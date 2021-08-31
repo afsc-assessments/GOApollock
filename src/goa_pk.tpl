@@ -1,4 +1,7 @@
-// GOA pollock age-structured model
+// GOA pollock age-structured model originally developed by
+// Martin Dorn (NFMS AFSC), taken over by Cole Monnahan (NMFS,
+// AFSC) in 2021 (pk20_8 renamed to goa_pk).
+
 // One fishery, three surveys: acoustic, bottom trawl, ADFG crab/groundfish  
 // Double logistic selectivity for fishery
 // Random walks in selectivity
@@ -8,6 +11,9 @@
 // Biosonics MillerFreeman and OscarDyson 
 // Implements 2 corrections to coding errors noticed by Teresa in Spring 2014
 // Namely: Uses 20 iterations rather than 10 to get the correct spawning biomass in the HCR, AND implements the bias corrected log likelihood for survey biomass correctly.
+
+
+
 DATA_SECTION
 
   !!CLASS ofstream report1("mceval.dat")
