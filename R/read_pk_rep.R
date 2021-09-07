@@ -130,3 +130,21 @@ mymelt <- function(replist, slot){
 ## mymelt(replists, 'Expected_spawning_biomass') %>% str
 ## mymelt(replists, 'Numbers_at_age') %>% str
 ## mymelt(replists, 'Natural_mortality') %>% str
+
+
+
+read_pk_cor <- function(model, path, version, endyr, styr=1970){
+  if(!file.exists(ff <- file.path(path, paste0(model, '.cor'))))
+    stop("file does not exists: ",ff)
+  yrs <- styr:endyr
+  oldwd <- getwd(); on.exit(setwd(oldwd))
+  setwd(path)
+  sdrep <- R2admb:::read_admb(model)
+  ## Parse these out into scalars and vectors
+  xx <- strsplit(names(sdrep$coefficients), '\\.') %>% sapply(function(x) x[1])
+  df <- data.frame(version=version, name=xx, est=as.numeric(sdrep$coefficients),
+    se=as.numeric(sdrep$se)) %>%
+    group_by(name) %>% mutate(i=1:n(), year=yrs[1:n()]) %>% ungroup() %>%
+    mutate(lwr=est-1.96*se, upr=est+1.96*se)
+  df                                       # }
+}
