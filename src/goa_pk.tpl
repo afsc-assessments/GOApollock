@@ -225,6 +225,7 @@ INITIALIZATION_SECTION
 //  inf2_srv6          7
   log_slp2_srv6     1
   inf2_srv6          20
+  natMscalar   1
   
 PARAMETER_SECTION
 
@@ -340,6 +341,8 @@ PARAMETER_SECTION
 //  init_bounded_number q5_pow(-10,10,6)  
   init_bounded_number q5_pow(-10,10,-6)
   init_bounded_number log_q6(-10,10,5)
+  // This scales M vector below so that M={M}*natMscalar. If 1 does nothing. 
+  init_bounded_number natMscalar(0,5,-5)
 
   number q1_bs
   vector q1(styr,endyr)
@@ -608,7 +611,8 @@ FUNCTION Selectivity
    M(7)=0.30;
    M(8)=0.29;
    M(9)=0.28;
-   M(10)=0.29; 
+   M(10)=0.29;
+   for(int i=1; i<=10; i++) M(i)*=natMscalar;
 //   M(5)=0.35;
 //   M(6)=0.31;
 //  M(7)=0.31;
