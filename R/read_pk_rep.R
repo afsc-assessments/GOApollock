@@ -2,7 +2,7 @@
 library(dplyr)
 library(ggplot2)
 
-read_pk_rep <- function(file, endyr=2020, styr=1970, model.name='none'){
+read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
   ## named vectors
   fyrs <- styr:endyr
   fages <- 1:10
@@ -73,7 +73,7 @@ read_pk_rep <- function(file, endyr=2020, styr=1970, model.name='none'){
     k <- k+1
   }
   names(myvals) <- mynames
-  myvals <- c( model=model.name, ages=list(fages), years=list(fyrs),  myvals)
+  myvals <- c( model=version, ages=list(fages), years=list(fyrs),  myvals)
   return(myvals)
 }
 
@@ -120,7 +120,7 @@ mymelt <- function(replist, slot){
 
 ## ## tests that it works on all the data types I want
 ## x1 <- read_pk_rep('model_runs/m01_2020_final_original/pk20_8.rep',
-##                   model.name='pk20_8', endyr=2020)
+##                   version='pk20_8', endyr=2020)
 ## x2 <- x1; x2$model <- 'dummy'
 ## replists <- list(x1,x2)
 
