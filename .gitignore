@@ -4,3 +4,4 @@ source/*.exe
 source/*.htp
 .Rproj.user
 .Rhistory
+tests/model_20_8
