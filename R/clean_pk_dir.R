@@ -3,6 +3,7 @@
 #'
 #' @param path Path to directory to clean
 #' @return Nothing
+#' @export
 clean_pk_dir <- function(path=getwd()){
   r <- list.files(path, pattern='r0|b0|p0')
   r <- c(r,list.files(path, pattern='\\.cpp|\\.obj|\\.log|\\.eva|\\.bar|\\.std|\\.htp|\\.dep'))

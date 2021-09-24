@@ -1,8 +1,11 @@
-## Function to read the GOA pollock model output report into R
-library(dplyr)
-library(ggplot2)
-
+#' Read the GOA pollock model output report
+#' @param file Report file name
+#' @param endyr,styr The start and end years in the model
+#' @param version A version name which is added, e.g., 'change_selex'
+#' @return A list of outputs
+#' @export
 read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
+  library(dplyr)
   ## named vectors
   fyrs <- styr:endyr
   fages <- 1:10
@@ -77,6 +80,13 @@ read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
   return(myvals)
 }
 
+
+#' Melt a named object from a replist (beta)
+#' @param replist Output from \code{read_pk_rep}
+#' @param slot The slot name to extract
+#' @export
+#' @return A data frame with named arguments sometimes
+#'
 mymelt <- function(replist, slot){
 
   ## multiple runs together or single?
@@ -132,8 +142,12 @@ mymelt <- function(replist, slot){
 ## mymelt(replists, 'Natural_mortality') %>% str
 
 
-
-read_pk_cor <- function(model, path, version, endyr, styr=1970){
+#' Read correlation file
+#' @param model model name
+#' @param path path to folder
+#' @param version,endyr,styr see rep function
+#' @export
+read_pk_cor <- function(model, path=getwd(), version, endyr, styr=1970){
   if(!file.exists(ff <- file.path(path, paste0(model, '.cor'))))
     stop("file does not exists: ",ff)
   yrs <- styr:endyr
