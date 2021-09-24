@@ -5,7 +5,6 @@
 #' @return A list of outputs
 #' @export
 read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
-  library(dplyr)
   ## named vectors
   fyrs <- styr:endyr
   fages <- 1:10
@@ -22,16 +21,17 @@ read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
 
   x <- scan(file, what="", sep="\n")
   ## drop initial spaces
-  y <- sapply(x, trimws) %>% unname
+  y <- unname(sapply(x, trimws))
   ## Separate elements by one or more whitepace
   z <- strsplit(y, "[[:space:]]+")
   ## Drop empty lines
-  z <- lapply(z, function(x) if(length(x)>0) x) %>% purrr::discard(is.null)
+  z <- purrr::discard(lapply(z, function(x) if(length(x)>0) x), is.null)
   ind <-  suppressWarnings(which(is.na(as.numeric(sapply(z, `[[`, 1)))))
   k <- 1; dummy <- NULL
   mynames <- NA
   myvals <- list()
   for(i in 1:(length(ind)-1)){
+    if(i==64) next # ragged shape, need to fix
     if(ind[i]==ind[i+1]-1){
       ## two chars in a row
       dummy <- z[ind[i]]
@@ -62,10 +62,10 @@ read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
       val <- lapply(vals, function(x) strsplit(x, "[[:space:]]"))
       if(length(val[[1]])==1){
         ## column vector
-        val <- unlist(val) %>% as.numeric()
+        val <- as.numeric(unlist(val))
       } else {
         ## matrices
-        val <- lapply(val, as.numeric) %>% do.call(rbind,.)
+        val <- do.call(rbind, lapply(val, as.numeric))
         stopifnot(length(vals)==nrow(val))
       }
     }
@@ -110,19 +110,19 @@ mymelt <- function(replist, slot){
   } else {
     y <- replist[[1]][[slot]]
     if(is.matrix(y)){
-      x <- lapply(replist, function(z){
+      x <- dplyr::bind_rows(lapply(replist, function(z){
         temp <- data.frame(model=z$model,reshape2::melt(z[[slot]]))
         if(nrow(temp)==length(z$ages)) temp <- cbind(temp, age=z$ages)
         if(nrow(temp)==length(z$years)) temp <- cbind(temp, year=z$years)
         temp
-      }) %>% bind_rows
-    } else {
-      x <- lapply(replist, function(z){
+      }))
+     } else {
+      x <- dplyr::bind_rows(lapply(replist, function(z){
         temp <- data.frame(model=z$model,value=z[[slot]])
         if(nrow(temp)==length(z$ages)) temp <- cbind(temp, age=z$ages)
         if(nrow(temp)==length(z$years)) temp <- cbind(temp, year=z$years)
         temp
-      }) %>% bind_rows
+      }))
     }
   }
   return(x)
