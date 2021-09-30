@@ -20,6 +20,8 @@ DATA_SECTION
 
   init_int styr                                  // Starting year for population model
   init_int endyr                                 // Ending year for population model
+  init_int retroyr				 // Retrospective end year (<= endyr)
+  // !! if(retroyr >endyr){cerr << "bad retroyr" << endl; ad_exit(1);}; 
   init_int rcrage                                // Recruitment age
   init_int trmage                                // Last modeled age
   init_int nbins1                                // Number of length bins in transitiom matrix 1
@@ -961,86 +963,103 @@ FUNCTION Objective_function
 //Total catch
   loglik(1) = -.5*norm2(elem_div((log(cattot)-log(Ecattot)),cattot_log_sd));
 //Age composition
-  for (i=1;i<=nyrs_fsh;i++)
-    {
+  loglik(2)=0;
+  for (i=1;i<=nyrs_fsh;i++) {
     llcatp(i) = 0;
-  for (j=ac_yng_fsh(i);j<=ac_old_fsh(i);j++)
-    {
+    for (j=ac_yng_fsh(i);j<=ac_old_fsh(i);j++) {
       llcatp(i) += multN_fsh(i)*(catp(i,j)+o)*log((Ecatp(fshyrs(i),j)+o)/(catp(i,j)+o));
-    res_fish(i,j)=catp(i,j);
-    res_fish(i,trmage-rcrage+j+1)=Ecatp(fshyrs(i),j);
-  if(multN_fsh(i)>0)
-    {
+      res_fish(i,j)=catp(i,j);
+      res_fish(i,trmage-rcrage+j+1)=Ecatp(fshyrs(i),j);
+      if(multN_fsh(i)>0) {
 	pearson_fish(i,j)=(catp(i,j)-Ecatp(fshyrs(i),j))/sqrt((Ecatp(fshyrs(i),j)*(1.-Ecatp(fshyrs(i),j)))/multN_fsh(i));	
+      }
     }
-	}
-  if(multN_fsh(i)>0)
-    {	
-	effN_fsh(i) = sum(elem_prod(Ecatp(fshyrs(i)),(1-Ecatp(fshyrs(i)))))/sum(square(catp(i)-Ecatp(fshyrs(i))));
-	}
-	}
-  loglik(2) = sum(llcatp);
+    if(multN_fsh(i)>0) {	
+      effN_fsh(i) = sum(elem_prod(Ecatp(fshyrs(i)),(1-Ecatp(fshyrs(i)))))/sum(square(catp(i)-Ecatp(fshyrs(i))));
+    }
+    if(fshyrs(i)<=retroyr){ 	// ignore data after retroyear
+      loglik(2) += llcatp(i);
+    }
+  }
 
 //Length composition
-  for (i=1;i<=nyrslen_fsh;i++)
-    {
+  loglik(3)=0;
+  for (i=1;i<=nyrslen_fsh;i++) {
     lllenp(i) = 0;
-  for (j=1;j<=nbins1;j++)
-    {
-      lllenp(i) += multNlen_fsh(i)*(lenp(i,j)+o)*log((Elenp(fshlenyrs(i),j)+o)/(lenp(i,j)+o));
-    }}
-  loglik(3) = sum(lllenp);
+      for (j=1;j<=nbins1;j++) {
+	lllenp(i) += multNlen_fsh(i)*(lenp(i,j)+o)*log((Elenp(fshlenyrs(i),j)+o)/(lenp(i,j)+o));
+      }
+    if(fshlenyrs(i)<=retroyr){ 	// ignore data after retroyear
+      loglik(3) += lllenp(i);
+    }
+  }
 
 
 // Survey 1 likelihoods
 //Total biomass  
 //  loglik(4) = -.5*norm2(elem_div(
 //       (log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.),indxsurv_log_sd1_bs));
-  loglik(4) = -.5*norm2(elem_div(
-      (log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.),indxsurv_log_sd1));
+  // loglik(4) = -.5*norm2(elem_div(
+  //     (log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.),indxsurv_log_sd1));
+  loglik(4)=0;
+  for(i=1; i<=nyrs_srv1;i++){
+    if(srvyrs1(i)<=retroyr){
+      loglik(4)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(srvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
+    }
+    //loglik+=dnorm(log(indxsurv1(i)), log(Eindxsurv1(survyrs1)) +square(indexsurv_log_sd1(i)/2.)
+ }
   RMSE_srv1_bs= sqrt(norm2(log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.)/nyrs_srv1_bs);
   RMSE_srv1= sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
   
 //Age composition
-  for (i=1;i<=nyrsac_srv1;i++)
-    {
+  loglik(5)=0;
+  for (i=1;i<=nyrsac_srv1;i++) {
     llsrvp1(i) = 0;
-	for (j=ac_yng_srv1(i);j<=ac_old_srv1(i);j++)
-    {
+    for (j=ac_yng_srv1(i);j<=ac_old_srv1(i);j++) {
       llsrvp1(i) += multN_srv1(i)*(srvp1(i,j)+o)*log((Esrvp1(srv_acyrs1(i),j)+o)/(srvp1(i,j)+o));
-	res_srv1(i,j)=srvp1(i,j);
-    res_srv1(i,trmage-rcrage+j+1)=Esrvp1(srv_acyrs1(i),j);
-	if(multN_srv1(i)>0)
-    {
+      res_srv1(i,j)=srvp1(i,j);
+      res_srv1(i,trmage-rcrage+j+1)=Esrvp1(srv_acyrs1(i),j);
+      if(multN_srv1(i)>0) {
 	pearson_srv1(i,j)=(srvp1(i,j)-Esrvp1(srv_acyrs1(i),j))/sqrt((Esrvp1(srv_acyrs1(i),j)*(1.-Esrvp1(srv_acyrs1(i),j)))/multN_srv1(i));	
+      }
     }
+    if(multN_srv1(i)>0) {
+      effN_srv1(i) = sum(elem_prod(Esrvp1(srv_acyrs1(i)),(1-Esrvp1(srv_acyrs1(i)))))/sum(square(srvp1(i)-Esrvp1(srv_acyrs1(i))));
     }
-  if(multN_srv1(i)>0)
-    {
-    effN_srv1(i) = sum(elem_prod(Esrvp1(srv_acyrs1(i)),(1-Esrvp1(srv_acyrs1(i)))))/sum(square(srvp1(i)-Esrvp1(srv_acyrs1(i))));
-	}
-	}
-  loglik(5) = sum(llsrvp1);
+    if(srv_acyrs1(i)<=retroyr){
+      loglik(5) += llsrvp1(i);
+    }
+  }
 //length composition
+ loglik(6)=0;
   for (i=1;i<=nyrslen_srv1;i++)
     {
     llsrvlenp1(i) = 0;
   for (j=1;j<=nbins3;j++)
     {
       llsrvlenp1(i) += multNlen_srv1(i)*(srvlenp1(i,j)+o)*log((Esrvlenp1(srv_lenyrs1(i),j)+o)/(srvlenp1(i,j)+o));
-    }}
-   loglik(6) = sum(llsrvlenp1);
+    }
+  if(srv_lenyrs1(i)<=retroyr){
+    loglik(6) += llsrvlenp1(i);
+  }
+    }
 
 // Survey 2 likelihoods
 
 //Total biomass    
-  loglik(7) = -.5*norm2(elem_div(
-       (log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.),indxsurv_log_sd2));
-  RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
+  // loglik(7) = -.5*norm2(elem_div(
+  //      (log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.),indxsurv_log_sd2));
+  loglik(7) =0;
+  for (i=1;i<=nyrs_srv2;i++){
+    if(srvyrs2(i)<=retroyr){
+      loglik(7)+=-.5*square((log(indxsurv2(i))-log(Eindxsurv2(srvyrs2(i)))+square(indxsurv_log_sd2(i))/2.)/indxsurv_log_sd2(i));
+    }
+  }
+    RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
    
 //Age composition
-  for (i=1;i<=nyrsac_srv2;i++)
-    {
+  loglik(8)=0;
+  for (i=1;i<=nyrsac_srv2;i++) {
     llsrvp2(i) = 0;
   for (j=ac_yng_srv2(i);j<=ac_old_srv2(i);j++)
     {
@@ -1056,8 +1075,10 @@ FUNCTION Objective_function
     {	
     effN_srv2(i) = sum(elem_prod(Esrvp2(srv_acyrs2(i)),(1-Esrvp2(srv_acyrs2(i)))))/sum(square(srvp2(i)-Esrvp2(srv_acyrs2(i))));
 	}
-	}
-  loglik(8) = sum(llsrvp2);
+  if(srv_acyrs2(i)<=retroyr){
+    loglik(8) += llsrvp2(i);
+  }
+  }
 //length composition
 
   for (i=1;i<=nyrslen_srv2;i++)
@@ -1066,19 +1087,29 @@ FUNCTION Objective_function
   for (j=1;j<=nbins2;j++)
     {
       llsrvlenp2(i) += multNlen_srv2(i)*(srvlenp2(i,j)+o)*log((Esrvlenp2(srv_lenyrs2(i),j)+o)/(srvlenp2(i,j)+o));
-    }}
-   loglik(9) = sum(llsrvlenp2);
+    }
+  if(srv_lenyrs2(i) <= retroyr){
+    loglik(9) += llsrvlenp2(i);
+  }
+    }
 
   loglik(10) = 0;
 
 // Survey 3 likelihoods
 
 //Total biomass
-    loglik(11) = -.5*norm2(elem_div(
-       (log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.),indxsurv_log_sd3));
-  RMSE_srv3= sqrt(norm2(log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.)/nyrs_srv3);
+    // loglik(11) = -.5*norm2(elem_div(
+    //    (log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.),indxsurv_log_sd3));
+    loglik(11)=0;
+    for(i=1; i<=nyrs_srv3;i++){
+      if(srvyrs3(i)<=retroyr){
+	loglik(11) += -.5*square((log(indxsurv3(i))-log(Eindxsurv3(srvyrs3(i)))+square(indxsurv_log_sd3(i))/2.)/indxsurv_log_sd3(i));
+      }
+    }
+    RMSE_srv3= sqrt(norm2(log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.)/nyrs_srv3);
 
 	 //age composition
+    loglik(12)=0;
   for (i=1;i<=nyrsac_srv3;i++)
     {
     llsrvp3(i) = 0;
@@ -1096,9 +1127,12 @@ FUNCTION Objective_function
     {		
     effN_srv3(i) = sum(elem_prod(Esrvp3(srv_acyrs3(i)),(1-Esrvp3(srv_acyrs3(i)))))/sum(square(srvp3(i)-Esrvp3(srv_acyrs3(i))));	
 	}
-	}
-   loglik(12) = sum(llsrvp3);
+  if(srv_acyrs3(i)<=retroyr){
+    loglik(12) += llsrvp3(i);
+  }
+    }
 //length composition
+  loglik(13)=0;
   for (i=1;i<=nyrslen_srv3;i++)
     {
     llsrvlenp3(i) = 0;
@@ -1112,26 +1146,45 @@ FUNCTION Objective_function
 	pearson_srv3len(i,j)=(srvlenp3(i,j)-Esrvlenp3(srv_lenyrs3(i),j))/sqrt((Esrvlenp3(srv_lenyrs3(i),j)*(1.-Esrvlenp3(srv_lenyrs3(i),j)))/multNlen_srv3(i));	
     }
 
-    }}
-   loglik(13) = sum(llsrvlenp3);
+    }
+  if(srv_lenyrs3(i)<=retroyr){
+    loglik(13) += llsrvlenp3(i);
+  }
+    }
 
 // Survey 4 and 5 likelihoods
-
-   loglik(14) = -.5*norm2(elem_div((log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.),indxsurv_log_sd4));
-   RMSE_srv4= sqrt(norm2(log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.)/nyrs_srv4);
+   // loglik(14) = -.5*norm2(elem_div((log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.),indxsurv_log_sd4));
+   // RMSE_srv4= sqrt(norm2(log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.)/nyrs_srv4);
+   // //   loglik(14) = 0;
+   // loglik(15) = -.5*norm2(elem_div((log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.),indxsurv_log_sd5));
+   // RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
+  loglik(14)=0; loglik(15)=0;
+  for(i=1; i<=nyrs_srv4;i++){ 	// assuming srv4 and srv5 have identical structure
+    if(srvyrs4(i) <=retroyr){
+    loglik(14) += -.5*square((log(indxsurv4(i))-log(Eindxsurv4(srvyrs4(i)))+square(indxsurv_log_sd4(i))/2.)/indxsurv_log_sd4(i));
    //   loglik(14) = 0;
-   loglik(15) = -.5*norm2(elem_div((log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.),indxsurv_log_sd5));
+    loglik(15) += -.5*square((log(indxsurv5(i))-log(Eindxsurv5(srvyrs5(i)))+square(indxsurv_log_sd5(i))/2.)/indxsurv_log_sd5(i));
+    }
+  }
    RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
    //   loglik(15) = 0;
+   RMSE_srv4= sqrt(norm2(log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.)/nyrs_srv4);
 
 // Survey 6 likelihoods
 
 //Total biomass    
-  loglik(16) = -.5*norm2(elem_div(
-       (log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.),indxsurv_log_sd6));
-  RMSE_srv6= sqrt(norm2(log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.)/nyrs_srv6);
+  // loglik(16) = -.5*norm2(elem_div(
+  //      (log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.),indxsurv_log_sd6));
+   loglik(16)=0;
+   for(i=1;i<=nyrs_srv6;i++){
+     if(srvyrs6(i)<=retroyr){
+       loglik(16)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(srvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
+     }
+   }
+   RMSE_srv6= sqrt(norm2(log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.)/nyrs_srv6);
    
 //Age composition
+   loglik(17)=0;
   for (i=1;i<=nyrsac_srv6;i++)
     {
     llsrvp6(i) = 0;
@@ -1149,18 +1202,22 @@ FUNCTION Objective_function
     {	
     effN_srv6(i) = sum(elem_prod(Esrvp6(srv_acyrs6(i)),(1-Esrvp6(srv_acyrs6(i)))))/sum(square(srvp6(i)-Esrvp6(srv_acyrs6(i))));
 	}
-	}
-  loglik(17) = sum(llsrvp6);
+  if(srv_acyrs6(i)<=retroyr){
+    loglik(17) +=llsrvp6(i);
+  }
+    }
 //length composition
-
   for (i=1;i<=nyrslen_srv6;i++)
     {
     llsrvlenp6(i) = 0;
   for (j=1;j<=nbins2;j++)
     {
       llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(srv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
-    }}
-   loglik(17) += sum(llsrvlenp6);
+    }
+  if(srv_lenyrs6(i)<=retroyr){
+    loglik(17) += llsrvlenp6(i);
+  }
+    }
 
 
 //   loglik(16)=0; 
@@ -1178,7 +1235,6 @@ FUNCTION Objective_function
 //  loglik(18) += -0.5*square(dev_log_recruit(endyr)/1.0);
 //  Stronger constraint on endyear recruitment dev
 //  loglik(18) += -0.5*square(dev_log_recruit(endyr)/0.25);
-
 
 //Normal process error on selectivity deviations
 //Note rwlk_sd(styr,endyr-1)
