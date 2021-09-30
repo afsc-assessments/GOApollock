@@ -26,3 +26,24 @@ clean_pk_dir <- function(path=getwd()){
     }
   }
 }
+
+
+#' Copy and build ADMB source from package
+#'
+#' @param path Path to folder
+#' @param name Executable name (default goa_pk)
+#' @param compile Whether to compile (default is TRUE)
+#' @export
+setup_exe <- function(path=getwd(), name='goa_pk', compile=TRUE){
+  tpl <- 'C:/Users/cole.monnahan/GOApollock/source/goa_pk.tpl'
+  stopifnot( file.exists(tpl))
+  dir.exists(path)
+  test <- file.copy(from=tpl, to=file.path(path,paste0(name, '.tpl')), overwrite=TRUE)
+  if(!test) warning("Failed to copy file")
+  if(compile){
+    message("Compiling model..")
+    old.wd <- getwd(); on.exit(setwd(old.wd))
+    setwd(path)
+    system(paste('admb', name))
+  }
+}
