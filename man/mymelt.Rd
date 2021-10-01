@@ -2,12 +2,13 @@
 % Please edit documentation in R/read_pk_rep.R
 \name{mymelt}
 \alias{mymelt}
-\title{Melt a named object from a replist (beta)}
+\title{Extract and melt a named object from a replist (beta)}
 \usage{
 mymelt(replist, slot)
 }
 \arguments{
-\item{replist}{Output from \code{read_pk_rep}}
+\item{replist}{Output from \code{read_pk_rep}. Can be a single
+report object or a list of them.}
 
 \item{slot}{The slot name to extract}
 }
@@ -15,5 +16,5 @@ mymelt(replist, slot)
 A data frame with named arguments sometimes
 }
 \description{
-Melt a named object from a replist (beta)
+Extract and melt a named object from a replist (beta)
 }

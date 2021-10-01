@@ -4,14 +4,22 @@
 \alias{read_pk_rep}
 \title{Read the GOA pollock model output report}
 \usage{
-read_pk_rep(file, endyr = 2020, styr = 1970, version = "none")
+read_pk_rep(
+  model = "goa_pk",
+  path = getwd(),
+  version = "none",
+  endyr,
+  styr = 1970
+)
 }
 \arguments{
-\item{file}{Report file name}
+\item{model}{model name}
 
-\item{endyr, styr}{The start and end years in the model}
+\item{path}{path to folder}
 
 \item{version}{A version name which is added, e.g., 'change_selex'}
+
+\item{endyr, styr}{The start and end years in the model}
 }
 \value{
 A list of outputs

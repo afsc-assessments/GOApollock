@@ -4,7 +4,13 @@
 \alias{read_pk_cor}
 \title{Read correlation file}
 \usage{
-read_pk_cor(model, path = getwd(), version, endyr, styr = 1970)
+read_pk_cor(
+  model = "goa_pk",
+  path = getwd(),
+  version = "none",
+  endyr,
+  styr = 1970
+)
 }
 \arguments{
 \item{model}{model name}
