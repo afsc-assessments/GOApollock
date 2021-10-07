@@ -961,7 +961,14 @@ FUNCTION Objective_function
 // Fishery likelihoods
 
 //Total catch
-  loglik(1) = -.5*norm2(elem_div((log(cattot)-log(Ecattot)),cattot_log_sd));
+  //loglik(1) = -.5*norm2(elem_div((log(cattot)-log(Ecattot)),cattot_log_sd));
+ loglik(1)=0;
+  for(i=styr; i<=endyr;i++){
+    if(i<=retroyr){
+      loglik(1) += -.5*square((log(cattot(i))-log(Ecattot(i)))/cattot_log_sd(i));
+    }
+  }	  
+
 //Age composition
   loglik(2)=0;
   for (i=1;i<=nyrs_fsh;i++) {
@@ -1080,7 +1087,7 @@ FUNCTION Objective_function
   }
   }
 //length composition
-
+  loglik(9)=0;
   for (i=1;i<=nyrslen_srv2;i++)
     {
     llsrvlenp2(i) = 0;
