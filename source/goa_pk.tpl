@@ -20,8 +20,8 @@ DATA_SECTION
 
   init_int styr                                  // Starting year for population model
   init_int endyr                                 // Ending year for population model
-  init_int retroyr				 // Retrospective end year (<= endyr)
-  // !! if(retroyr >endyr){cerr << "bad retroyr" << endl; ad_exit(1);}; 
+  init_int retroyr				 // Peel year for retrospective (last year of model data)
+
   init_int rcrage                                // Recruitment age
   init_int trmage                                // Last modeled age
   init_int nbins1                                // Number of length bins in transitiom matrix 1
@@ -31,7 +31,6 @@ DATA_SECTION
 //Fishery 
   init_vector cattot(styr,endyr)                 // Total catch in tons
   init_vector cattot_log_sd(styr,endyr)          // Total catch (cv) = sdev of log(cattot)
-
   init_int nyrs_fsh                              // Number of fishery age comps
   init_ivector fshyrs(1,nyrs_fsh)                // Years for the fishery age comps
   init_vector multN_fsh(1,nyrs_fsh)              // Multinomial sample size by year
@@ -43,6 +42,7 @@ DATA_SECTION
   init_vector multNlen_fsh(1,nyrslen_fsh)        // Multinomial sample size by year
 
   init_vector rwlk_sd(styr,endyr-1)              // Random walk stdevs
+  //!! dvar_vector rwlk_sd=rwlk_sd(styr,retroyr-1);              
   init_matrix catp(1,nyrs_fsh,rcrage,trmage)     // Catch proportions at age
   init_matrix lenp(1,nyrslen_fsh,1,nbins1)       // Catch proportions at age
 
@@ -59,8 +59,11 @@ DATA_SECTION
   init_ivector srvyrs1(1,nyrs_srv1)           // Years in which surveys occured
   init_vector indxsurv1(1,nyrs_srv1)           // Survey index
   init_vector indxsurv_log_sd1(1,nyrs_srv1)    // Survey index (cv) = sdev of log(indxsurv)
+
   init_vector q1_rwlk_sd(styr,endyr-1)              // Random walk stdevs
+  //!! dvar_vector q1_rwlk_sd=q1_rwlk_sd(styr,retroyr-1);              
   init_vector yrfrct_srv1(styr,endyr)            // Fraction of year to midpoint of survey
+  //!! dvar_vector yrfrct_srv1=yrfrct_srv1(styr,retroyr);            
   init_int nyrsac_srv1                           // Number of survey age comps
   init_ivector srv_acyrs1(1,nyrsac_srv1)         // Years for the survey age comp
   init_vector multN_srv1(1,nyrsac_srv1)          // Multinomial sample size by year
@@ -72,14 +75,32 @@ DATA_SECTION
   init_matrix srvp1(1,nyrsac_srv1,rcrage,trmage) // Survey proportions at age
   init_matrix srvlenp1(1,nyrslen_srv1,1,nbins3)  // Survey proportions at length
   init_matrix wt_srv1(styr,endyr,rcrage,trmage)  // Survey weights at age
-                                                 // Note full dimensions for weight matrix
+  //!! dvar_matrix wt2_srv1(styr,retroyr,rcrage,trmage);
+//  !! for(int y=styr;y<=retroyr;y++) for(int a=rcrage; a<=trmage; a++) wt2_srv1(y,a)=wt_srv1(y,a);
+ 
+ // !! dvar_matrix wt2_srv1(styr,retroyr,rcrage,trmage);//= wt_srv1.sub(styr, retroyr);
+ //  !! for (int i = styr; i <= retroyr; ++i)
+ //  !! {
+ //  !!   wt2_srv1(i) = wt_srv1(i);
+ //  !! }
+ //  !! cout << wt_srv1  << endl;
+ //  !! cout << "---" << endl;
+ //  !! cout << wt2_srv1 << endl;
+// !! cout << wt_srv1 << endl;
+  // !! cout << wt2_srv1 << endl;
+// Note full dimensions for weight matrix
 //Survey 2 (Bottom trawl)
   init_int nyrs_srv2                             // Number of surveys
   init_ivector srvyrs2(1,nyrs_srv2)              // Years in which surveys occured
   init_vector indxsurv2(1,nyrs_srv2)             // Survey index
   init_vector indxsurv_log_sd2(1,nyrs_srv2)      // Survey index (cv) = sdev of log(indxsurv)
   init_vector q2_rwlk_sd(styr,endyr-1)              // Random walk stdevs
+  // !! cout << q2_rwlk_sd << endl;
+  // !! dvar_vector q2_rwlk_sd=q2_rwlk_sd(styr,retroyr-1);
+  // !! cout << q2_rwlk_sd << endl;
+
   init_vector yrfrct_srv2(styr,endyr)            // Fraction of year to midpoint of survey
+  //!! dvar_vector yrfrct_srv2=yrfrct_srv2(styr,retroyr);            
   init_int nyrsac_srv2                           // Number of survey age comps
   init_ivector srv_acyrs2(1,nyrsac_srv2)         // Years for the survey age comp
   init_vector multN_srv2(1,nyrsac_srv2)          // Multinomial sample size by year
@@ -99,7 +120,9 @@ DATA_SECTION
   init_vector indxsurv3(1,nyrs_srv3)             // Survey index
   init_vector indxsurv_log_sd3(1,nyrs_srv3)      // Survey index (cv) = sdev of log(indxsurv)
   init_vector q3_rwlk_sd(styr,endyr-1)              // Random walk stdevs
+  //!! dvar_vector q3_rwlk_sd=q3_rwlk_sd(styr,retroyr-1);              
   init_vector yrfrct_srv3(styr,endyr)            // Fraction of year to midpoint of survey
+  //!! dvar_vector yrfrct_srv3=yrfrct_srv3(styr,retroyr);            
   init_int nyrsac_srv3                           // Number of survey age comps
   init_ivector srv_acyrs3(1,nyrsac_srv3)         // Years for the survey age comps
   init_vector multN_srv3(1,nyrsac_srv3)          // Multinomial sample size by year
@@ -128,6 +151,7 @@ DATA_SECTION
   init_vector indxsurv6(1,nyrs_srv6)             // Survey index
   init_vector indxsurv_log_sd6(1,nyrs_srv6)      // Survey index (cv) = sdev of log(indxsurv)
   init_vector yrfrct_srv6(styr,endyr)            // Fraction of year to midpoint of survey
+  //!! dvar_vector yrfrct_srv6=yrfrct_srv6(styr,retroyr);            
   init_int nyrsac_srv6                           // Number of survey age comps
   init_ivector srv_acyrs6(1,nyrsac_srv6)         // Years for the survey age comp
   init_vector multN_srv6(1,nyrsac_srv6)          // Multinomial sample size by year
@@ -159,6 +183,17 @@ DATA_SECTION
   init_vector wt_spawn_proj(rcrage,trmage)       // Projection population weight at age at spawning (April 15)
   init_vector wt_fsh_proj(rcrage,trmage)         // Projection fishery weight at age 
   init_vector wt_srv_proj(rcrage,trmage)         // Projection arbitrary survey weight at age 
+// After all the data is read in, redefine the endyr to be the
+// retroyr, then **carefully* redefine calculations throughout to
+// not overindex the data inputs
+ int endyr0;
+ LOC_CALCS
+  if(retroyr>endyr){cerr << "bad peel year" << endl; ad_exit(1);};
+  //cout << endyr << endl;
+  endyr0=endyr;
+  endyr=retroyr;
+  //cout << endyr << endl;
+ END_CALCS
   init_vector Ftarget(endyr+1,endyr+5)
   init_number B40
 // mean log recruitment
@@ -231,8 +266,10 @@ INITIALIZATION_SECTION
   
 PARAMETER_SECTION
 
-//Population parameters 
-
+//Population parameters
+  // !! cout << "par sec " << endyr << " retro= " << retroyr<< " " << endyr0 << endl;
+  // !! endyr=retroyr;
+   !! cout << "endyr=" << endyr << "; retro= " << retroyr<< "; original endyr=" << endyr0 << endl;
 //  init_bounded_number M(0.1,0.5,-1)
   init_bounded_vector M(rcrage,trmage,0.1,5.0,-1)
 
@@ -451,7 +488,6 @@ number RMSE_srv6
   objective_function_value objfun
 
 PRELIMINARY_CALCS_SECTION
-
 // Do upper and lower accumulations in age composition data
 
 // Fishery
@@ -544,10 +580,11 @@ PROCEDURE_SECTION
 
   if(last_phase())
   {
-  Projections();
-  }
+    Projections();
+  } 
   Objective_function();
   MCMC_output();
+  cout << "phase=" << current_phase() << "; obj fn=" << objfun << endl;
 
 FUNCTION Convert_log_parameters
 
@@ -763,11 +800,13 @@ FUNCTION Expected_values
     }
 
 
+
 // Do upper and lower accumulation in expected age composition
 
 // Fishery
   for (i=1;i<=nyrs_fsh;i++)
     {
+    if(fshyrs(i)>endyr) break;
   for (j=rcrage;j<=trmage;j++)
     {
     if(j<ac_yng_fsh(i)) 
@@ -781,11 +820,11 @@ FUNCTION Expected_values
       Ecatp(fshyrs(i),j) = 0;
       }
     }}
-
 // Survey 1
 
   for (i=1;i<=nyrsac_srv1;i++)
     {
+    if(srv_acyrs1(i)>endyr) break;
   for (j=rcrage;j<=trmage;j++)
     {
 
@@ -804,6 +843,7 @@ FUNCTION Expected_values
 // Survey 2
   for (i=1;i<=nyrsac_srv2;i++)
     {
+    if(srv_acyrs2(i)>endyr) break;
   for (j=rcrage;j<=trmage;j++)
     {
     if(j<ac_yng_srv2(i)) 
@@ -821,6 +861,7 @@ FUNCTION Expected_values
 	// Survey 6
   for (i=1;i<=nyrsac_srv6;i++)
     {
+    if(srv_acyrs6(i)>endyr) break;
   for (j=rcrage;j<=trmage;j++)
     {
     if(j<ac_yng_srv6(i)) 
@@ -838,7 +879,6 @@ FUNCTION Expected_values
 FUNCTION Projections
 
 //Recruitments 
-
  for (i=endyr+1;i<=endyr+5;i++)
     {
 //  recruitment with bias correction
@@ -855,7 +895,6 @@ FUNCTION Projections
     {
     N_proj(i,rcrage)=recruit_proj(i);
     }
-
 //Initialize the age composition
 
 //  Standard projection
@@ -887,7 +926,7 @@ FUNCTION Projections
     }
     }
    slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
-
+  
 
 //Forward projections
 
@@ -964,14 +1003,14 @@ FUNCTION Objective_function
   //loglik(1) = -.5*norm2(elem_div((log(cattot)-log(Ecattot)),cattot_log_sd));
  loglik(1)=0;
   for(i=styr; i<=endyr;i++){
-    if(i<=retroyr){
+    if(i>endyr) break;
       loglik(1) += -.5*square((log(cattot(i))-log(Ecattot(i)))/cattot_log_sd(i));
-    }
   }	  
 
 //Age composition
   loglik(2)=0;
   for (i=1;i<=nyrs_fsh;i++) {
+    if(fshyrs(i)>endyr) break; 	// ignore data after retroyear
     llcatp(i) = 0;
     for (j=ac_yng_fsh(i);j<=ac_old_fsh(i);j++) {
       llcatp(i) += multN_fsh(i)*(catp(i,j)+o)*log((Ecatp(fshyrs(i),j)+o)/(catp(i,j)+o));
@@ -984,21 +1023,18 @@ FUNCTION Objective_function
     if(multN_fsh(i)>0) {	
       effN_fsh(i) = sum(elem_prod(Ecatp(fshyrs(i)),(1-Ecatp(fshyrs(i)))))/sum(square(catp(i)-Ecatp(fshyrs(i))));
     }
-    if(fshyrs(i)<=retroyr){ 	// ignore data after retroyear
-      loglik(2) += llcatp(i);
-    }
+    loglik(2) += llcatp(i);
   }
 
 //Length composition
   loglik(3)=0;
   for (i=1;i<=nyrslen_fsh;i++) {
+    if(fshlenyrs(i)>endyr) break;
     lllenp(i) = 0;
       for (j=1;j<=nbins1;j++) {
 	lllenp(i) += multNlen_fsh(i)*(lenp(i,j)+o)*log((Elenp(fshlenyrs(i),j)+o)/(lenp(i,j)+o));
       }
-    if(fshlenyrs(i)<=retroyr){ 	// ignore data after retroyear
       loglik(3) += lllenp(i);
-    }
   }
 
 
@@ -1010,17 +1046,17 @@ FUNCTION Objective_function
   //     (log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.),indxsurv_log_sd1));
   loglik(4)=0;
   for(i=1; i<=nyrs_srv1;i++){
-    if(srvyrs1(i)<=retroyr){
-      loglik(4)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(srvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
-    }
+    if(srvyrs1(i)>endyr) break;
+    loglik(4)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(srvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
     //loglik+=dnorm(log(indxsurv1(i)), log(Eindxsurv1(survyrs1)) +square(indexsurv_log_sd1(i)/2.)
- }
+  }
   RMSE_srv1_bs= sqrt(norm2(log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.)/nyrs_srv1_bs);
   RMSE_srv1= sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
   
 //Age composition
   loglik(5)=0;
   for (i=1;i<=nyrsac_srv1;i++) {
+    if(srv_acyrs1(i)>endyr) break;
     llsrvp1(i) = 0;
     for (j=ac_yng_srv1(i);j<=ac_old_srv1(i);j++) {
       llsrvp1(i) += multN_srv1(i)*(srvp1(i,j)+o)*log((Esrvp1(srv_acyrs1(i),j)+o)/(srvp1(i,j)+o));
@@ -1033,23 +1069,20 @@ FUNCTION Objective_function
     if(multN_srv1(i)>0) {
       effN_srv1(i) = sum(elem_prod(Esrvp1(srv_acyrs1(i)),(1-Esrvp1(srv_acyrs1(i)))))/sum(square(srvp1(i)-Esrvp1(srv_acyrs1(i))));
     }
-    if(srv_acyrs1(i)<=retroyr){
-      loglik(5) += llsrvp1(i);
-    }
+   loglik(5) += llsrvp1(i);
   }
 //length composition
  loglik(6)=0;
   for (i=1;i<=nyrslen_srv1;i++)
     {
+    if(srv_lenyrs1(i)>endyr) break;
     llsrvlenp1(i) = 0;
   for (j=1;j<=nbins3;j++)
     {
       llsrvlenp1(i) += multNlen_srv1(i)*(srvlenp1(i,j)+o)*log((Esrvlenp1(srv_lenyrs1(i),j)+o)/(srvlenp1(i,j)+o));
     }
-  if(srv_lenyrs1(i)<=retroyr){
-    loglik(6) += llsrvlenp1(i);
-  }
-    }
+     loglik(6) += llsrvlenp1(i);
+      }
 
 // Survey 2 likelihoods
 
@@ -1058,17 +1091,17 @@ FUNCTION Objective_function
   //      (log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.),indxsurv_log_sd2));
   loglik(7) =0;
   for (i=1;i<=nyrs_srv2;i++){
-    if(srvyrs2(i)<=retroyr){
-      loglik(7)+=-.5*square((log(indxsurv2(i))-log(Eindxsurv2(srvyrs2(i)))+square(indxsurv_log_sd2(i))/2.)/indxsurv_log_sd2(i));
-    }
-  }
-    RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
+    if(srvyrs2(i)>endyr) break;
+    loglik(7)+=-.5*square((log(indxsurv2(i))-log(Eindxsurv2(srvyrs2(i)))+square(indxsurv_log_sd2(i))/2.)/indxsurv_log_sd2(i));
+   }
+  RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
    
 //Age composition
   loglik(8)=0;
   for (i=1;i<=nyrsac_srv2;i++) {
     llsrvp2(i) = 0;
-  for (j=ac_yng_srv2(i);j<=ac_old_srv2(i);j++)
+   if(srv_acyrs2(i)>endyr) break;
+   for (j=ac_yng_srv2(i);j<=ac_old_srv2(i);j++)
     {
       llsrvp2(i) += multN_srv2(i)*(srvp2(i,j)+o)*log((Esrvp2(srv_acyrs2(i),j)+o)/(srvp2(i,j)+o));
 	  res_srv2(i,j)=srvp2(i,j);
@@ -1082,22 +1115,20 @@ FUNCTION Objective_function
     {	
     effN_srv2(i) = sum(elem_prod(Esrvp2(srv_acyrs2(i)),(1-Esrvp2(srv_acyrs2(i)))))/sum(square(srvp2(i)-Esrvp2(srv_acyrs2(i))));
 	}
-  if(srv_acyrs2(i)<=retroyr){
-    loglik(8) += llsrvp2(i);
-  }
-  }
+   loglik(8) += llsrvp2(i);
+   }
 //length composition
   loglik(9)=0;
   for (i=1;i<=nyrslen_srv2;i++)
     {
-    llsrvlenp2(i) = 0;
+     if(srv_lenyrs2(i) > endyr) break;
+     llsrvlenp2(i) = 0;
   for (j=1;j<=nbins2;j++)
     {
       llsrvlenp2(i) += multNlen_srv2(i)*(srvlenp2(i,j)+o)*log((Esrvlenp2(srv_lenyrs2(i),j)+o)/(srvlenp2(i,j)+o));
     }
-  if(srv_lenyrs2(i) <= retroyr){
     loglik(9) += llsrvlenp2(i);
-  }
+ 
     }
 
   loglik(10) = 0;
@@ -1109,16 +1140,16 @@ FUNCTION Objective_function
     //    (log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.),indxsurv_log_sd3));
     loglik(11)=0;
     for(i=1; i<=nyrs_srv3;i++){
-      if(srvyrs3(i)<=retroyr){
-	loglik(11) += -.5*square((log(indxsurv3(i))-log(Eindxsurv3(srvyrs3(i)))+square(indxsurv_log_sd3(i))/2.)/indxsurv_log_sd3(i));
-      }
+      if(srvyrs3(i)>endyr) break;
+      loglik(11) += -.5*square((log(indxsurv3(i))-log(Eindxsurv3(srvyrs3(i)))+square(indxsurv_log_sd3(i))/2.)/indxsurv_log_sd3(i));
     }
     RMSE_srv3= sqrt(norm2(log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.)/nyrs_srv3);
 
-	 //age composition
+//age composition
     loglik(12)=0;
   for (i=1;i<=nyrsac_srv3;i++)
     {
+    if(srv_acyrs3(i)>endyr) break;
     llsrvp3(i) = 0;
   for (j=rcrage;j<=trmage;j++)
     {
@@ -1134,14 +1165,14 @@ FUNCTION Objective_function
     {		
     effN_srv3(i) = sum(elem_prod(Esrvp3(srv_acyrs3(i)),(1-Esrvp3(srv_acyrs3(i)))))/sum(square(srvp3(i)-Esrvp3(srv_acyrs3(i))));	
 	}
-  if(srv_acyrs3(i)<=retroyr){
     loglik(12) += llsrvp3(i);
-  }
+  
     }
 //length composition
   loglik(13)=0;
   for (i=1;i<=nyrslen_srv3;i++)
     {
+     if(srv_lenyrs3(i)>endyr) break;
     llsrvlenp3(i) = 0;
   for (j=1;j<=nbins2;j++)
     {
@@ -1154,9 +1185,8 @@ FUNCTION Objective_function
     }
 
     }
-  if(srv_lenyrs3(i)<=retroyr){
     loglik(13) += llsrvlenp3(i);
-  }
+  
     }
 
 // Survey 4 and 5 likelihoods
@@ -1167,11 +1197,11 @@ FUNCTION Objective_function
    // RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
   loglik(14)=0; loglik(15)=0;
   for(i=1; i<=nyrs_srv4;i++){ 	// assuming srv4 and srv5 have identical structure
-    if(srvyrs4(i) <=retroyr){
+    if(srvyrs4(i) >endyr) break;
     loglik(14) += -.5*square((log(indxsurv4(i))-log(Eindxsurv4(srvyrs4(i)))+square(indxsurv_log_sd4(i))/2.)/indxsurv_log_sd4(i));
    //   loglik(14) = 0;
     loglik(15) += -.5*square((log(indxsurv5(i))-log(Eindxsurv5(srvyrs5(i)))+square(indxsurv_log_sd5(i))/2.)/indxsurv_log_sd5(i));
-    }
+    
   }
    RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
    //   loglik(15) = 0;
@@ -1184,16 +1214,16 @@ FUNCTION Objective_function
   //      (log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.),indxsurv_log_sd6));
    loglik(16)=0;
    for(i=1;i<=nyrs_srv6;i++){
-     if(srvyrs6(i)<=retroyr){
+     if(srvyrs6(i)>endyr) break;
        loglik(16)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(srvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
-     }
-   }
+    }
    RMSE_srv6= sqrt(norm2(log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.)/nyrs_srv6);
    
 //Age composition
    loglik(17)=0;
   for (i=1;i<=nyrsac_srv6;i++)
     {
+    if(srv_acyrs6(i)>endyr) break;
     llsrvp6(i) = 0;
   for (j=ac_yng_srv6(i);j<=ac_old_srv6(i);j++)
     {
@@ -1209,21 +1239,20 @@ FUNCTION Objective_function
     {	
     effN_srv6(i) = sum(elem_prod(Esrvp6(srv_acyrs6(i)),(1-Esrvp6(srv_acyrs6(i)))))/sum(square(srvp6(i)-Esrvp6(srv_acyrs6(i))));
 	}
-  if(srv_acyrs6(i)<=retroyr){
     loglik(17) +=llsrvp6(i);
-  }
+  
     }
 //length composition
   for (i=1;i<=nyrslen_srv6;i++)
     {
+    if(srv_lenyrs6(i)>endyr) break;
     llsrvlenp6(i) = 0;
   for (j=1;j<=nbins2;j++)
     {
       llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(srv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
     }
-  if(srv_lenyrs6(i)<=retroyr){
     loglik(17) += llsrvlenp6(i);
-  }
+
     }
 
 
@@ -1246,25 +1275,25 @@ FUNCTION Objective_function
 //Normal process error on selectivity deviations
 //Note rwlk_sd(styr,endyr-1)
     
-  loglik(19)  = -0.5*norm2(elem_div(first_difference(slp1_fsh_dev),rwlk_sd)); 
-  loglik(19) += -0.5*norm2(elem_div(first_difference(inf1_fsh_dev),4.0*rwlk_sd));
-  loglik(19) += -0.5*norm2(elem_div(first_difference(slp2_fsh_dev),rwlk_sd));
-  loglik(19) += -0.5*norm2(elem_div(first_difference(inf2_fsh_dev),rwlk_sd));
+  loglik(19)  = -0.5*norm2(elem_div(first_difference(slp1_fsh_dev),rwlk_sd(styr,endyr-1))); 
+  loglik(19) += -0.5*norm2(elem_div(first_difference(inf1_fsh_dev),4.0*rwlk_sd(styr,endyr-1)));
+  loglik(19) += -0.5*norm2(elem_div(first_difference(slp2_fsh_dev),rwlk_sd(styr,endyr-1)));
+  loglik(19) += -0.5*norm2(elem_div(first_difference(inf2_fsh_dev),rwlk_sd(styr,endyr-1)));
  
 // Recruitment in projection mode 
 
-  if(last_phase())
-  {
-  loglik(20) =  -(1/(2.0*sigmasq_recr))*norm2(log_recr_proj - log_mean_recr_proj);
-  }
-  else
+  // if(last_phase())
+  // {
+  // loglik(20) =  -(1/(2.0*sigmasq_recr))*norm2(log_recr_proj - log_mean_recr_proj);
+  // }
+  // else
   {
   loglik(20)=0;
   }
   
-  loglik(21)  = -0.5*norm2(elem_div(first_difference(log_q1_dev),q1_rwlk_sd)); 
-  loglik(21)  += -0.5*norm2(elem_div(first_difference(log_q2_dev),q2_rwlk_sd)); 
-  loglik(21)  += -0.5*norm2(elem_div(first_difference(log_q3_dev),q3_rwlk_sd)); 
+  loglik(21)  = -0.5*norm2(elem_div(first_difference(log_q1_dev),q1_rwlk_sd(styr,endyr-1))); 
+  loglik(21)  += -0.5*norm2(elem_div(first_difference(log_q2_dev),q2_rwlk_sd(styr,endyr-1))); 
+  loglik(21)  += -0.5*norm2(elem_div(first_difference(log_q3_dev),q3_rwlk_sd(styr,endyr-1))); 
   
 
 //  loglik(21)= 0;
@@ -1382,7 +1411,6 @@ TOP_OF_MAIN_SECTION
 
 
 REPORT_SECTION
-
   report << "Objective function" << endl;
   report << objfun << endl;
   report << "Likelihood components" << endl;
