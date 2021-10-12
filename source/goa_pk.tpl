@@ -570,7 +570,7 @@ PROCEDURE_SECTION
 //Use C++ syntax for the procedure section
 
 //Calls to functions
-
+ cout << "endyr=" << endyr << endl;
   Convert_log_parameters();
   Selectivity();
   Mortality();
