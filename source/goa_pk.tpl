@@ -1479,9 +1479,9 @@ REPORT_SECTION
   report << "Observed and expected age comp" << endl;
   report << res_srv3 << endl;
   report << "Pearson residuals age comp" << endl;
-  report << "Input N" << endl;
-  report << multN_srv3 << endl;  
   report << pearson_srv3 << endl; 
+  report << "Input N" << endl;
+  report << multN_srv3 << endl;
   report << "Effective N age comp" << endl;
   report << effN_srv3 << endl;   
   report << "Survey 3 length composition likelihoods" << endl;
