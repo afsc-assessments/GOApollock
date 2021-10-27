@@ -267,9 +267,6 @@ INITIALIZATION_SECTION
 PARAMETER_SECTION
 
 //Population parameters
-  // !! cout << "par sec " << endyr << " retro= " << retroyr<< " " << endyr0 << endl;
-  // !! endyr=retroyr;
-   !! cout << "endyr=" << endyr << "; retro= " << retroyr<< "; original endyr=" << endyr0 << endl;
 //  init_bounded_number M(0.1,0.5,-1)
   init_bounded_vector M(rcrage,trmage,0.1,5.0,-1)
 
@@ -570,7 +567,7 @@ PROCEDURE_SECTION
 //Use C++ syntax for the procedure section
 
 //Calls to functions
- cout << "endyr=" << endyr << endl;
+ //cout << "endyr=" << endyr << endl;
   Convert_log_parameters();
   Selectivity();
   Mortality();
@@ -584,7 +581,7 @@ PROCEDURE_SECTION
   } 
   Objective_function();
   MCMC_output();
-  cout << "phase=" << current_phase() << "; obj fn=" << objfun << endl;
+ // cout << "phase=" << current_phase() << "; obj fn=" << objfun << endl;
 
 FUNCTION Convert_log_parameters
 
@@ -1050,8 +1047,12 @@ FUNCTION Objective_function
     loglik(4)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(srvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
     //loglik+=dnorm(log(indxsurv1(i)), log(Eindxsurv1(survyrs1)) +square(indexsurv_log_sd1(i)/2.)
   }
-  RMSE_srv1_bs= sqrt(norm2(log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.)/nyrs_srv1_bs);
-  RMSE_srv1=0;// sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
+  RMSE_srv1_bs=0;
+  if(!isretro)
+     RMSE_srv1_bs= sqrt(norm2(log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.)/nyrs_srv1_bs);
+  RMSE_srv1=0;
+  if(isretro)
+    RMSE_srv1= sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
   
 //Age composition
   loglik(5)=0;
@@ -1094,7 +1095,9 @@ FUNCTION Objective_function
     if(srvyrs2(i)>endyr) break;
     loglik(7)+=-.5*square((log(indxsurv2(i))-log(Eindxsurv2(srvyrs2(i)))+square(indxsurv_log_sd2(i))/2.)/indxsurv_log_sd2(i));
    }
-  RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
+  RMSE_srv2=0;
+  if(isretro)
+    RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
    
 //Age composition
   loglik(8)=0;
@@ -1143,7 +1146,9 @@ FUNCTION Objective_function
       if(srvyrs3(i)>endyr) break;
       loglik(11) += -.5*square((log(indxsurv3(i))-log(Eindxsurv3(srvyrs3(i)))+square(indxsurv_log_sd3(i))/2.)/indxsurv_log_sd3(i));
     }
-    RMSE_srv3= sqrt(norm2(log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.)/nyrs_srv3);
+    RMSE_srv3=0;
+    if(isretro)
+      RMSE_srv3= sqrt(norm2(log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.)/nyrs_srv3);
 
 //age composition
     loglik(12)=0;
@@ -1203,9 +1208,13 @@ FUNCTION Objective_function
     loglik(15) += -.5*square((log(indxsurv5(i))-log(Eindxsurv5(srvyrs5(i)))+square(indxsurv_log_sd5(i))/2.)/indxsurv_log_sd5(i));
     
   }
-   RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
+   RMSE_srv5=0;
+   if(isretro)
+     RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
    //   loglik(15) = 0;
-   RMSE_srv4= sqrt(norm2(log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.)/nyrs_srv4);
+   RMSE_srv4=0;
+   if(isretro)
+     RMSE_srv4= sqrt(norm2(log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.)/nyrs_srv4);
 
 // Survey 6 likelihoods
 
@@ -1217,7 +1226,9 @@ FUNCTION Objective_function
      if(srvyrs6(i)>endyr) break;
        loglik(16)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(srvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
     }
-   RMSE_srv6= sqrt(norm2(log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.)/nyrs_srv6);
+   RMSE_srv6=0;
+   if(isretro)
+     RMSE_srv6= sqrt(norm2(log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.)/nyrs_srv6);
    
 //Age composition
    loglik(17)=0;
