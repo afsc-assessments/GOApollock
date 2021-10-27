@@ -447,6 +447,8 @@ PARAMETER_SECTION
 
   sdreport_vector Espawnbio(styr,endyr)
   sdreport_vector Esumbio(styr,endyr)
+  vector Espawnbio_2plus(styr,endyr)
+  vector Etotalbio(styr,endyr)
 
 //residual output matrices
 matrix res_fish(1,nyrs_fsh,rcrage,2*trmage-rcrage+1)
@@ -781,11 +783,11 @@ FUNCTION Expected_values
 // 3+ biomass
     Esumbio(i)= N(i)(rcrage+2,trmage)*wt_pop(i)(rcrage+2,trmage);
 // Total biomass
-//    Esumbio(i)= N(i)(rcrage,trmage)*wt_pop(i)(rcrage,trmage);
+    Etotalbio(i)= N(i)(rcrage,trmage)*wt_pop(i)(rcrage,trmage);
 // 2+ biomass at spawning (use for apportioning to management area)
-//    Esumbio(i)= sum(elem_prod(elem_prod(N(i)(rcrage+1,trmage),mfexp(-yrfrct_srv1(i)*Z(i)(rcrage+1,trmage))),wt_srv1(i)(rcrage+1,trmage)));
-//1+ biomass at spawning
-//      Esumbio(i)= sum(elem_prod(elem_prod(N(i)(rcrage,trmage),mfexp(-yrfrct_srv1(i)*Z(i)(rcrage,trmage))),wt_srv1(i)(rcrage,trmage)));
+    Espawnbio_2plus(i)= sum(elem_prod(elem_prod(N(i)(rcrage+1,trmage),mfexp(-yrfrct_srv1(i)*Z(i)(rcrage+1,trmage))),wt_srv1(i)(rcrage+1,trmage)));
+// //1+ biomass at spawning
+//     Esumbio(i)= sum(elem_prod(elem_prod(N(i)(rcrage,trmage),mfexp(-yrfrct_srv1(i)*Z(i)(rcrage,trmage))),wt_srv1(i)(rcrage,trmage)));
 
     Espawnbio(i)= sum(elem_prod(elem_prod(elem_prod(N(i),mfexp(-0.21*Z(i))),wt_spawn(i)),0.5*mat));
 //For retrospective comparison, use below AND the pre-1999 weight at age (in dat file)
@@ -1575,9 +1577,9 @@ REPORT_SECTION
   report << "Observed and expected age comp" << endl;
   report << res_srv3 << endl;
   report << "Pearson residuals age comp" << endl;
-  report << "Input N" << endl;
-  report << multN_srv3 << endl;  
   report << pearson_srv3 << endl; 
+  report << "Input N" << endl;
+  report << multN_srv3 << endl;
   report << "Effective N age comp" << endl;
   report << effN_srv3 << endl;   
   report << "Survey 3 length composition likelihoods" << endl;
@@ -1651,10 +1653,15 @@ REPORT_SECTION
   report << Esrvlenp6 << endl;
   report << " " << endl;
 
+  report << "Expected total biomass" << endl;
+  report << Etotalbio << endl;
   report << "Expected summary (age 3+) biomass" << endl;
   report << Esumbio << endl;
   report << "Expected spawning biomass" << endl;
   report << Espawnbio << endl;
+  report << "Expected spawning biomass age 2+" << endl;
+  report << Espawnbio_2plus << endl;
+  
 
   report << "Numbers at age" << endl;
   report << N << endl;

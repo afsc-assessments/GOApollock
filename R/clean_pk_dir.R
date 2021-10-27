@@ -6,7 +6,7 @@
 #' @export
 clean_pk_dir <- function(path=getwd()){
   r <- list.files(path, pattern='r0|b0|p0')
-  r <- c(r,list.files(path, pattern='\\.cpp|\\.obj|\\.log|\\.eva|\\.bar|\\.std|\\.htp|\\.dep'))
+  r <- c(r,list.files(path, pattern='\\.cpp|\\.obj|\\.log|\\.eva|\\.bar|\\.htp|\\.dep'))
   if(length(r)>0) trash <- file.remove(file.path(path, r))
   s <- file.size(r <- file.path(path, 'mceval.dat'))
   if(!is.na(s)){

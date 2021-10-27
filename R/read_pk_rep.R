@@ -1,10 +1,12 @@
 #' Read the GOA pollock model output report
-#' @param file Report file name
+#' @param model model name
+#' @param path path to folder
 #' @param endyr,styr The start and end years in the model
 #' @param version A version name which is added, e.g., 'change_selex'
 #' @return A list of outputs
 #' @export
-read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
+read_pk_rep <- function(model='goa_pk', path=getwd(), version='none', endyr,
+                       styr=1970){
   ## named vectors
   fyrs <- styr:endyr
   fages <- 1:10
@@ -18,6 +20,10 @@ read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
     }
     x
   }
+
+  file <- file.path(path,model)
+  if(length(grep('.rep', file))==0) file <- paste0(file,'.rep')
+  if(!file.exists(file)) stop("File not found=", file)
 
   x <- scan(file, what="", sep="\n")
   ## drop initial spaces
@@ -76,13 +82,14 @@ read_pk_rep <- function(file, endyr=2020, styr=1970, version='none'){
     k <- k+1
   }
   names(myvals) <- mynames
-  myvals <- c( model=version, ages=list(fages), years=list(fyrs),  myvals)
+  myvals <- c( version=version, ages=list(fages), years=list(fyrs),  myvals)
   return(myvals)
 }
 
 
-#' Melt a named object from a replist (beta)
-#' @param replist Output from \code{read_pk_rep}
+#' Extract and melt a named object from a replist (beta)
+#' @param replist Output from \code{read_pk_rep}. Can be a single
+#'   report object or a list of them.
 #' @param slot The slot name to extract
 #' @export
 #' @return A data frame with named arguments sometimes
@@ -96,34 +103,20 @@ mymelt <- function(replist, slot){
     ## Matrix already has dimnames for ages and years as appropriate
     y <- replist[[slot]]
     if(is.matrix(y)){
-      temp <- data.frame(model=replist$model, reshape2::melt(y))
+      temp <- data.frame(model=replist$version, reshape2::melt(y))
       if(nrow(temp)==length(replist$ages)) temp <- cbind(temp, age=replist$ages)
       if(nrow(temp)==length(replist$years)) temp <- cbind(temp, year=replist$years)
       temp
     } else {
-      temp <- data.frame(model=replist$model, value=y)
+      temp <- data.frame(model=replist$version, value=y)
       if(nrow(temp)==length(replist$ages)) temp <- cbind(temp, age=replist$ages)
       if(nrow(temp)==length(replist$years)) temp <- cbind(temp, year=replist$years)
       temp
     }
     x <- temp
-  } else {
-    y <- replist[[1]][[slot]]
-    if(is.matrix(y)){
-      x <- dplyr::bind_rows(lapply(replist, function(z){
-        temp <- data.frame(model=z$model,reshape2::melt(z[[slot]]))
-        if(nrow(temp)==length(z$ages)) temp <- cbind(temp, age=z$ages)
-        if(nrow(temp)==length(z$years)) temp <- cbind(temp, year=z$years)
-        temp
-      }))
-     } else {
-      x <- dplyr::bind_rows(lapply(replist, function(z){
-        temp <- data.frame(model=z$model,value=z[[slot]])
-        if(nrow(temp)==length(z$ages)) temp <- cbind(temp, age=z$ages)
-        if(nrow(temp)==length(z$years)) temp <- cbind(temp, year=z$years)
-        temp
-      }))
-    }
+  }  else {
+    ## use recursion to get individual ones
+    x <- do.call(rbind, lapply(replist, function(z) mymelt(z, slot=slot)))
   }
   return(x)
 }
@@ -147,13 +140,13 @@ mymelt <- function(replist, slot){
 #' @param path path to folder
 #' @param version,endyr,styr see rep function
 #' @export
-read_pk_cor <- function(model, path=getwd(), version, endyr, styr=1970){
+read_pk_cor <- function(model='goa_pk', path=getwd(), version='none', endyr, styr=1970){
   if(!file.exists(ff <- file.path(path, paste0(model, '.cor'))))
     stop("file does not exists: ",ff)
   yrs <- styr:endyr
   oldwd <- getwd(); on.exit(setwd(oldwd))
   setwd(path)
-  sdrep <- R2admb:::read_admb(model)
+  sdrep <- suppressWarnings(R2admb:::read_admb(model))
   ## Parse these out into scalars and vectors
   xx <- strsplit(names(sdrep$coefficients), '\\.') %>% sapply(function(x) x[1])
   df <- data.frame(version=version, name=xx, est=as.numeric(sdrep$coefficients),
