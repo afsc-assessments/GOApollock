@@ -44,8 +44,6 @@ DATA_SECTION
 
   init_int styr                                  // Starting year for population model
   init_int endyr                                 // Ending year for population model
-  init_int retroyr				 // Peel year for retrospective (last year of model data)
-
   init_int rcrage                                // Recruitment age
   init_int trmage                                // Last modeled age
   init_int nbins1                                // Number of length bins in transitiom matrix 1
