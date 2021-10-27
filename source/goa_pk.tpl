@@ -1281,9 +1281,9 @@ FUNCTION Objective_function
 //  Stronger constraint on endyear recruitment dev
 //  loglik(18) += -0.5*square(dev_log_recruit(endyr)/0.25);
 
-//Normal process error on selectivity deviations
-//Note rwlk_sd(styr,endyr-1)
-    
+ // Normal process error on selectivity deviations. Note
+ // rwlk_sd(styr,endyr-1) b/c if using retro they will be too
+ // long since read in as data with the original endyr value
   loglik(19)  = -0.5*norm2(elem_div(first_difference(slp1_fsh_dev),rwlk_sd(styr,endyr-1))); 
   loglik(19) += -0.5*norm2(elem_div(first_difference(inf1_fsh_dev),4.0*rwlk_sd(styr,endyr-1)));
   loglik(19) += -0.5*norm2(elem_div(first_difference(slp2_fsh_dev),rwlk_sd(styr,endyr-1)));
@@ -1299,7 +1299,9 @@ FUNCTION Objective_function
   {
   loglik(20)=0;
   }
-  
+ // Normal process error on catchability deviations. Note
+ // rwlk_sd(styr,endyr-1) b/c if using retro they will be too
+ // long since read in as data with the original endyr value
   loglik(21)  = -0.5*norm2(elem_div(first_difference(log_q1_dev),q1_rwlk_sd(styr,endyr-1))); 
   loglik(21)  += -0.5*norm2(elem_div(first_difference(log_q2_dev),q2_rwlk_sd(styr,endyr-1))); 
   loglik(21)  += -0.5*norm2(elem_div(first_difference(log_q3_dev),q3_rwlk_sd(styr,endyr-1))); 
