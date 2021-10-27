@@ -15,7 +15,29 @@
 
 
 DATA_SECTION
-
+  
+  // Command line argument to do a retrospective peel
+  // To use this flag, run the model using: "-retro n" to peel n years.
+  //
+  // Modified in 2021 by code Steve Martell wrote for ATF. The
+  // general idea is to read in the data with dimensions as is,
+  // then redefine endyr in the parameter section to be shorter
+  // by n years. To avoid over-running arrays it breaks out of
+  // for loops early and has conditionals based on isretro value
+  int retro_yrs
+  int isretro
+  !! int on,opt;
+  !! retro_yrs=0;
+  !! if((on=option_match(ad_comm::argc,ad_comm::argv,"-retro",opt))>-1){
+  !!   retro_yrs=atoi(ad_comm::argv[on+1]);
+  !!   isretro=1;
+  !!   cout<<"|-------------------------------------------------|\n";
+  !!   cout<<"|       Implementing Retrospective analysis       |\n";
+  !!   cout<<"|-------------------------------------------------|\n";
+  !!   cout<<"| Number of retrospective years = "<<retro_yrs<<endl;
+  !! }
+    
+  
   !!CLASS ofstream report1("mceval.dat")
 
   init_int styr                                  // Starting year for population model
@@ -188,10 +210,10 @@ DATA_SECTION
 // not overindex the data inputs
  int endyr0;
  LOC_CALCS
-  if(retroyr>endyr){cerr << "bad peel year" << endl; ad_exit(1);};
+  if(retro_yrs<0){cerr << "bad peels in -retro option" << endl; ad_exit(1);};
   //cout << endyr << endl;
   endyr0=endyr;
-  endyr=retroyr;
+  endyr=endyr-retro_yrs;
   //cout << endyr << endl;
  END_CALCS
   init_vector Ftarget(endyr+1,endyr+5)
@@ -1051,7 +1073,7 @@ FUNCTION Objective_function
   if(!isretro)
      RMSE_srv1_bs= sqrt(norm2(log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.)/nyrs_srv1_bs);
   RMSE_srv1=0;
-  if(isretro)
+  if(!isretro)
     RMSE_srv1= sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
   
 //Age composition
@@ -1096,7 +1118,7 @@ FUNCTION Objective_function
     loglik(7)+=-.5*square((log(indxsurv2(i))-log(Eindxsurv2(srvyrs2(i)))+square(indxsurv_log_sd2(i))/2.)/indxsurv_log_sd2(i));
    }
   RMSE_srv2=0;
-  if(isretro)
+  if(!isretro)
     RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
    
 //Age composition
@@ -1147,7 +1169,7 @@ FUNCTION Objective_function
       loglik(11) += -.5*square((log(indxsurv3(i))-log(Eindxsurv3(srvyrs3(i)))+square(indxsurv_log_sd3(i))/2.)/indxsurv_log_sd3(i));
     }
     RMSE_srv3=0;
-    if(isretro)
+    if(!isretro)
       RMSE_srv3= sqrt(norm2(log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.)/nyrs_srv3);
 
 //age composition
@@ -1209,11 +1231,11 @@ FUNCTION Objective_function
     
   }
    RMSE_srv5=0;
-   if(isretro)
+   if(!isretro)
      RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
    //   loglik(15) = 0;
    RMSE_srv4=0;
-   if(isretro)
+   if(!isretro)
      RMSE_srv4= sqrt(norm2(log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.)/nyrs_srv4);
 
 // Survey 6 likelihoods
@@ -1227,7 +1249,7 @@ FUNCTION Objective_function
        loglik(16)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(srvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
     }
    RMSE_srv6=0;
-   if(isretro)
+   if(!isretro)
      RMSE_srv6= sqrt(norm2(log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.)/nyrs_srv6);
    
 //Age composition
