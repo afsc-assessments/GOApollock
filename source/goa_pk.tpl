@@ -24,19 +24,21 @@ DATA_SECTION
   // then redefine endyr in the parameter section to be shorter
   // by n years. To avoid over-running arrays it breaks out of
   // for loops early and has conditionals based on isretro value
-  int retro_yrs
+  int retro_yrs 
   int isretro
   !! int on,opt;
   !! retro_yrs=0;
+  !! isretro=0;
   !! if((on=option_match(ad_comm::argc,ad_comm::argv,"-retro",opt))>-1){
   !!   retro_yrs=atoi(ad_comm::argv[on+1]);
   !!   isretro=1;
-  !!   cout<<"|-------------------------------------------------|\n";
-  !!   cout<<"|       Implementing Retrospective analysis       |\n";
-  !!   cout<<"|-------------------------------------------------|\n";
-  !!   cout<<"| Number of retrospective years = "<<retro_yrs<<endl;
+  !!   cout << endl << endl;
+  !!   cout << "|-------------------------------------------------|\n";
+  !!   cout << "|       Implementing retrospective analysis       |\n";
+  !!   cout << "|-------------------------------------------------|\n";
+  !!   cout << "|                Number of peels="<< retro_yrs << "                |\n";
+  !!   cout << "|-------------------------------------------------|\n"<< endl << endl;
   !! }
-    
   
   !!CLASS ofstream report1("mceval.dat")
 
@@ -83,9 +85,7 @@ DATA_SECTION
   init_vector indxsurv_log_sd1(1,nyrs_srv1)    // Survey index (cv) = sdev of log(indxsurv)
 
   init_vector q1_rwlk_sd(styr,endyr-1)              // Random walk stdevs
-  //!! dvar_vector q1_rwlk_sd=q1_rwlk_sd(styr,retroyr-1);              
   init_vector yrfrct_srv1(styr,endyr)            // Fraction of year to midpoint of survey
-  //!! dvar_vector yrfrct_srv1=yrfrct_srv1(styr,retroyr);            
   init_int nyrsac_srv1                           // Number of survey age comps
   init_ivector srv_acyrs1(1,nyrsac_srv1)         // Years for the survey age comp
   init_vector multN_srv1(1,nyrsac_srv1)          // Multinomial sample size by year
@@ -97,19 +97,6 @@ DATA_SECTION
   init_matrix srvp1(1,nyrsac_srv1,rcrage,trmage) // Survey proportions at age
   init_matrix srvlenp1(1,nyrslen_srv1,1,nbins3)  // Survey proportions at length
   init_matrix wt_srv1(styr,endyr,rcrage,trmage)  // Survey weights at age
-  //!! dvar_matrix wt2_srv1(styr,retroyr,rcrage,trmage);
-//  !! for(int y=styr;y<=retroyr;y++) for(int a=rcrage; a<=trmage; a++) wt2_srv1(y,a)=wt_srv1(y,a);
- 
- // !! dvar_matrix wt2_srv1(styr,retroyr,rcrage,trmage);//= wt_srv1.sub(styr, retroyr);
- //  !! for (int i = styr; i <= retroyr; ++i)
- //  !! {
- //  !!   wt2_srv1(i) = wt_srv1(i);
- //  !! }
- //  !! cout << wt_srv1  << endl;
- //  !! cout << "---" << endl;
- //  !! cout << wt2_srv1 << endl;
-// !! cout << wt_srv1 << endl;
-  // !! cout << wt2_srv1 << endl;
 // Note full dimensions for weight matrix
 //Survey 2 (Bottom trawl)
   init_int nyrs_srv2                             // Number of surveys
@@ -117,12 +104,8 @@ DATA_SECTION
   init_vector indxsurv2(1,nyrs_srv2)             // Survey index
   init_vector indxsurv_log_sd2(1,nyrs_srv2)      // Survey index (cv) = sdev of log(indxsurv)
   init_vector q2_rwlk_sd(styr,endyr-1)              // Random walk stdevs
-  // !! cout << q2_rwlk_sd << endl;
-  // !! dvar_vector q2_rwlk_sd=q2_rwlk_sd(styr,retroyr-1);
-  // !! cout << q2_rwlk_sd << endl;
 
   init_vector yrfrct_srv2(styr,endyr)            // Fraction of year to midpoint of survey
-  //!! dvar_vector yrfrct_srv2=yrfrct_srv2(styr,retroyr);            
   init_int nyrsac_srv2                           // Number of survey age comps
   init_ivector srv_acyrs2(1,nyrsac_srv2)         // Years for the survey age comp
   init_vector multN_srv2(1,nyrsac_srv2)          // Multinomial sample size by year
@@ -142,9 +125,7 @@ DATA_SECTION
   init_vector indxsurv3(1,nyrs_srv3)             // Survey index
   init_vector indxsurv_log_sd3(1,nyrs_srv3)      // Survey index (cv) = sdev of log(indxsurv)
   init_vector q3_rwlk_sd(styr,endyr-1)              // Random walk stdevs
-  //!! dvar_vector q3_rwlk_sd=q3_rwlk_sd(styr,retroyr-1);              
   init_vector yrfrct_srv3(styr,endyr)            // Fraction of year to midpoint of survey
-  //!! dvar_vector yrfrct_srv3=yrfrct_srv3(styr,retroyr);            
   init_int nyrsac_srv3                           // Number of survey age comps
   init_ivector srv_acyrs3(1,nyrsac_srv3)         // Years for the survey age comps
   init_vector multN_srv3(1,nyrsac_srv3)          // Multinomial sample size by year
@@ -173,7 +154,6 @@ DATA_SECTION
   init_vector indxsurv6(1,nyrs_srv6)             // Survey index
   init_vector indxsurv_log_sd6(1,nyrs_srv6)      // Survey index (cv) = sdev of log(indxsurv)
   init_vector yrfrct_srv6(styr,endyr)            // Fraction of year to midpoint of survey
-  //!! dvar_vector yrfrct_srv6=yrfrct_srv6(styr,retroyr);            
   init_int nyrsac_srv6                           // Number of survey age comps
   init_ivector srv_acyrs6(1,nyrsac_srv6)         // Years for the survey age comp
   init_vector multN_srv6(1,nyrsac_srv6)          // Multinomial sample size by year
@@ -211,10 +191,8 @@ DATA_SECTION
  int endyr0;
  LOC_CALCS
   if(retro_yrs<0){cerr << "bad peels in -retro option" << endl; ad_exit(1);};
-  //cout << endyr << endl;
   endyr0=endyr;
   endyr=endyr-retro_yrs;
-  //cout << endyr << endl;
  END_CALCS
   init_vector Ftarget(endyr+1,endyr+5)
   init_number B40
@@ -589,7 +567,6 @@ PROCEDURE_SECTION
 //Use C++ syntax for the procedure section
 
 //Calls to functions
- //cout << "endyr=" << endyr << endl;
   Convert_log_parameters();
   Selectivity();
   Mortality();
@@ -603,7 +580,6 @@ PROCEDURE_SECTION
   } 
   Objective_function();
   MCMC_output();
- // cout << "phase=" << current_phase() << "; obj fn=" << objfun << endl;
 
 FUNCTION Convert_log_parameters
 
@@ -1734,4 +1710,8 @@ REPORT_SECTION
   report <<     B40 << endl;  
   report << "Fishing mortality" << endl;
   report <<     F_proj << endl;  
+  if(isretro & last_phase()){
+   cout << endl << endl << "!!! Finished retrospective run with peels="<< retro_yrs<< " !!!"<< endl <<endl;
+   }
+
 
