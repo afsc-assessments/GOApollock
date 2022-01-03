@@ -2,6 +2,8 @@
 
 export(clean_pk_dir)
 export(mymelt)
+export(read_dat)
 export(read_pk_cor)
 export(read_pk_rep)
 export(setup_exe)
+export(write_dat)
