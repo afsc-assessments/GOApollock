@@ -1,3 +1,153 @@
+
+#' Simulate a data set from a given rep file and input data
+#'
+#' @param datlist A data list as returned by
+#'   \link{read_dat}. Observed data overwritten with simulated
+#'   data.
+#' @param replist A replist as returned by
+#'   \link{read_pk_rep}. Uses expected values as truth.
+#' @param fileout The new dat file name to be written
+#' @param path Optional path for fileout
+#' @return Nothing, a data file is written.
+#' @export
+#'
+#' @details The expected values from the report file are used as
+#'   the "truth." This routine is similar to the approach used in
+#'   SS.Data simulated either as lognormal (indices) or
+#'   multinomial (compositions) given the CV and sample sizes
+#'   given in the datlist.  This implicitly assumes they have
+#'   been weighted as desired. Sample sizes of 0 result in no
+#'   observations, and fractions will be rounded internally by
+#'   rmultinom. Currently the total fishery catch is not
+#'   resampled, but the age compositions are.
+sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
+
+  cv2se <- function(cv)  sqrt(log(cv^2+1))
+  myrmultinom <- function(N, true){
+    stopifnot(length(N)==nrow(true))
+    if(any(N<1 & N>0)) warning("0<N<1 detected, using N=1")
+    N[N<1 & N>0] <- 1
+    sim <- t(sapply(1:length(N), function(i)
+      rmultinom(1, size=N[i], prob=true[i,])))
+    sim
+  }
+  d <- datlist; r <- replist
+
+
+### fishery -- not redoing catch b/c that seems right but revisit
+### this
+  ## age comps
+  ind <- r$years %in% d$fshyrs
+  N <- d$multN_fsh
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_fishery_age_composition[ind,]
+  d$catp <- myrmultinom(N, true)
+
+
+### Survey 1
+  ## index
+  ind <- r$years %in% d$srvyrs1
+  se <- cv2se(d$indxsurv_log_sd1)
+  stopifnot(sum(ind)==length(se))
+  true <- r$Expected_survey_1_index[2,ind] ## BS survey
+  d$indxsurv1 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+  ## age comps
+  ind <- r$years %in% d$srv_acyrs1
+  N <- d$multN_srv1
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_1_age_composition[ind,]
+  d$srvp1 <- myrmultinom(N, true)
+  ## len comps
+  ind <- r$years %in% d$srv_lenyrs1
+  N <- d$multNlen_srv1
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_1_length_composition[ind,]
+  d$srvlenp1 <- myrmultinom(N, true)
+
+### Survey 2
+  ## index
+  ind <- r$years %in% d$srvyrs2
+  se <- cv2se(d$indxsurv_log_sd2)
+  stopifnot(sum(ind)==length(se))
+  true <- r$Expected_survey_2_index[ind]
+  d$indxsurv2 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+  ## age comps
+  ind <- r$years %in% d$srv_acyrs2
+  N <- d$multN_srv2
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_2_age_composition[ind,]
+  d$srvp2 <- myrmultinom(N, true)
+  ## len comps
+  ind <- r$years %in% d$srv_lenyrs2
+  N <- d$multNlen_srv2
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_2_length_composition[ind,]
+  d$srvlenp2 <- myrmultinom(N, true)
+
+### Survey 3
+  ## index
+  ind <- r$years %in% d$srvyrs3
+  se <- cv2se(d$indxsurv_log_sd3)
+  stopifnot(sum(ind)==length(se))
+  true <- r$Expected_survey_3_index[ind]
+  d$indxsurv3 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+  ## age comps
+  ind <- r$years %in% d$srv_acyrs3
+  N <- d$multN_srv3
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_3_age_composition[ind,]
+  d$srvp3 <- myrmultinom(N, true)
+  ## len comps
+  ind <- r$years %in% d$srv_lenyrs3
+  N <- d$multNlen_srv3
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_3_length_composition[ind,]
+  d$srvlenp3 <- myrmultinom(N, true)
+### Survey 4
+  ## index
+  ind <- r$years %in% d$srvyrs4
+  se <- cv2se(d$indxsurv_log_sd4)
+  stopifnot(sum(ind)==length(se))
+  true <- r$Expected_survey_4_index[ind]
+  d$indxsurv4 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+### Survey 5
+  ## index
+  ind <- r$years %in% d$srvyrs5
+  se <- cv2se(d$indxsurv_log_sd5)
+  stopifnot(sum(ind)==length(se))
+  true <- r$Expected_survey_5_index[ind]
+  d$indxsurv5 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+
+### Survey 6
+  ## index
+  ind <- r$years %in% d$srvyrs6
+  se <- cv2se(d$indxsurv_log_sd6)
+  stopifnot(sum(ind)==length(se))
+  true <- r$Expected_survey_6_index[ind]
+  d$indxsurv6 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+  ## age comps
+  ind <- r$years %in% d$srv_acyrs6
+  N <- d$multN_srv6
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_6_age_composition[ind,]
+  d$srvp6 <- myrmultinom(N, true)
+  ## len comps
+  ind <- r$years %in% d$srv_lenyrs6
+  N <- d$multNlen_srv6
+  stopifnot(sum(ind)==length(N))
+  true <- r$Expected_survey_6_length_composition[ind,]
+  d$srvlenp6 <- myrmultinom(N, true)
+
+  ## plot(r$year[ind], true, cex=2, ylim=c(0,.5))
+  ## trash <- sapply(1:500, function(i){
+  ##   s <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+  ##   points(r$year[ind], s, col=rgb(1,0,0,.5))})
+  ## points(r$year[ind], true, cex=2, pch=16)
+
+  write_dat(d, fileout=fileout, path=path)
+  return(invisible(d))
+}
+
 #' Write an R data list to file for reading into ADMB
 #'
 #' @param datlist An object as read in by \link{read_dat}
