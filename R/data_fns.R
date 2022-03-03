@@ -33,12 +33,19 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   }
   d <- datlist; r <- replist
 
+  ## If the retro option is used then the expected value
+  ## vectors/matrices will be shorter than the data ones. So keep
+  ## track of that and only resample those with
+  endyr <- tail(r$years,1)
 
 ### fishery -- not redoing catch b/c that seems right but revisit
 ### this
   ## age comps
-  ind <- r$years %in% d$fshyrs
+  indr <- (r$years %in% d$fshyrs)
+  ind <- ind & (r$years <=endyr)
+
   N <- d$multN_fsh
+  browser()
   stopifnot(sum(ind)==length(N))
   true <- r$Expected_fishery_age_composition[ind,]
   d$catp <- myrmultinom(N, true)
