@@ -1,3 +1,5 @@
+mapoff <- function(name) input$map[[name]] <<- as.factor(input$par[[name]]*NA)
+
 par_table <- function(fit, v=NULL){
   x <- table(names(fit$opt$par)) %>% as.data.frame %>%
     setNames(c("par","length"))
@@ -6,13 +8,21 @@ par_table <- function(fit, v=NULL){
   x
 }
 
-plot_ssb <- function(fit, asdrep){
+plot_ssb <- function(fit, asdrep, log=TRUE){
   ssb <- get_ssb(asdrep, fit)
+  if(log){
   g <- ggplot(ssb, aes(year, est, ymin=est-1.96*sd, ymax=est+1.96*sd,
-                fill=platform, color=platform)) +
+                       fill=platform, color=platform))+
+    labs(y='log SSB')
+  } else {
+  g <- ggplot(ssb, aes(year, exp(est), ymin=exp(est-1.96*sd), ymax=exp(est+1.96*sd),
+                       fill=platform, color=platform)) +
+  ylim(0,NA) + labs(y='SSB')
+  }
+  g <- g+
     geom_ribbon(alpha=.5) + geom_line(lwd=1) +
-    theme(legend.position='top')+ ylim(10,14)+
-    labs(y='log SSB', color=NULL, fill=NULL)
+    theme(legend.position='top')+
+    labs( color=NULL, fill=NULL)
   g
 }
 
@@ -30,7 +40,7 @@ get_wham_ssb <- function(fit, v=NULL){
   out
 }
 get_admb_ssb <- function(x)
-  cbind(platform='admb',
+  cbind(platform='pkwham',
         filter(x, name=='log_ssb') %>% select(year, est, sd=se))
 get_ssb <- function(admb, wham){ rbind(get_wham_ssb(wham), get_admb_ssb(admb))}
 
