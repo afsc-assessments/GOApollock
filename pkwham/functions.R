@@ -327,23 +327,22 @@ match_input_nll <- function(aa, asap3, NAA_re=list(sigma="rec", cor="iid")){
 
 plot_checks <- function(aa, ww){
   ## Check NAA
-  par(mfrow=c(2,3))
+  par(mfrow=c(2,3), mar=c(3,3,2,.5), mgp=c(1.5,.5,0), tck=-.01)
   ## NAA initial and final years
   x1 <- (-1e6*aa$Numbers_at_age[1,]+ww$NAA[1,])/(1e6*aa$Numbers_at_age[1,])
   x2 <- (-1e6*aa$Numbers_at_age[25,]+ww$NAA[25,])/(1e6*aa$Numbers_at_age[25,])
   x3 <- (-1e6*aa$Numbers_at_age[52,]+ww$NAA[52,])/(1e6*aa$Numbers_at_age[52,])
-  plot(1:10, x1, ylim=range(c(x1,x2,x3)), type='l', xlab='age', ylab='Rel Error NAA')
+  plot(1:10, x1, ylim=range(c(x1,x2,x3)), type='l',
+       xlab='age', ylab='Relative difference', main='Numbers at age')
   lines(1:10, x2, col=2)
   lines(1:10, x3, col=3)
   abline(h=0)
-  legend('bottom', legend=c('initial','middle', 'final'), col=1:3, lty=1)
+  legend('bottomleft', legend=c('initial','middle', 'final'), col=1:3, lty=1)
   ## Recruits and F
-  x1 <- (ww$NAA[,1]-1e6*aa$Numbers_at_age[,1])/(1e6*aa$Numbers_at_age[,1])
-  x2 <- (ww$F[,1]-aa$Fishing_mortalities)/aa$Fishing_mortalities
-  plot(x1, ylim=range(c(0,x1,x2)), xlab='year', ylab='Rel Error', type='l');
+  x1 <- (ww$F[,1]-aa$Fishing_mortalities)/aa$Fishing_mortalities
+  plot(x1, ylim=range(c(0,x1)), xlab='year',
+       ylab='Relative difference', type='l', main='Fishing effort');
   abline(h=0)
-  lines(x2, col=2)
-  legend('bottom', legend=c('recruits', 'F'), col=1:2, lty=1)
   ## Check selex
   x1 <- colMeans(ww$selAA[[1]]-aa$Fishery_selectivity)
   x2 <- (ww$selAA[[2]][1,]-aa$Survey_1_selectivity)
@@ -355,7 +354,7 @@ plot_checks <- function(aa, ww){
   x8 <- (ww$selAA[[1]][1,]-aa$Fishery_selectivity[1,])
   x9 <- (ww$selAA[[1]][52,]-aa$Fishery_selectivity[52,])
   plot(1:10, x1, ylim=range(c(x1,x2,x3,x4,x5,x6,x7,x8,x9)),
-       ylab='Selex diff', type='l', xlab='age');
+       ylab='Absolute difference', type='l', xlab='age', main='Selectivity');
   abline(h=0)
   lines(1:10, x2, col=2)
   lines(1:10, x3, col=3)
@@ -366,14 +365,15 @@ plot_checks <- function(aa, ww){
   lines(1:10, x8, col=8)
   lines(1:10, x9, col=9)
   legend('topright', legend=c('fsh mean', 'svy1', 'svy2', 'svy3',
-                            'svy4', 'svy5', 'svy6', 'fsh1',
-                            'fsh52'), col=1:9, ncol=2, lty=1)
+                            'svy4', 'svy5', 'svy6', 'fsh y=1',
+                            'fsh y=52'), col=1:9, ncol=2, lty=1)
   x1 <- (ww$SSB-aa$Expected_spawning_biomass*1e6)/(aa$Expected_spawning_biomass*1e6)
   x2 <- (ww$pred_catch[,1]-aa$Expected_total_catch)/(aa$Expected_total_catch)
   abline(h=0)
-  plot(1:52, x1, ylim=range(c(x1,x2,0)),ylab='Rel Error',
-       type='l', xlab='year');
-  lines(1:52, x2, ylab='Rel Error', col=2)
+  plot(1:52, x1, ylim=range(c(x1,x2,0)),ylab='Relative difference',
+       type='l', xlab='year', main='SSB and catch');
+  lines(1:52, x2,  col=2)
+  legend('topleft', legend=c('SSB', 'Catch'), col=1:2, lty=1)
   abline(h=0)
   ## Get the indices right
   x1 <- (ww$pred_indices[,1]-1e6*aa$Expected_survey_1_index[2,])/(1e6*aa$Expected_survey_1_index[2,])
@@ -384,16 +384,17 @@ plot_checks <- function(aa, ww){
   x6 <-
     (ww$pred_indices[,6]-1e6*aa$Expected_survey_6_index)/(1e6*aa$Expected_survey_6_index)
   abline(h=0)
-  matplot(cbind(x1,x2,x3,x4,x5,x6), ylab='Rel Error index diffs',
-          xlab='year')
-  legend('topleft', legend=c('SSB', 'Catch'), col=1:2, lty=1)
+  matplot(cbind(x1,x2,x3,x4,x5,x6), ylab='Relative difference',
+          xlab='year', main='Expected survey indices')
   x1 <- ww$q[,1]-aa$Survey_1_q[-1]
   x2 <- ww$q[,2]-aa$Survey_2_q
   x3 <- ww$q[,3]-aa$Survey_3_q
   x4 <- ww$q[,4]-aa$Survey_4_q
   x5 <- ww$q[,5]-aa$Survey_5_q
   x6 <- ww$q[,6]-aa$Survey_6_q
-  matplot(cbind(x1,x2,x3,x4,x5,x6), ylab='q diffs')
+  matplot(cbind(x1,x2,x3,x4,x5,x6), ylab='Absolute differneces',
+          main='Catchabilities',
+          xlab='year')
   abline(h=0)
 }
 
