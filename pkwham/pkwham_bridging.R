@@ -29,7 +29,7 @@ m2 <- fit_wham(input2, do.osa=FALSE, do.fit=FALSE,
                do.retro=FALSE, do.sdrep=FALSE,
                MakeADFun.silent=TRUE)
 wrep <- m$report(); wrep2 <- m2$report()
-## Check that the two models have nearly identical output
+x## Check that the two models have nearly identical output
 plot_checks(arep, wrep)
 plot_checks(arep2, wrep2)
 ## yep the dynamics match
