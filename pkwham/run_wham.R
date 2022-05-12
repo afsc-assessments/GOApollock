@@ -1,16 +1,26 @@
 ## This file runs the GOA pollock assessement in WHAM under some
-## different configurations
+## different configurations. Use the devel branch of wham not the
+## goapk_bridge one like with the bridging exercise.
 
-## devtools::install('C:/Users/cole.monnahan/wham')
+## an original version of this script assumed that the
+## 'goapk_bridge' version of wham was installed. It's probably
+## best to break that now so these results won't match previous
+## ones. Specifically, the wham models won't match the admb as
+## well.
+
+devtools::install_github('timjmiller/wham', ref='devel')
+devtools::install_github('Cole-Monnahan-NOAA/wham', ref='goapk_bridge')
 library(dplyr)
 library(tidyr)
 library(GOApollock)
 library(wham)
+packageVersion('wham') #  '1.0.6.9000'
 library(ggplot2)
 theme_set(theme_bw())
 library(purrr)
 source("functions.R")
 mapoff <- function(name) input$map[[name]] <<- as.factor(input$par[[name]]*NA)
+
 
 ## Get WHAM initial values setup to be close by using the output
 ## from ADMB
@@ -18,6 +28,7 @@ arep <- read_pk_rep('pk_wham', 'goa_pk_wham', version='pkwham', endyr=2021)
 asdrep <- read_pk_cor('pk_wham', 'goa_pk_wham', version='pkwham', endyr=2021)
 asap3 <- read_asap3_dat("goa_pk_asap3.txt")
 input <- match_input(arep, asap3)
+saveRDS(input, 'akwham_input_2021.RDS')
 ## map process variances off to start to match ADMB (penalized
 ## likelihood)
 mapoff('sel_repars')                    # selex variance
