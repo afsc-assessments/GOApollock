@@ -5,3 +5,9 @@ source/*.htp
 .Rproj.user
 .Rhistory
 tests/model_20_8
+pkwham/*/*.cov
+pkwham/*/*.hes
+pkwham/*/*.cor
+pkwham/*/*.exe
+pkwham/*/*.rep
+pkwham/*/*.par
