@@ -11,10 +11,11 @@
 ##!!! this has the modification of the Q prior that needs to be
 ## put into the .cpp and then installed to run teh following
 ## code. YOu will have to do that on your own for now. !!!
-## devtools::install('C:/Users/cole.monnahan/wham')
+devtools::install_github('Cole-Monnahan-NOAA/wham', ref='goapk_bridge')
 
 library(dplyr)
 library(tidyr)
+devtools::install_github("afsc-assessments/GOApollock", ref='pkwham')
 library(GOApollock)
 library(wham)
 library(ggplot2)
@@ -32,13 +33,13 @@ arep0 <- read_pk_rep(version='ADMB original', endyr=2021)
 ## compare it to the WHAM version
 file.copy('pk_wham.tpl', to='goa_pk_wham/pk_wham.tpl', overwrite=TRUE)
 setwd("goa_pk_wham/")
-system('admb_new pk_wham ')
+system('admb pk_wham ')
 ## Start from MLEs of original model and do not estimate to see
 ## differences
 system("pk_wham -ind pk21_9.txt -maxfn 0 -nohess -ainp goa_pk.par")
 arep1 <- read_pk_rep(model='pk_wham', version='pkwham initial', endyr=2021)
 ## Same thing but optimize it to see how it moves
-system("pk_wham -ind pk21_9.txt -ainp goa_pk.par -nohess -iprint 0")
+system("pk_wham -ind pk21_9.txt -ainp goa_pk.par -nohess")
 arep2 <- read_pk_rep( model='pk_wham', version='pkwham optimized', endyr=2021)
 clean_pk_dir()
 setwd("..")
@@ -62,7 +63,7 @@ source("functions.R")
 file.copy('pk_wham.tpl', to='goa_pk_wham_nll/pk_wham.tpl', overwrite=TRUE)
 setwd("goa_pk_wham_nll/")
 trash <- file.remove(c("pk_wham.rep", "pk_wham2.rep"))
-system("admb_new pk_wham")
+system("admb pk_wham")
 file.copy('pk_wham.exe', 'pk_wham2.exe', overwrite=TRUE)
 system("pk_wham -ind pk21_9.txt -ainp init.pin -maxfn 0 -nohess")
 system('pk_wham2 -ind pk21_9.txt -ainp init2.pin -maxfn 0 -nohess')
@@ -117,12 +118,13 @@ source("functions.R")
 file.copy('pk_wham.tpl', to='goa_pk_wham/pk_wham.tpl', overwrite=TRUE)
 setwd("goa_pk_wham/")
 trash <- file.remove(c("pk_wham.rep", "pk_wham.cor"))
-system("admb_new pk_wham")
+system("admb pk_wham")
 system("pk_wham -ind pk21_9.txt -iprint 50")
 clean_pk_dir()
 setwd("..")
 asap3 <- read_asap3_dat("goa_pk_asap3.txt")
 arep <- read_pk_rep('pk_wham', 'goa_pk_wham', version='pkwham', endyr=2021)
+adrep <- read_pk_cor('pk_wham', 'goa_pk_wham', version='pkwham', endyr=2021)
 
 ## Now match WHAM and fit it
 asap3 <- read_asap3_dat("goa_pk_asap3.txt")
@@ -136,6 +138,6 @@ mapoff('q_repars')                      # q variance
 ## Compare penalized likelihood models
 fit <- fit_wham(input, do.osa=FALSE, do.fit=TRUE, do.retro=FALSE,
                 do.sdrep=TRUE, MakeADFun.silent=TRUE)
-g0 <- plot_ssb(fit, asdrep, log=FALSE)
+g0 <- plot_ssb(fit, adrep, log=FALSE)
 ggsave('plots/phase3_bridging_SSB.png', g0, width=7, height=4)
 plot_checks(arep, fit$rep)
