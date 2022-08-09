@@ -25,7 +25,7 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   cv2se <- function(cv)  sqrt(log(cv^2+1))
   myrmultinom <- function(N, true){
     stopifnot(length(N)==nrow(true))
-    if(any(N<1 & N>0)) warning("0<N<1 detected, using N=1")
+    if(any(N<1 & N>0)) message("0<N<1 detected, using N=1")
     N[N<1 & N>0] <- 1
     sim <- t(sapply(1:length(N), function(i)
       rmultinom(1, size=N[i], prob=true[i,])))
@@ -42,10 +42,9 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
 ### this
   ## age comps
   indr <- (r$years %in% d$fshyrs)
-  ind <- ind & (r$years <=endyr)
+  ind <- indr & (r$years <=endyr)
 
   N <- d$multN_fsh
-  browser()
   stopifnot(sum(ind)==length(N))
   true <- r$Expected_fishery_age_composition[ind,]
   d$catp <- myrmultinom(N, true)
