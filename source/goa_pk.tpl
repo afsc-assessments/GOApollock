@@ -1289,13 +1289,13 @@ FUNCTION Objective_function
   loglik(19) += -0.5*norm2(elem_div(first_difference(slp2_fsh_dev),rwlk_sd(styr,endyr-1)));
   loglik(19) += -0.5*norm2(elem_div(first_difference(inf2_fsh_dev),rwlk_sd(styr,endyr-1)));
  
-// Recruitment in projection mode 
-
-  // if(last_phase())
-  // {
-  // loglik(20) =  -(1/(2.0*sigmasq_recr))*norm2(log_recr_proj - log_mean_recr_proj);
-  // }
-  // else
+// Recruitment in projection mode, but skip it if doing retro
+// peels b/c it makes no sense and breaks this code
+  if(last_phase() & retro_yrs==0)
+  {
+  loglik(20) =  -(1/(2.0*sigmasq_recr))*norm2(log_recr_proj - log_mean_recr_proj);
+  }
+  else
   {
   loglik(20)=0;
   }
