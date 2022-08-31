@@ -1,4 +1,4 @@
-// GOA pollock age-structured model originally developed by
+// GOApollock age-structured model originally developed by
 // Martin Dorn (NFMS AFSC), taken over by Cole Monnahan (NMFS,
 // AFSC) in 2021 (pk20_8 renamed to goa_pk).
 
@@ -15,6 +15,9 @@
 // Command line option '-retro N' added to allow for easy
 // retrospective analyses. For N>0 the projections are not
 // calculated.
+
+// Added log biomass sdreport vectors. Will use those for
+// uncertainties moving forward.
 
 DATA_SECTION
   // Command line argument to do a retrospective peel
@@ -397,6 +400,9 @@ PARAMETER_SECTION
   matrix Esrvlenp6(styr,endyr,1,nbins2)
   sdreport_vector Espawnbio(styr,endyr)
   sdreport_vector Esumbio(styr,endyr)
+  // log versions make more sense for asymptotics
+  sdreport_vector Espawnbio_log(styr,endyr)
+  sdreport_vector Esumbio_log(styr,endyr)
   vector Espawnbio_2plus(styr,endyr)
   vector Etotalbio(styr,endyr)
   // log likelihood containers
@@ -664,6 +670,9 @@ FUNCTION Expected_values
    //     Esumbio(i)= sum(elem_prod(elem_prod(N(i)(rcrage,trmage),mfexp(-yrfrct_srv1(i)*Z(i)(rcrage,trmage))),wt_srv1(i)(rcrage,trmage)));
    Espawnbio(i)= sum(elem_prod(elem_prod(elem_prod(N(i),mfexp(-0.21*Z(i))),wt_spawn(i)),0.5*mat));
  }
+ Espawnbio_log=log(Espawnbio);
+ Esumbio_log=log(Esumbio);
+ 
 
  // Do upper and lower accumulation in expected age composition
 
