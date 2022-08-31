@@ -4,10 +4,12 @@
 \alias{clean_pk_dir}
 \title{Clean temporary files from a directory containing a model run}
 \usage{
-clean_pk_dir(path = getwd())
+clean_pk_dir(path = getwd(), full = FALSE)
 }
 \arguments{
 \item{path}{Path to directory to clean}
+
+\item{full}{Whether to delete everything except .dat and .tpl files}
 }
 \value{
 Nothing

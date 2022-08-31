@@ -25,10 +25,12 @@ Nothing, a data file is written.
 Simulate a data set from a given rep file and input data
 }
 \details{
-Data simulated either as lognormal (indices) or
+The expected values from the report file are used as
+the "truth." This routine is similar to the approach used in
+SS.Data simulated either as lognormal (indices) or
 multinomial (compositions) given the CV and sample sizes
-given in the datlist. This implicitly assumes they have been
-weighted as desired. Sample sizes of 0 result in no
+given in the datlist.  This implicitly assumes they have
+been weighted as desired. Sample sizes of 0 result in no
 observations, and fractions will be rounded internally by
 rmultinom. Currently the total fishery catch is not
 resampled, but the age compositions are.
