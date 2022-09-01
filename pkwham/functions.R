@@ -1,3 +1,5 @@
+
+## super dangerous to do this but oh well
 mapoff <- function(name) input$map[[name]] <<- as.factor(input$par[[name]]*NA)
 
 par_table <- function(fit, v=NULL){
@@ -39,9 +41,12 @@ get_wham_ssb <- function(fit, v=NULL){
   if(!is.null(v)) out <- cbind(out, version=v)
   out
 }
-get_admb_ssb <- function(x)
-  cbind(platform='pkwham',
+get_admb_ssb <- function(x){
+  if(!'log_ssb' %in% x$name) stop("old model version without log_ssb")
+  cbind(platform='admb',
         filter(x, name=='log_ssb') %>% select(year, est, sd=se))
+
+}
 get_ssb <- function(admb, wham){ rbind(get_wham_ssb(wham), get_admb_ssb(admb))}
 
 
@@ -171,7 +176,9 @@ match_input <- function(aa, asap3, NAA_re=list(sigma="rec", cor="iid")){
   ##   invsel(c(-5,0.367879441171442,15,0.135335283236613))
   ## input$par$logit_selpars[6,13:16] <-
   ##   invsel(c(-5,0.367879441171442,15,0.135335283236613))
-  input$par$logit_selpars[2,1:10] <- c(-Inf, -Inf, invsel(aa$Survey_1_selectivity,a=0,b=1)[-(1:2)])
+  ## Need to be careful b/c invsel returns an Inf sometimes and
+  ## that breaks things downstream
+  input$par$logit_selpars[2,1:10] <- c(-Inf, -Inf, 10, invsel(aa$Survey_1_selectivity,a=0,b=1)[-(1:3)])
   input$par$logit_selpars[5,1:10] <- c(Inf, rep(-Inf,9))
   input$par$logit_selpars[6,1:10] <- c(-Inf, Inf, rep(-Inf,8))
   input$par$logit_selpars[7,13:16] <-

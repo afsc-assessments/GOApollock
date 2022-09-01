@@ -9,7 +9,7 @@
 ## well.
 
 devtools::install_github('timjmiller/wham', ref='devel')
-devtools::install_github('Cole-Monnahan-NOAA/wham', ref='goapk_bridge')
+## devtools::install_github('Cole-Monnahan-NOAA/wham', ref='goapk_bridge')
 library(dplyr)
 library(tidyr)
 library(GOApollock)
@@ -36,8 +36,12 @@ mapoff('log_NAA_sigma')                 # recruit variance
 mapoff('q_repars')                      # q variance
 
 ## SSB and uncertainty for the two for base case model
-fit0 <- fit_wham(input, do.osa=FALSE, do.fit=TRUE, do.retro=FALSE,
+fit0 <- fit_wham(input, do.osa=FALSE, do.fit=FALSE, do.retro=FALSE,
                 do.sdrep=TRUE, MakeADFun.silent=TRUE)
+tmp <- fit0$report()
+tmp$pred_index_paa[,1,]
+
+
 g0 <- plot_ssb(fit0, asdrep)
 ggsave('plots/SSB0.png', g0, width=5, height=3.5)
 (tab0 <- par_table(fit0))
