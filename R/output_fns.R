@@ -1,3 +1,35 @@
+#' Calculate Mohn's rho
+#' @param reps A list of replists for each peel as returned by
+#'   \code{read_pk_rep}
+#' @param max_peels Optional numeric to control the max number of
+#'   peels to use in the calculation. E.g. can calculate rho with
+#'   4,5,6, etc. peels and compare
+#' @return The rho value rounded to 3 decimal places, and prints
+#'   to console
+#' @export
+calculate_rho <- function(reps, max_peels=NULL){
+  ssb <- mymelt(reps, 'Expected_spawning_biomass') %>%
+    mutate(model=as.numeric(gsub('peel','', model))) %>%
+    rename(peel=model, SSB=value) %>%
+    group_by(year) %>%
+    mutate(SSB_Pct_Diff=100*(SSB-SSB[peel==0])/SSB[peel==0]) %>%
+    ungroup()
+  if(!is.null(max_peels)) ssb <- filter(ssb, peel<=max_peels)
+  ## Calculate Mohn's rho. For each terminal point in the peel SSB,
+  ## compare to that same year in the full run and calculate
+  ## relative differences. Already did this above so just grab the
+  ## right years to average
+  rho <- ssb%>% filter(2021-peel==year & year!=2021) %>%
+    pull(SSB_Pct_Diff)
+  message("Percentage range of annual differences:",round(min(rho),1)," to ", round(max(rho),1))
+  message("Median absolute error of rho:",round(median(abs(rho))))
+  rho <- rho %>% mean %>% '/'(100) # ugly syntax to /100
+  rho.lab <- paste0("Mohn's rho= ", round(rho,3))
+  print(rho.lab)
+  round(rho,3)
+}
+
+
 #' Read the GOA pollock model output report
 #' @param model model name
 #' @param path path to folder
@@ -156,3 +188,21 @@ read_pk_cor <- function(model='goa_pk', path=getwd(), version='none', endyr, sty
   df                                       # }
 }
 
+
+#' Read standard deviation file
+#' @param model model name
+#' @param path path to folder
+#' @param version,endyr,styr see rep function
+#' @export
+read_pk_std <- function(model='goa_pk', path=getwd(), version='none', endyr, styr=1970){
+  yrs <- styr:endyr
+  ff <- file.path(path, paste0(model,'.std'))
+  if(!file.exists(ff))
+    stop("file ",ff, " does not exist")
+  df <- read.table(ff, header=TRUE) %>% cbind(version=version) %>%
+    rename(se=std.dev, est=value) %>% select(-index) %>%
+    group_by(name) %>%
+    mutate(year=yrs[1:n()], i=1:n()) %>% ungroup %>%
+    mutate(lwr=est-1.96*se, upr=est+1.96*se)
+  df
+}
