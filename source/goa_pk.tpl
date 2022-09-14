@@ -13,8 +13,8 @@
 // Namely: Uses 20 iterations rather than 10 to get the correct spawning biomass in the HCR, AND implements the bias corrected log likelihood for survey biomass correctly.
 
 // Command line option '-retro N' added to allow for easy
-// retrospective analyses. For N>0 the projections are not
-// calculated.
+// retrospective analyses. In this mode RMSE for indices are not
+// calculated (fixed at zero).
 
 // Added log biomass sdreport vectors. Will use those for
 // uncertainties moving forward.
@@ -36,12 +36,7 @@ DATA_SECTION
   !! if((on=option_match(ad_comm::argc,ad_comm::argv,"-retro",opt))>-1){
   !!   retro_yrs=atoi(ad_comm::argv[on+1]);
   !!   isretro=1;
-  !!   cout << endl << endl;
-  !!   cout << "|-------------------------------------------------|\n";
-  !!   cout << "|       Implementing retrospective analysis       |\n";
-  !!   cout << "|-------------------------------------------------|\n";
-  !!   cout << "|                Number of peels="<< retro_yrs << "                |\n";
-  !!   cout << "|-------------------------------------------------|\n"<< endl << endl;
+  !!   cout << "\n!!  Implementing retro w/ peels="<< retro_yrs << " !!\n";
   !! }
   
   !!CLASS ofstream report1("mceval.dat")
@@ -785,18 +780,18 @@ FUNCTION Projections
   for (i=endyr+1;i<=endyr+5;i++) {
     // have to get Z twice
     //  Tuning loop to get the spawning biomass adjustment right
-    F_proj(i)=Ftarget(i);
+    F_proj(i)=Ftarget(i+retro_yrs);
     for (loop=1;loop<=20;loop++) {
       for (j=rcrage;j<=trmage;j++) {
 	Z_proj(i,j)=(F_proj(i)*slctfsh_proj(j))+M(j);
       }  
       sbio = sum(elem_prod(elem_prod(elem_prod(N_proj(i),mfexp(-0.21*Z_proj(i))),wt_spawn_proj),0.5*mat));
       //  Set the fishing mortality rate
-      F_proj(i)=Ftarget(i);
+      F_proj(i)=Ftarget(i+retro_yrs);
       if (sbio < B40) {
-	F_proj(i)=Ftarget(i)*(((sbio/B40)-0.05)/(1-0.05));
+	F_proj(i)=Ftarget(i+retro_yrs)*(((sbio/B40)-0.05)/(1-0.05));
 	// SSL control rule
-	//   F_proj(i)=Ftarget(i)*(((sbio/B40)-0.2)/(1-0.2));
+	//   F_proj(i)=Ftarget(i+retro_yrs)*(((sbio/B40)-0.2)/(1-0.2));
       }
     }
   // Total mortality
@@ -1076,7 +1071,7 @@ FUNCTION Objective_function
  
  // Recruitment in projection mode, but skip it if doing retro
  // peels b/c it makes no sense and breaks this code
-  if(last_phase() & retro_yrs==0) {
+  if(last_phase()) {
     loglik(20) =  -(1/(2.0*sigmasq_recr))*norm2(log_recr_proj - log_mean_recr_proj);
   } else {
     loglik(20)=0;
@@ -1469,8 +1464,5 @@ REPORT_SECTION
   report <<     B40 << endl;  
   report << "Fishing mortality" << endl;
   report <<     F_proj << endl;  
-  if(isretro & last_phase()){
-   cout << endl << endl << "!!! Finished retrospective run with peels="<< retro_yrs<< " !!!"<< endl <<endl;
-   }
 
 
