@@ -1,4 +1,4 @@
-# Appendix 10a. Supplemental catch data 
+# Appendix 1a. Supplemental catch data 
 
 In order to comply with the Annual Catch Limit (ACL) requirements, a dataset has been generated to help estimate total catch and removals from NMFS stocks in Alaska. 
 This dataset estimates total removals that occur during non-directed groundfish fishing activities. 

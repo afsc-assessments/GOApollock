@@ -1,18 +1,16 @@
 # Fishery 
-
-Brief description of fishery history  
-Description of management measures/unit(s)   
-Management history (including key changes which may have influenced assessment procedures; selectivity of commercial fishing gear; or distribution of catch by gear, area, or season.  
-Include a table of total catch, total ABC, total OFL, and total TAC, and associated management measures  
-Description of the current directed fishery (including gear types, seasons, major fishing locations)  
-Description of effort and CPUE  
-Information on discards of this stock or stock complex (from directed fishery for this stock or stock complex)  
+The commercial fishery for walleye pollock in the Gulf of Alaska started as a foreign fishery in the early 1970s (Megrey 1989). Catches increased rapidly during the late 1970s and early 1980s (Table 1.1). A large spawning aggregation was discovered in Shelikof Strait in 1981, and a fishery developed for which pollock roe was an important product. The domestic fishery for pollock developed rapidly in the Gulf of Alaska with only a short period of joint venture operations in the mid-1980s. The fishery was fully domestic by 1988. 
 
 ## Description of the Directed Fishery
-
 ### Catch Patterns
 
+The pollock target fishery in the Gulf of Alaska is entirely shore-based with approximately 96% of the catch taken with pelagic trawls. During winter, fishing effort targets pre-spawning aggregations in Shelikof Strait and near the Shumagin Islands (Fig. 1.1). Fishing in summer is less predictable, but typically occurs in deep-water troughs on the east side of Kodiak Island and along the Alaska Peninsula. 
+
 ### Bycatch and Discards
+Incidental catch in the Gulf of Alaska directed pollock fishery is low. For tows classified as pollock targets in the Gulf of Alaska between 2016 and 2020, on average about 96% of the catch by weight of FMP species consisted of pollock (Table 1.2). Nominal pollock targets are defined by the dominance of pollock in the catch, and may include tows where other species were targeted, but pollock were caught instead. The most common managed species in the incidental catch are arrowtooth flounder, Pacific ocean perch, Pacific cod, sablefish, shallow-water flatfish, and flathead sole (Table 1.2). Sablefish incidental catch has trended upwards since 2018, perhaps reflecting both the recent increase in sablefish abundance and a wider spatial distribution. The most common recent non-target species are grenadiers, squid, capelin, jellyfish and miscellaneous fish (Table 1.2). Bycatch estimates for prohibited species over the period 2016-2020 are given in Table 1.3. Chinook salmon are the most important prohibited species caught as bycatch in the pollock fishery. A sharp spike in Chinook salmon bycatch in 2010 led the Council to adopt management measures to reduce Chinook salmon bycatch, including a cap of 25,000 Chinook salmon bycatch in the directed pollock fishery. Estimated Chinook salmon bycatch since 2010 has been less than the peak in 2010, with increases in 2016, 2017, and 2019, and reduced to 10,867 in 2020.
 
 ## Management Measures 
 
+Since 1992, the Gulf of Alaska pollock Total Allowable Catch (TAC) has been apportioned spatially and temporally to reduce potential impacts on Steller sea lions. The details of the apportionment scheme have evolved over time, but the general objective is to allocate the TAC to management areas based on the distribution of surveyed biomass, and to establish three or four seasons between mid-January and fall during which some fraction of the TAC can be taken. The Steller Sea Lion Protection Measures implemented in 2001 established four seasons in the Central and Western GOA beginning January 20, March 10, August 25, and October 1, with 25% of the total TAC allocated to each season. Allocations to management areas 610, 620 and 630 are based on the seasonal biomass distribution as estimated by groundfish surveys. In addition, a harvest control rule was implemented that requires suspension of directed pollock fishing when spawning biomass declines below 20% of the reference unfished level.
+
+Recently NMFS approved the final rule for Amendment 109 to GOA Fishery Management Plan developed by the North Pacific Fisheries Management Council. Amendment 109 combines pollock fishery A and B seasons into a single season (redesignated as the A season), and the C and D seasons into a single season (redesignated as the B season), and changes the annual start date of the redesignated pollock B season from August 25 to September 1. These changes will be implemented beginning in 2021 and affect the seasonal allocation only in the Central and Western GOA.

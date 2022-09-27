@@ -1,11 +1,33 @@
 ## Responses to SSC and Plan Team Comments on Assessments in General
 
-> "The SSC requests that all authors fill out the risk table in 2019…" (SSC December 2018)  
-
-A risk table has been included in this assessment.
+None this year.
 
 ## Responses to SSC and Plan Team Comments Specific to this Assessment
 
-> "For this cycle, the SSC also agrees with the author’s justification for the adjustment of the likelihood weight of the survey index to utilize this new time series more appropriately."
+> The SSC in December 2020: "For the ESP socioeconomic indices, the SSC suggests using Kodiak and small community categories for the annual percent harvesting revenue indicators similar to what was done for the annual percent processing revenue indicators, for consistency with the text in this ESP (pg. 110) and the approach used in other ESPs, as well as for comprehensiveness"
 
-The likelihood weighting has remained consistent with the weights found in the last full assessment.
+In the future, we plan to conduct a thorough evaluation of the information provided in the Economic SAFE and ACEPO report to determine what socioeconomic indicators could be provided in the ESP that are not redundant with those reports and related directly to stock health. This may result in a transition of indicators currently reported in this ESP to a different series of socioeconomic indicators in future ESPs and may include aggregating small communities as suggested or focusing more on dependency rather than engagement. Additional considerations should be given for the timing of the economic and community reports that are delayed by 1-2 years depending on the data source from the annual stock assessment cycle and how this information might inform the stock assessment
+
+> The GOA Plan Team in its November 2019 minutes recommended the author examine fishery selectivity, as persistent patterns in the catch-at-age residuals may represent artifacts of the selectivity functional form used. 
+
+We did not explore alternative functional forms in this assessment. We noticed that the initial inflection point of the double-logistic selectivity curve was about age 4, and hypothesized that if the time variation in this component were too small (too little annual flexibility) it could cause the aforementioned residual pattern. Thus, as a first step, we tried allowing for greater flexibility in both the time-varying initial inflection and slope used to control the selectivity of younger fish by increasing the process error on the random walk components. Despite this increased flexibility, we found no appreciable improvement to the age-4 residuals. We therefore agree that investigation of alternative functional forms is warranted, and will explore that in future assessments. 
+
+>The GOA Plan Team in its November 2019 minutes recommended the author explore better methods for constraining the time varying catchability parameter to be under 1 for the Shelikof Strait acoustic survey. 
+
+The model uses a random walk on log scale to estimate a time-varying catchability for the Shelikof biomass index. It is possible for the estimated catchability to be greater than 1. While this has not occurred to date, we note that the confidence intervals exceeded it in recent years. We therefore tried an alternative form by estimating the random walk in inverse logit (i.e., logistic) space, so that the estimated catchability and its uncertainty was naturally constrained between 0 and 1. Due to the change in parameterization, the assumed process error for the random walk needed to be increased to allow for a similar level of flexibility. The following figure shows the results of catchability, fit to the index, and estimated spawning biomass for the original and logistic versions, with the latter having more flexibility allowed.
+
+The logistic transformation works to constrain the catchability to its assumed natural range, but results in a shift in absolute size of the stock for unclear reasons. The specification of the magnitude of the process error also needs further investigation. So despite its promise, we did not bring forward this as an alternative this year. Further investigations will be done for next year, with tentative plans to explore estimating the process error in a state-space approach.
+
+Results comparing the original log and new logistic transformation for the random-walk catchability of the Shelikof index. Estimated catchability (top) with 95% confidence intervals (ribbons) for the two parameterizations (colors). The expected indices (lines) are shown with the observed data (points and vertical lines; middle panel). Estimated spawning biomass with 95% confidence interval (ribbons) is shown at bottom.
+
+> The GOA Plan Team in its November 2019 minutes recommended an exploration of combining the acoustic summer survey and the GOA bottom trawl survey using a VAST framework, similar to the approach used by Cole Monnahan for EBS pollock surveys.
+
+Such an analysis would be extremely informative and valuable to improving this assessment. One of the most challenging tasks is reprocessing the acoustic data. We have initiated conversations with both the acoustic and bottom trawl survey groups about what it would take to have suitable data for this analysis. We will continue to work with them on the feasibility of this. However, we agree with previous authors’ argument that this should be considered a long-term research objective.
+
+> The GOA Plan Team in its November 2018 minutes recommended investigating model behavior sensitivity to abundance indices by incrementally dropping survey indexes to clarify how the data affect the model(s).
+
+We performed this incremental leave-one-out experiment for the four surveys, but included the weight and length compositions in addition to the indices. Results are shown in the following figure where the model is fitted without each survey in turn. The trends are generally the same. The summer acoustic has little effect, due to only having four years of data. The ADF&G and Shelikof surveys have a relative minor impact if dropped, except in recent years with the notable divergence in index trends. Most noteworthy is that the NMFS bottom trawl survey sets the scale of the population (without it there is a notable increase in uncertainty and an absolute increase in estimates), which is tied to its catchability which is not well-estimated and instead is driven by an informative prior. This analysis suggests revisiting the formation of that prior and how it interacts with the scale of the population.
+
+
+ 
+

@@ -1,15 +1,15 @@
 ---
 params: 
-  chapter: 10
-  species: "rougheye and black spotted rockfish"
-  species_complex: "yes"
+  chapter: 1
+  species: "walleye pollock"
+  species_complex: "no"
   area: "Gulf of Alaska"
   tier: 3
-author: "Benjamin C. Williams, Peter-John F. Hulson, Chris R. Lunsford"
-date: "November 2022"
+author: "Cole C. Monnahan, Martin W. Dorn, Alison L. Deary, et al"
+date: "November 2021"
 
 # don't do anything below this line unless you are cool with the consequences
-output:
+output: 
   bookdown::word_document2:
      reference_docx: "template.docx"
      toc: false
@@ -94,8 +94,8 @@ c3 = 2884 # proj catch year + 2
 ```{r, child="07-results.Rmd", eval = T}
 ```
 
-```{r, child="08-abc.Rmd", eval = T}
-```
+# ```{r, child="08-abc.Rmd", eval = T}
+# ```
 
 ```{r, child="09-ecosystem.Rmd", eval = T}
 ```

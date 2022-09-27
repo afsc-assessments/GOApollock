@@ -1,5 +1,44 @@
+## Status Summary for Gulf of Alaska Pollock in W/C/WYK Areas
 ```{r}
 # using built in example data 
 data <- safe::tier3
+
+data[1,-1] <- 0.3
+data[3,-1] <- c(1097340, 812182,848878,1205850)
+data[4,-1] <- c(184530,169577,186481,167840)
+data[5,-1] <- c(443000,443000,430000,430000)
+data[6,-1] <- c(177000,177000,172000,172000)
+data[7,-1] <- c(155000,155000,150000,150000)
+data[8,-1] <- c(.33,.3,.31,.29)
+data[9,-1] <- c(.28,.26,.26,.26) 
+data[10,-1] <- c(.28,.26,.26,.26) 
+data[11,-1] <- c(123455,106767,154983,153997)
+data[12,-1] <- c(105722,91934, 133081,131912)
+data[13,-1] <- data[12,-1]
+data[14,-1] <- c(2019,2020,2020,2021)
+
+
 safe::main_table(data, year, tier=3, c1, c2, c3)
+```
+ 
+ ## Status Summary for Gulf of Alaska Pollock in the Southeast Outside Area
+
+
+```{r}
+# using built in example data 
+data <- safe::tier3[c(1:3,8:16), ]
+data[1,-1] <- 0.3
+data[2,-1] <- 5 # tier
+data[3,1] <- 'Biomass (t)'
+data[3,-1] <- c(45103, 45103,50500,50500)
+data[4,-1] <- c(.3,.3,.3,.3)
+data[5,-1] <- c(.23,.23,.23,.23) 
+data[6,-1] <- c(.23,.23,.23,.23) 
+data[7,-1] <- c(13531,13531,15150,15150)
+data[8,-1] <- c(10148,10148,11363,11363)
+data[9,-1] <- c(10148,10148,11363,11363)
+data[11,-1] <- c(2019,2020,2020,2021)
+
+
+safe::main_table(data=data, year=year, tier=5)
 ```
