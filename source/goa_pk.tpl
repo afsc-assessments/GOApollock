@@ -19,6 +19,8 @@
 // Added log biomass sdreport vectors. Will use those for
 // uncertainties moving forward.
 
+// Cleaned out old inputs  9/22.
+
 DATA_SECTION
   // Command line argument to do a retrospective peel
   // To use this flag, run the model using: "-retro n" to peel n years.
@@ -65,13 +67,7 @@ DATA_SECTION
   init_matrix lenp(1,nyrslen_fsh,1,nbins1)       // Catch proportions at age
   init_matrix wt_fsh(styr,endyr,rcrage,trmage)   // Weight at age by year
                                                  // For matrices indices for rows, then col
-  // Survey 1 (Acoustic)
-  // Biosonics
-  init_int nyrs_srv1_bs                             // Number of survey biomass estimates
-  init_ivector srvyrs1_bs(1,nyrs_srv1_bs)           // Years in which surveys occured
-  init_vector indxsurv1_bs(1,nyrs_srv1_bs)          // Survey index
-  init_vector indxsurv_log_sd1_bs(1,nyrs_srv1_bs)   // Survey index (cv) = sdev of log(indxsurv)
-  //EK500
+  // Survey 1 (Acoustic) EK500 (biosonic deleted in 2022)
   init_int nyrs_srv1                             // Number of survey biomass estimates
   init_ivector srvyrs1(1,nyrs_srv1)           // Years in which surveys occured
   init_vector indxsurv1(1,nyrs_srv1)           // Survey index
@@ -206,7 +202,6 @@ INITIALIZATION_SECTION
   mean_log_F        -1.6   // Mean log fishing mortality
 
   M                  0.30  // Natural mortality
-  log_q1_bs          0.0   // Survey 1 catchability
   log_q1_mean        0.0   // Survey 1 catchability
   log_q1_dev         0.0   // Survey 1 catchability
   log_q2_mean        0.0   // Survey 2 catchability
@@ -330,7 +325,6 @@ PARAMETER_SECTION
   init_bounded_number mean_log_F(-10,10,1)
   init_bounded_dev_vector dev_log_F(styr,endyr,-10,10,2)
   vector F(styr,endyr)
-  init_bounded_number log_q1_bs(-10,10,-1)
   init_bounded_number log_q1_mean(-10,10,5)
   init_bounded_dev_vector log_q1_dev(styr,endyr,-5,5,5) 
   vector log_q1(styr,endyr)
@@ -352,7 +346,6 @@ PARAMETER_SECTION
   init_bounded_number natMscalar(0,5,-5)
 
  // Dependent parameters
-  number q1_bs
   vector q1(styr,endyr)
   vector q2(styr,endyr)
   vector q3(styr,endyr)
@@ -378,7 +371,6 @@ PARAMETER_SECTION
   vector Ecattot(styr,endyr)
   matrix Ecatp(styr,endyr,rcrage,trmage)
   matrix Elenp(styr,endyr,1,nbins1)
-  vector Eindxsurv1_bs(styr,endyr)
   vector Eindxsurv1(styr,endyr)
   matrix Esrvp1(styr,endyr,rcrage,trmage)
   matrix Esrvlenp1(styr,endyr,1,nbins3)
@@ -434,7 +426,6 @@ PARAMETER_SECTION
   vector effN_srv3(1,nyrsac_srv3)
   vector effN_srv6(1,nyrsac_srv6)
 
-  number RMSE_srv1_bs
   number RMSE_srv1
   number RMSE_srv2
   number RMSE_srv3
@@ -546,7 +537,6 @@ FUNCTION Convert_log_parameters
    q3(i)=mfexp(log_q3_mean+log_q3_dev(i)); 
  }
  F = mfexp(mean_log_F + dev_log_F);
- q1_bs = mfexp(log_q1_bs);
  q4 = mfexp(log_q4);
  q5 = mfexp(log_q5);
  q6 = mfexp(log_q6);
@@ -640,7 +630,6 @@ FUNCTION Expected_values
    Eecocon(i) = 1000000*sum(elem_prod(Eec(i),wt_pop(i)));
    Ecatp(i) = (C(i)/sum(C(i)))*age_trans;
    Elenp(i) = Ecatp(i) * len_trans1;
-   Eindxsurv1_bs(i)= q1_bs*sum(elem_prod(elem_prod(elem_prod(N(i),mfexp(-yrfrct_srv1(i)*Z(i))),slctsrv1),wt_srv1(i)));
    Eindxsurv1(i)= q1(i)*sum(elem_prod(elem_prod(elem_prod(N(i),mfexp(-yrfrct_srv1(i)*Z(i))),slctsrv1),wt_srv1(i)));
    Esrvp1(i) = (Nsrv1(i)/sum(Nsrv1(i)))*age_trans;
    Esrvlenp1(i) = Esrvp1(i) * len_trans3;
@@ -872,9 +861,6 @@ FUNCTION Objective_function
     loglik(4)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(srvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
   }
 
-  RMSE_srv1_bs=0;
-  if(!isretro) // to do: take this out
-    RMSE_srv1_bs= sqrt(norm2(log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.)/nyrs_srv1_bs);
   RMSE_srv1=0;
   if(!isretro)
     RMSE_srv1= sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
@@ -1249,7 +1235,6 @@ REPORT_SECTION
 
   report << " " << endl;
   report << "Survey 1 q" << endl;
-  report << q1_bs << endl;
   report << q1 << endl;
   report << "Selectivity parameters" << endl;  
 //  report << log_slp1_srv1 << endl; 
@@ -1259,10 +1244,8 @@ REPORT_SECTION
   report << "Survey 1 selectivity" << endl;
   report << slctsrv1 << endl;
   report << "Expected survey 1 index" << endl;
-  report << Eindxsurv1_bs << endl;
   report << Eindxsurv1 << endl;
   report << "RMSE" << endl;
-//  report << RMSE_srv1_bs << endl;
   report << RMSE_srv1 << endl;
   report << "Survey 1 age composition likelihoods" << endl;
   report << llsrvp1 << endl;

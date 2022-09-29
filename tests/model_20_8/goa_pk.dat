@@ -152,15 +152,6 @@
 0.165	0.458	0.604	0.744	0.908	1.033	1.139	1.125	1.081	1.177	#2021	from WAA model which uses 2020 fishery and 2021 Shelikof with end_yr=2023; see tests in inputs/fishery folder																																																			
 																																																														
 #Survey 1 data (Shelikof acoustic)																																																														
-#Number of BS surveys																																																														
-9																																																														
-# Years then index then and CV (These are old and not updated)																																																														
-1981	1983	1984	1985	1986	1988	1989	1990	1991	# year																																																					
-## index																																																														
-2.476	2.207	1.750	1.097	0.442	0.294	0.278	0.308	0.368	# index																																																					
-# CV																																																														
-#0.12331	0.1552	0.1833	0.1448	0.2178	0.1691	0.0999	0.1718	0.3471	# old CV																																																					
-0.2	0.2	0.2	0.2	0.2	0.2	0.2	0.2	0.2	# used CV																																																					
 #Number of EK500 surveys																																																														
 28																																																														
 #Years in which surveys occured																																																														
