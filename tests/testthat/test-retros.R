@@ -1,6 +1,7 @@
 library(GOApollock)
 
 test_that("retros work",{
+  skip_if(TRUE)
   setwd('../model_20_8/')
   reps <- list()
   f1 <- 'goa_pk.std'
