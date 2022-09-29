@@ -3,7 +3,7 @@
 
 ## Biology and Distribution
 
-Walleye pollock (Gadus chalcogrammus; hereafter referred to as pollock) is a semi-pelagic schooling fish widely distributed in the North Pacific Ocean. Pollock in the central and western Gulf of Alaska (GOA) are managed as a single stock independently of pollock in the Bering Sea and Aleutian Islands. The separation of pollock in Alaskan waters into eastern Bering Sea and Gulf of Alaska stocks is supported by analysis of larval drift patterns from spawning locations [@bailey1997a], genetic studies of allozyme frequencies (Grant and Utter 1980), mtDNA variability [@mulligan1992a], and microsatellite allele variability (Bailey et al. 1997).
+Walleye pollock (Gadus chalcogrammus; hereafter referred to as pollock) is a semi-pelagic schooling fish widely distributed in the North Pacific Ocean. Pollock in the central and western Gulf of Alaska (GOA) are managed as a single stock independently of pollock in the Bering Sea and Aleutian Islands. The separation of pollock in Alaskan waters into eastern Bering Sea and Gulf of Alaska stocks is supported by analysis of larval drift patterns from spawning locations [@bailey1997a], genetic studies of allozyme frequencies (Grant and Utter 1980), mtDNA variability [@mulligan1992a], and microsatellite allele variability (Bailey et al. 1997). See figure \@ref(fig:fig1) and table \@ref(tab:tab1).
 
 ## Stock Structure
 

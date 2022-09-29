@@ -1,12 +1,12 @@
 # Figures
 
-```{r, fig.cap = "pressure"}
-plot(pressure)
-```
+# ```{r, fig.cap = "pressure"}
+# plot(pressure)
+# ```
 
-```{r fig1, fig.cap="Estimated and observed long-term and recent commercial catch of northern rockfish in the Gulf of Alaska.", eval = F}
+```{r fig1, fig.cap="Distribution of pollock catch in the 2020 fishery shown for 1/2 degree latitude by 1 degree longitude blocks by season in the Gulf of Alaska as determined by fishery observer-recorded haul retrieval locations. Blocks with less than 1.0 t of pollock catch are not shown. The area of the circle is proportional to the catch. ", eval = TRUE}
 
-knitr::include_graphics(here::here(year, model, "figs", "catch.png"))
+knitr::include_graphics(figdir("fig1.png"))
 ```
 
 ```{r fig2, fig.cap="Fishery length compositions for GOA northern rockfish. Observed = bars, lines are the predicted lengths from author recommended model.", eval = F}

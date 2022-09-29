@@ -1,10 +1,11 @@
 # Tables
 
 ```{r tab1}
-knitr::kable(data.frame(year = 1999:2000,
-                 catch = 1:2), 
-             caption = "Summary of key management measures and the time series of catch, ABC, and TAC for northern rockfish in the Gulf of Alaska",
-             booktabs = TRUE)
+
+x <- gettab(sheet = 'Table 1.1')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>% colformat_double(digits=0)
+
 ```
 
 \pagebreak

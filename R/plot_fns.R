@@ -58,7 +58,7 @@ plot_resids <- function(mat, years, minyr=NULL){
   }
   x <- melt_resids(mat, years) %>% mutate(resid=ifelse(resid==0,NA,resid))
   if(!is.null(minyr)) x <- filter(x, year>=minyr)
-  g <- ggplot(x, aes(year, age, size=abs(resid), fill=resid<0)) +
+  g <- ggplot(x, aes(year, age, size=sqrt(abs(resid)), fill=resid<0)) +
     geom_point(alpha=.8, pch=21, fg=gray(.5) ) +
     scale_y_continuous(breaks=1:10)
   rmin <- min(x$resid, na.rm=TRUE) %>% round(1)
