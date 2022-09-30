@@ -196,7 +196,8 @@ read_dat <- function(filename, path=NULL){
     on.exit(setwd(oldwd))
     setwd(path)
   }
-  char.lines <- readLines(filename)
+  if(!file.exists(filename)) stop("File ", filename, " does not exist")
+  char.lines <- suppressMessages(readLines(filename))
   com.ind <- which(substring(char.lines, 1, 1) %in% c(" ", "#"))
   blank.ind <- which(substring(char.lines, 1, 1) == "\t")
   com.ind <- sort(c(com.ind,blank.ind))
