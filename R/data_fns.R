@@ -55,7 +55,7 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs1
   se <- cv2se(d$indxsurv_log_sd1)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_1_index[2,ind] ## BS survey
+  true <- r$Expected_survey_1_index[ind] ## BS survey
   d$indxsurv1 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs1
@@ -241,12 +241,6 @@ read_dat <- function(filename, path=NULL){
   d$catp <- sn( ind=ind, n = d$nyrs_fsh*10, nrow=d$nyrs_fsh, ncol=10)
   d$lenp <- sn( ind=ind, n = d$nyrslen_fsh*d$nbins1, nrow=d$nyrslen_fsh, ncol=d$nbins1)
   d$wt_fsh <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
-  ## This BS survey is not longer used but the inputs are
-  ## here. Will be dropped at some point.
-  d$nyrs_srv1_bs <- si(ind=ind, n =1)
-  d$srvyrs1_bs <- si(ind=ind, n =d$nyrs_srv1_bs)
-  d$indxsurv1_bs <- sn( ind=ind, n =d$nyrs_srv1_bs)
-  d$indxsurv_log_sd1_bs <- sn( ind=ind, n =d$nyrs_srv1_bs)
   ## The used survey 1
   d$nyrs_srv1 <- si(ind=ind, n =1)
   d$srvyrs1 <- si(ind=ind, n =d$nyrs_srv1)

@@ -162,8 +162,6 @@ DATA_SECTION
   // Population vectors
   init_matrix wt_pop(styr,endyr,rcrage,trmage)   // Population weight at age
   init_matrix wt_spawn(styr,endyr,rcrage,trmage) // Population weight at age at spawning (April 15)
-  // Anne's maturity vector
-  init_vector mat_old(rcrage,trmage)             // Proportion mature
   init_vector mat(rcrage,trmage)                 // Proportion mature
 
   // Projection parameters
