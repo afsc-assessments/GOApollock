@@ -160,20 +160,40 @@ DATA_SECTION
   init_matrix len_trans3(rcrage,trmage,1,nbins3)
 
   // Population vectors
-  init_matrix wt_pop(styr,endyr,rcrage,trmage)   // Population weight at age
-  init_matrix wt_spawn(styr,endyr,rcrage,trmage) // Population weight at age at spawning (April 15)
+  matrix wt_pop(styr,endyr,rcrage,trmage)   // Population weight at age
+  matrix wt_spawn(styr,endyr,rcrage,trmage) // Population weight at age at spawning (April 15)
+  !! wt_pop=wt_srv2;
+  !! wt_spawn=wt_srv1;
   init_vector mat(rcrage,trmage)                 // Proportion mature
 
   // Projection parameters
-  init_vector wt_pop_proj(rcrage,trmage)         // Projection population weight at age at start of year
-  init_vector wt_spawn_proj(rcrage,trmage)       // Projection population weight at age at spawning (April 15)
-  init_vector wt_fsh_proj(rcrage,trmage)         // Projection fishery weight at age 
-  init_vector wt_srv_proj(rcrage,trmage)         // Projection arbitrary survey weight at age 
+  vector wt_pop_proj(rcrage,trmage);
+  vector wt_spawn_proj(rcrage,trmage);
+  vector wt_fsh_proj(rcrage,trmage);
+  vector wt_srv_proj(rcrage,trmage);
+  LOCAL_CALCS
+   // for projections take averages of WAA only from recent survey years with data
+    wt_pop_proj.initialize();
+    wt_spawn_proj.initialize();
+    for(int a=rcrage;a<=trmage;a++){
+      for(int i=1;i<=3;i++)
+          wt_pop_proj(a)+=wt_srv2(srv_acyrs2(nyrsac_srv2-i+1),a)/3;
+      for(int i=1;i<=5;i++){
+          wt_spawn_proj(a)+=wt_srv1(srv_acyrs1(nyrsac_srv1-i+1),a)/5;
+      // for predicting what the survey will see next year, Shelikof for now
+          wt_srv_proj(a)+=wt_srv1(srv_acyrs1(nyrsac_srv1-i+1),a)/5;
+      }	  
+     }
+     wt_fsh_proj=wt_fsh(endyr);
+  END_CALCS
+  
   init_vector Ftarget(endyr+1,endyr+5)
   init_number B40		                 // mean log recruitment
   init_number log_mean_recr_proj 
   init_number sigmasq_recr                       // Variance for log recr, recruitment indices
 
+  init_number check
+  !! if(check != -999){ cerr << "Failed to parse .dat file, final value=" << check <<endl; ad_exit(1);}
   int styr_avg_slct
   int endyr_avg_slct
   int i                                          // Index for year

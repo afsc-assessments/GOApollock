@@ -196,7 +196,7 @@ read_dat <- function(filename, path=NULL){
     on.exit(setwd(oldwd))
     setwd(path)
   }
-  char.lines <- readLines(filename)
+  char.lines <- readLines(filename, warn=FALSE)
   com.ind <- which(substring(char.lines, 1, 1) %in% c(" ", "#"))
   blank.ind <- which(substring(char.lines, 1, 1) == "\t")
   com.ind <- sort(c(com.ind,blank.ind))
@@ -334,17 +334,12 @@ read_dat <- function(filename, path=NULL){
   d$len_trans2 <- sn( ind=ind, n = d$nbins2*10, nrow=10, ncol=d$nbins2)
   d$len_trans3 <- sn( ind=ind, n = d$nbins3*10, nrow=10, ncol=d$nbins3)
   ## the projection module inputs
-  d$wt_pop <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
-  d$wt_spawn <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
-  d$mat_old <- sn( ind=ind, n=10)
   d$mat <- sn( ind=ind, n =10)
-  d$wt_pop_proj <- sn( ind=ind, n =10)
-  d$wt_spawn_proj <- sn( ind=ind, n =10)
-  d$wt_fsh_proj <- sn( ind=ind, n =10)
-  d$wt_srv_proj <- sn( ind=ind, n =10)
   d$Ftarget <- sn( ind=ind, n =5)
   d$B40 <- sn( ind=ind, n =1)
   d$log_mean_recr_proj <- sn( ind=ind, n =1)
   d$sigmasq_recr <- sn( ind=ind, n =1)
+  d$check <- sn(ind=ind, n=1)
+  if(d$check != -999) stop("Failed to read in dat file, final value=",d$check)
   return(d)
 }
