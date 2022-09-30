@@ -46,7 +46,7 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
 
   N <- d$multN_fsh
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_fishery_age_composition[ind,]
+  true <- r$Fishery_expected_age_composition[ind,]
   d$catp <- myrmultinom(N, true)
 
 
@@ -55,19 +55,19 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs1
   se <- cv2se(d$indxsurv_log_sd1)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_1_index[ind] ## BS survey
+  true <- r$Survey_1_expected_index[ind] ## BS survey
   d$indxsurv1 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs1
   N <- d$multN_srv1
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_1_age_composition[ind,]
+  true <- r$Survey_1_expected_age_composition[ind,]
   d$srvp1 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs1
   N <- d$multNlen_srv1
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_1_length_composition[ind,]
+  true <- r$Survey_1_expected_length_composition[ind,]
   d$srvlenp1 <- myrmultinom(N, true)
 
 ### Survey 2
@@ -75,19 +75,19 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs2
   se <- cv2se(d$indxsurv_log_sd2)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_2_index[ind]
+  true <- r$Survey_2_expected_index[ind]
   d$indxsurv2 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs2
   N <- d$multN_srv2
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_2_age_composition[ind,]
+  true <- r$Survey_2_expected_age_composition[ind,]
   d$srvp2 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs2
   N <- d$multNlen_srv2
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_2_length_composition[ind,]
+  true <- r$Survey_2_expected_length_composition[ind,]
   d$srvlenp2 <- myrmultinom(N, true)
 
 ### Survey 3
@@ -95,33 +95,33 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs3
   se <- cv2se(d$indxsurv_log_sd3)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_3_index[ind]
+  true <- r$Survey_3_expected_index[ind]
   d$indxsurv3 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs3
   N <- d$multN_srv3
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_3_age_composition[ind,]
+  true <- r$Survey_3_expected_age_composition[ind,]
   d$srvp3 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs3
   N <- d$multNlen_srv3
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_3_length_composition[ind,]
+  true <- r$Survey_3_expected_length_composition[ind,]
   d$srvlenp3 <- myrmultinom(N, true)
 ### Survey 4
   ## index
   ind <- r$years %in% d$srvyrs4
   se <- cv2se(d$indxsurv_log_sd4)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_4_index[ind]
+  true <- r$Survey_4_expected_index[ind]
   d$indxsurv4 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
 ### Survey 5
   ## index
   ind <- r$years %in% d$srvyrs5
   se <- cv2se(d$indxsurv_log_sd5)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_5_index[ind]
+  true <- r$Survey_5_expected_index[ind]
   d$indxsurv5 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
 
 ### Survey 6
@@ -129,19 +129,19 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs6
   se <- cv2se(d$indxsurv_log_sd6)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_6_index[ind]
+  true <- r$Survey_6_expected_index[ind]
   d$indxsurv6 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs6
   N <- d$multN_srv6
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_6_age_composition[ind,]
+  true <- r$Survey_6_expected_age_composition[ind,]
   d$srvp6 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs6
   N <- d$multNlen_srv6
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_6_length_composition[ind,]
+  true <- r$Survey_6_expected_length_composition[ind,]
   d$srvlenp6 <- myrmultinom(N, true)
 
   ## plot(r$year[ind], true, cex=2, ylim=c(0,.5))
