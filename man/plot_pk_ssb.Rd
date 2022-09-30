@@ -14,7 +14,7 @@ plot_pk_ssb(
 }
 \arguments{
 \item{x}{A list of data frames as read in from
-\link\code{read_pk_cor}}
+\link{\code{read_pk_cor}}}
 
 \item{add_uncertainty}{Whether to add 95\% confidence
 intervals. These are calculated in log space.}

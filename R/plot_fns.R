@@ -1,7 +1,7 @@
 #' Plot spawning biomass
 #'
 #' @param x A list of data frames as read in from
-#'   \link\code{read_pk_cor}
+#'   \link{\code{read_pk_cor}}
 #' @param add_uncertainty Whether to add 95% confidence
 #'   intervals. These are calculated in log space.
 #' @param uselog Whether to calculate in log space or not
