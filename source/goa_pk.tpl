@@ -21,6 +21,10 @@
 
 // Cleaned out old inputs  9/22.
 
+// Model 19.1a: add sigmaR=1.3 for all devs, turn on descending
+// logistic selectivity for survey 6. Also add more sdreport
+// variables to output.
+
 DATA_SECTION
   // Command line argument to do a retrospective peel
   // To use this flag, run the model using: "-retro n" to peel n years.
@@ -264,6 +268,7 @@ INITIALIZATION_SECTION
 //  inf2_srv6          7
   log_slp2_srv6     1
   inf2_srv6          20
+  sigmaR 1.3 
   natMscalar   1
   
 PARAMETER_SECTION
@@ -276,6 +281,7 @@ PARAMETER_SECTION
   vector initN(rcrage+1,trmage)
   init_bounded_number mean_log_recruit(-15,15,1)
   init_bounded_dev_vector dev_log_recruit(styr,endyr,-15,15,3)
+  init_bounded_number sigmaR(0,5,-1);
   sdreport_vector recruit(styr,endyr)
 
  // Forward projections 
@@ -336,8 +342,8 @@ PARAMETER_SECTION
   init_bounded_number inf1_srv6(0,50,-1)
   //    init_bounded_number inf1_srv6(1,50,-1)
   //    init_bounded_number inf1_srv6(1,50,-1)
-  init_bounded_number log_slp2_srv6(-5,5,-7)
-  init_bounded_number inf2_srv6(5,25,-7)
+  init_bounded_number log_slp2_srv6(-5,5,7)
+  init_bounded_number inf2_srv6(5,25,7)
 
  // Fishing mortality and survey catchablility
   init_bounded_number mean_log_F(-10,10,1)
@@ -1052,18 +1058,9 @@ FUNCTION Objective_function
   loglik(17) += llsrvlenp6(i);
   }
 
- // Constraints on recruitment
+  // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
   loglik(18)= 0;
- //  loglik(18)+= -0.5*square((mean_log_initN-mean_log_recruit)/0.3);
-  loglik(18) += -0.5*square(dev_log_recruit(styr)/1.0);
-  loglik(18) += -0.5*norm2(dev_log_recruit(styr+1,styr+7)/1.0);
- //  loglik(18) += -0.5*norm2(dev_log_initN/1.0);
- // The one below is what I have been using
-  loglik(18) += -0.5*norm2(dev_log_recruit(endyr-1,endyr)/1.0);
- //  loglik(18) += -0.5*norm2(dev_log_recruit(endyr-2,endyr)/1.0);  
- //  loglik(18) += -0.5*square(dev_log_recruit(endyr)/1.0);
- //  Stronger constraint on endyear recruitment dev
- //  loglik(18) += -0.5*square(dev_log_recruit(endyr)/0.25);
+  loglik(18) += -0.5*norm2(dev_log_recruit/sigmaR);
 
  // Normal process error on selectivity deviations. Note
  // rwlk_sd(styr,endyr-1) b/c if using retro they will be too
