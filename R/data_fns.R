@@ -182,6 +182,17 @@ write_dat <- function(datlist, fileout, path=NULL){
   })
 }
 
+#' Read text file input for ADMB model
+#'
+#' @param filename The filename to be read in
+#' @param path Path to the file if not in working directory
+#' @export
+read_dat <- function(filename,path=NULL){
+  .Deprecated('read_pk_dat')
+  read_pk_dat(filename,path)
+}
+
+
 
 #' Read text file input for ADMB model
 #'
@@ -190,7 +201,7 @@ write_dat <- function(datlist, fileout, path=NULL){
 #' @export
 #' @return A named list of all elements with corresponding names
 #'   to the ADMB model
-read_dat <- function(filename, path=NULL){
+read_pk_dat <- function(filename, path=NULL){
   if(!is.null(path)){
     oldwd <- getwd()
     on.exit(setwd(oldwd))

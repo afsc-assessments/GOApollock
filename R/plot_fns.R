@@ -1,3 +1,57 @@
+
+#' Plot survey selectivities with +/- 1 SE
+#' @param x A list of data frames as read in from
+#'   \link{\code{read_pk_std}}
+#'
+#' @param add_uncertainty Whether to add +/- SE
+#'   intervals. These are calculated in logit space.
+#' @param plot_logit Whether to plot in logit space or not
+#' @param plot Whether to plot and return the ggplot object
+#'   (TRUE) or return the data (FALSE).
+#'
+#' @return Either a ggplot object or the data used for it,
+#' depending on \code{plot} argument.
+#' @export
+#'
+plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
+                          plot_logit=FALSE, plot=TRUE){
+  x <-  bind_rows(x)
+  ## redefine these to clear up plot
+  x <- mutate(x, lwr=est-se, upr=est+se)
+  svys <- x %>%
+    filter(name!='slctfsh_logit' & grepl('_logit',name)) %>%
+    mutate(survey=gsub("slctsrv","Survey ", name),
+           survey=gsub('_logit', '',survey)) %>%
+    filter(is.finite(est))
+  if(nrow(svys)==0)
+    stop("No survey selex found, maybe from old model version?")
+  if(add_fishery){
+    fsh <-
+      filter(x, name=='slctfsh_logit' & is.finite(est)) %>%
+      mutate(survey='Fishery (2021)')
+    if(nrow(fsh)==0)
+      stop("No fishery selex found, maybe from old model version?")
+    x <- bind_rows(svys,fsh)
+  } else {
+    x <- svs
+  }
+  ## plot in logit space?
+  if(!plot_logit){
+    f <- function(x) 1/(1+exp(-x))
+    x <- mutate(x, est=f(est), lwr=f(lwr), upr=f(upr))
+  }
+  alpha1 <- .2 # for ribbon
+  alpha2 <- 1 # for lines
+  ylab <- ifelse(plot_logit, 'logit selectivity','Selectivity')
+  if(add_uncertainty) ylab <- paste(ylab, '(+/- 1 SE)')
+  g <- ggplot(x, aes(i,est, ymin=lwr, ymax=upr, color=survey, fill=survey))+
+    geom_line(alpha=alpha2, lwd=1) + geom_point(alpha=alpha2)+
+    facet_wrap('version')+   scale_x_continuous(breaks=1:10)+
+    labs(fill=NULL, color=NULL, x='Age', y=ylab)
+  if(add_uncertainty) g <-  g+ geom_ribbon(alpha=alpha1, color=NA)
+  if(plot)  {print(g); g}  else  return(x)
+}
+
 #' Plot spawning biomass
 #'
 #' @param x A list of data frames as read in from
@@ -37,6 +91,7 @@ plot_pk_ssb <- function(x, add_uncertainty=TRUE, plotlog=TRUE, uselog=FALSE, plo
     geom_line(alpha=alpha2, lwd=1) +
     theme_bw()+ labs(x=NULL,y='Spawning biomass (M mt)')
   if(plotlog) g <- g+ scale_y_log10()
+  if(!plotlog) g <- g+ylim(0,NA)
   if(add_uncertainty) g <-  g+ geom_ribbon(alpha=alpha1)
   if(plot)  {print(g); g}  else  return(ses)
 }
