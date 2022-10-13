@@ -22,8 +22,9 @@
 // Cleaned out old inputs  9/22.
 
 // Model 19.1a: add sigmaR=1.3 for all devs, turn on descending
-// logistic selectivity for survey 6. Also add more sdreport
-// variables to output.
+// logistic selectivity for survey 6, including some broad priors
+// to stabilize estimation. Also add more sdreport variables to
+// output.
 
 DATA_SECTION
   // Command line argument to do a retrospective peel
@@ -283,6 +284,7 @@ PARAMETER_SECTION
   init_bounded_dev_vector dev_log_recruit(styr,endyr,-15,15,3)
   init_bounded_number sigmaR(0,5,-1);
   sdreport_vector recruit(styr,endyr)
+  sdreport_vector log_recruit(styr,endyr);
 
  // Forward projections 
   init_bounded_vector log_recr_proj(endyr+1,endyr+5,-5,5,10)
@@ -351,14 +353,11 @@ PARAMETER_SECTION
   vector F(styr,endyr)
   init_bounded_number log_q1_mean(-10,10,5)
   init_bounded_dev_vector log_q1_dev(styr,endyr,-5,5,5) 
-  vector log_q1(styr,endyr)
    //  init_bounded_number log_q2(-10,10,-1)
   init_bounded_number log_q2_mean(-10,10,5)
   init_bounded_dev_vector log_q2_dev(styr,endyr,-5,5,-1)  
-  vector log_q2(styr,endyr)   
   init_bounded_number log_q3_mean(-10,10,6)
   init_bounded_dev_vector log_q3_dev(styr,endyr,-5,5,5) 
-  vector log_q3(styr,endyr) 	
   init_bounded_number log_q4(-10,10,6)
   //  init_bounded_number q4_pow(-10,10,6)
   init_bounded_number q4_pow(-10,10,-6)
@@ -373,6 +372,9 @@ PARAMETER_SECTION
   vector q1(styr,endyr)
   vector q2(styr,endyr)
   vector q3(styr,endyr)
+  sdreport_vector log_q1(styr,endyr)
+  sdreport_vector log_q2(styr,endyr)
+  sdreport_vector log_q3(styr,endyr)
   number q4
   number q5
   number q6
@@ -389,7 +391,14 @@ PARAMETER_SECTION
   matrix Nsrv6(styr,endyr,rcrage,trmage)
   vector slctsrv6(rcrage,trmage)
   matrix slctfsh(styr,endyr,rcrage,trmage)
-  // Expected values
+  sdreport_vector slctsrv1_logit(rcrage,trmage)
+  sdreport_vector slctsrv2_logit(rcrage,trmage)
+  sdreport_vector slctsrv3_logit(rcrage,trmage)
+  sdreport_vector slctsrv6_logit(rcrage,trmage)
+  sdreport_vector slctfsh_logit(rcrage,trmage);
+
+
+// Expected values
   vector Eecocon(styr,endyr)
   matrix Eec(styr,endyr,rcrage,trmage)
   vector Ecattot(styr,endyr)
@@ -552,13 +561,17 @@ FUNCTION Convert_log_parameters
  for (j=rcrage+1;j<=trmage;j++) {
    initN(j) = initN(j)*mfexp(dev_log_initN(j));
  }
- recruit = mfexp(mean_log_recruit +  dev_log_recruit);
+ log_recruit=mean_log_recruit +  dev_log_recruit;
+ recruit = mfexp(log_recruit);
 
  // Acoustic survey random walk setup
  for (i=styr;i<=endyr;i++) {
-   q1(i)=mfexp(log_q1_mean+log_q1_dev(i));
-   q2(i)=mfexp(log_q2_mean+log_q2_dev(i));
-   q3(i)=mfexp(log_q3_mean+log_q3_dev(i)); 
+   log_q1(i)=log_q1_mean+log_q1_dev(i);
+   log_q2(i)=log_q2_mean+log_q2_dev(i);
+   log_q3(i)=log_q3_mean+log_q3_dev(i); 
+   q1(i)=mfexp(log_q1(i));
+   q2(i)=mfexp(log_q2(i));
+   q3(i)=mfexp(log_q3(i));
  }
  F = mfexp(mean_log_F + dev_log_F);
  q4 = mfexp(log_q4);
@@ -612,7 +625,17 @@ FUNCTION Selectivity
       *(1-1/(1+mfexp(-mfexp(log_slp2_srv6)*(double(j)-inf2_srv6))));
   }
   slctsrv6=slctsrv6/slctsrv6(1);
-		
+
+  // Calculate uncertainty in logit space where it makes more
+  // sense. But it does break when selex=0 or 1 identically so
+  // need to be careful there.
+  slctsrv1_logit=-log(1/(slctsrv1-1e-10)-1);
+  slctsrv2_logit=-log(1/(slctsrv2-1e-10)-1);
+  slctsrv3_logit=-log(1/(slctsrv3-1e-10)-1);
+  slctsrv6_logit=-log(1/(slctsrv6-1e-10)-1);
+  slctfsh_logit=-log(1/(slctfsh(endyr-1)-1e-10)-1);
+
+
 FUNCTION Mortality
   for (i=styr;i<=endyr;i++) {
     for (j=rcrage;j<=trmage;j++) {
@@ -788,6 +811,7 @@ FUNCTION Projections
  }
  slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
  
+
 
  //Forward projections
   for (i=endyr+1;i<=endyr+5;i++) {
@@ -1088,6 +1112,10 @@ FUNCTION Objective_function
  // Prior on trawl catchability       
  loglik(23) = -.5*square((log_q2_mean-log(0.85))/0.1);
  loglik(24) = 0;
+ // these broad priors stabilize estimation, particularly for
+ // retros, and imply uniform 1 selex for this survey
+ loglik(24) -= dnorm(log_slp2_srv6, 0,2, true);
+ loglik(24) -= dnorm(inf2_srv6, 10,3, true);
  objfun = -sum(loglik);
 
  // Variable to do a likelihood profile over
