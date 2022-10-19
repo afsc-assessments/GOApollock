@@ -131,9 +131,9 @@ match_input <- function(aa, asap3, NAA_re=list(sigma="rec", cor="iid")){
                          invq(aa$Survey_5_q),
                          invq(aa$Survey_6_q))
   ### tried this to get prior on BT to match but didn't work
-  ## input$data$use_q_prior[2] <- 1
-  ## input$data$logit_q_prior_sigma[2] <- .1
-  ## input$par$q_prior_re[2] <- invq(.85)
+  input$data$use_q_prior[2] <- 1
+  input$data$logit_q_prior_sigma[2] <- .1
+  input$par$q_prior_re[2] <- invq(.85)
 
   input$par$q_re[,1] <- invq(aa$Survey_1_q[-1])-mean(invq(aa$Survey_1_q[-1]))
   input$par$q_re[,3] <- invq(aa$Survey_3_q)-mean(invq(aa$Survey_3_q))
