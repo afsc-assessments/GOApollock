@@ -28,11 +28,12 @@ fit0 <- fit_wham(input, do.osa=FALSE, do.fit=FALSE, do.retro=FALSE,
                 do.sdrep=TRUE, MakeADFun.silent=TRUE)
 fit0$rep[grep('nll',names(fit0$rep))] %>% lapply(sum) %>% unlist
 plot_checks(arep, fit0$rep) # special plot function to explore inits
+plot_ssb(fit0, asdrep) ## matches closely except for initial NAA
 
 ## Compare platforms after optimizing.
 fit1 <- fit_wham(input, do.osa=FALSE, do.fit=TRUE, do.retro=FALSE,
                 do.sdrep=TRUE, MakeADFun.silent=TRUE)
 fit1$rep[grep('nll',names(fit1$rep))] %>% lapply(sum) %>% unlist
-plot_ssb(fit1, asdrep)
+plot_ssb(fit1, asdrep) # mean and uncertainty match well
 
 
