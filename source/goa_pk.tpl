@@ -1340,7 +1340,7 @@ REPORT_SECTION
   report << "Projection catch at age" << endl << C_proj << endl; 
   report << "Projection survey numbers at age" << endl << Nsrv_proj << endl;
   report << "Projection population weight at age" << endl <<  wt_pop_proj << endl;  
-  report << "Projection Spawning weight at age" << endl << wt_spawn_proj << endl;  
+  report << "Projection spawning weight at age" << endl << wt_spawn_proj << endl;  
   report << "Projection fishery weight at age" << endl << wt_fsh_proj << endl; 
   report << "Projection fishery selectivity" << endl << slctfsh_proj << endl; 
   report << "Projection total catches" << endl << Ecattot_proj << endl;  

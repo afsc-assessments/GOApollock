@@ -2,15 +2,21 @@
 % Please edit documentation in R/plot_fns.R
 \name{plot_pk_selex}
 \alias{plot_pk_selex}
-\title{Plot survey selectivities}
+\title{Plot survey selectivities with +/- 1 SE}
 \usage{
-plot_pk_selex(x, add_uncertainty = TRUE, plot_logit = FALSE, plot = TRUE)
+plot_pk_selex(
+  x,
+  add_uncertainty = TRUE,
+  add_fishery = TRUE,
+  plot_logit = FALSE,
+  plot = TRUE
+)
 }
 \arguments{
 \item{x}{A list of data frames as read in from
 \link{\code{read_pk_std}}}
 
-\item{add_uncertainty}{Whether to add 95\% confidence
+\item{add_uncertainty}{Whether to add +/- SE
 intervals. These are calculated in logit space.}
 
 \item{plot_logit}{Whether to plot in logit space or not}
@@ -23,5 +29,5 @@ Either a ggplot object or the data used for it,
 depending on \code{plot} argument.
 }
 \description{
-Plot survey selectivities
+Plot survey selectivities with +/- 1 SE
 }
