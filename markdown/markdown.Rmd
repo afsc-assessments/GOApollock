@@ -10,7 +10,7 @@ date: "November 2021"
 
 # don't do anything below this line unless you are cool with the consequences
 output: 
-  bookdown::word_document2:
+  bookdown::html_document2:
      reference_docx: "template.docx"
      toc: false
      number_sections: false
@@ -59,7 +59,7 @@ title: `r title`
 library(safe)
 library(flextable)
 # globals
-figdir <- function(x) file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2021/writeup/figures/',x)
+figdir <- function(x) file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/figures/',x)
 gettab <- function(sheet, ...){
   p <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/2022_GOApollock tables.xlsx'
   stopifnot(file.exists(p))
@@ -74,13 +74,47 @@ year = 2022
 date = 'October 22, 2022'
 model = "base"
 end_proj = year + 15
-best_f = 0.0641 # from the best_f function in groundfishr package
-ofl = 8000 # placeholder while i figure things out
+best_f = 999 # from the best_f function in groundfishr package
 
+myres <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results'
+
+## Read in the key output files
+repfile <- readRDS(file.path(myres, 'repfile.RDS'))
+datfile <- readRDS(file.path(myres, 'datfile.RDS'))
+stdfile <- readRDS(file.path(myres, 'stdfile.RDS'))
+## retro_reports <- readRDS(file.path(myres, 'retro_reports.RDS'))
 # todo: read from proj output
-c1 = 2842 # estimated catch in current year
-c2 = 3489 # proj catch year + 1
-c3 = 2884 # proj catch year + 2
+c1 = 999 # estimated catch in current year
+c2 = 999 # proj catch year + 1
+c3 = 999 # proj catch year + 2
+## retro_stds <- readRDS(file.path(myres, 'retro_stds.RDS'))
+exec_table <- read.csv(file.path(myres, 'exec_table.csv'))
+
+F <- function(x, digits=0) formatC(round(x,digits), format='d', big.mark=',')
+Finv <- function(x) as.numeric(gsub(',','',x))
+
+sumbio <- F(exec_table[2,3])
+ssb <- F(exec_table[3,3])
+b100 <- F(exec_table[4,3])
+b40 <- F(exec_table[5,3])
+b35 <- F(exec_table[6,3])
+ofl <- F(exec_table[10,3])
+maxabc <- F(exec_table[11,3])
+abc <- F(exec_table[12,3])
+
+sumbio.last <- F(exec_table[2,1])
+ssb.last <- F(exec_table[3,1])
+b100.last <- F(exec_table[4,1])
+b40.last <- F(exec_table[5,1])
+b35.last <- F(exec_table[6,1])
+ofl.last <- F(exec_table[10,1])
+maxabc.last <- F(exec_table[11,1])
+abc.last <- F(exec_table[12,1])
+
+abcN <- Finv(abc)
+abcN.last <- Finv(abc.last)
+
+
 # todo: build a function/switch to auto run the tier(a/b) - also for overfishing/overfished
 ```
 

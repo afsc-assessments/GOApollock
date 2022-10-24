@@ -1,8 +1,8 @@
 # Tables
 
-```{r tab1}
+```{r t.catch}
 
-x <- gettab(sheet = 'Table 1.1')
+x <- gettab(sheet = 'catch')
 flextable::regulartable(x$tab) %>%  
       flextable::set_caption(x$cap) %>% colformat_double(digits=0)
 

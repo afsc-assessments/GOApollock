@@ -3,22 +3,60 @@
 ## Summary of Changes in Assessment Inputs
 
 ### Changes to input data
-1. Fishery: 2020 total catch and catch at age.
-2. Shelikof Strait acoustic survey: 2021 biomass index and age composition.
-3. NMFS bottom trawl survey: 2021 biomass index and length composition
-4. Summer acoustic survey: 2021 biomass index and length composition
-5. ADF&G crab/groundfish trawl survey: 2021 biomass index and 2020 age composition
+1. Fishery: 2021 total catch and catch at age.
+2. Shelikof Strait acoustic survey: 2022 biomass index and age composition.
+3. NMFS bottom trawl survey: 2021 age compositions
+4. Summer acoustic survey: 2021 age compositions
+5. ADF&G crab/groundfish trawl survey: 2022 biomass index 
 
 ### Changes in assessment methodology
-The age-structured assessment model is identical to the model used for the 2019 and 2020 assessments (Model 19.1). 
+Two minor changes were made to the model. First, a penalty of 1.3
+was added to  recruitment deviations in all years. Previously
+the penalty of 1.0 was applied only to early and late
+deviations. Second, selectivity of the summer acoustic survey was
+estimated. Previously this was assumed 1.0 for all ages. Together
+these changes constitute model 19.1a.
 
 ## Summary of Results
 
-The base model projection of female spawning biomass in 2022 is 186,481 t, which is 43.4% of unfished spawning biomass (based on average post-1977 recruitment) and above B40% (172,000 t), thereby placing GOA pollock in sub-tier “a” of Tier 3. New surveys in 2021 include the winter Shelikof Strait acoustic survey, NMFS bottom trawl survey, summer acoustic survey, and ADF&G bottom trawl survey. These surveys indicated similar relative abundance in 2021, unlike previous years when the surveys showed strongly contrasting trends. The risk matrix table recommended by the SSC was used to determine whether to recommend an ABC lower than the maximum permissible. The table is applied by evaluating the severity of four types of considerations that could be used to support a scientific recommendation to reduce the ABC from the maximum permissible. Although we identified some aspects of the stock that merit close tracking, there were no elevated concerns about stock assessment, population dynamics, environment/ecosystem, or fisheries performance categories. We therefore recommend no reduction from maximum permissible ABC.
+The base model projection of female spawning biomass in `r year`
+is `r ssb` t, which is `r 100*Finv(ssb)/Finv(b100)` % of unfished
+spawning biomass (based on average post-1977 recruitment) and
+above B40% (`r b40` t), thereby placing GOA pollock in sub-tier
+“a” of Tier 3. New surveys in 2022 include the winter Shelikof
+Strait acoustic survey and the ADF&G bottom trawl survey. Similar
+to 2021 these showed similar trends, unlike previous years when
+the surveys showed strongly contrasting trends. The risk matrix
+table recommended by the SSC was used to determine whether to
+recommend an ABC lower than the maximum permissible. The table is
+applied by evaluating the severity of four types of
+considerations that could be used to support a scientific
+recommendation to reduce the ABC from the maximum
+permissible. Although we identified some aspects of the stock
+that merit close tracking, there were no elevated concerns about
+stock assessment, population dynamics, environment/ecosystem, or
+fisheries performance categories. We therefore recommend no
+reduction from maximum permissible ABC.
 
-The authors’ 2022 ABC recommendation for pollock in the Gulf of Alaska west of 140° W lon. (W/C/WYK regions) is 133,081 t, which is an increase of 26% from the 2021 ABC. The author’s recommended 2023 ABC is 131,912 t. The OFL in 2022 is 154,983 t, and the OFL in 2023 if the ABC is taken in 2022 is 153,097 t. These calculations are based on a projected 2021 catch of 92,342 t (Mary Furuness, pers. comm. Oct. 14, 2021). It should be noted that the ABC is projected to increase after 2023 even as the large 2012 year class continues to diminish due to new large cohorts entering the exploitable stock, although there is considerable uncertainty about the 2018 year class.
+The authors’ `r year+1` ABC recommendation for pollock in the
+Gulf of Alaska west of 140° W lon. (W/C/WYK regions) is `r abc`
+t, which is an increase of `r 100*(abcN-abcN.last)/abcN.last`
+from the `r year-1` ABC. The author’s recommended `r year+2` ABC
+is `r F(exec_table[12,4])` t. The OFL in `r year+1` is `r ofl` t,
+and the OFL in `r year+2` if the ABC is taken in `r year+1` is 
+`r F(exec_table[10,4])` t. These calculations are based on a
+projected `r year` catch of `r F(tail(datfile$cattot,1))`
+t. The estimated scale of the stock increased compared to
+previous years, driven both by new data and model changes. 
 
-For pollock in southeast Alaska (Southeast Outside region, east of 140° W lon.), the ABC recommendation for both 2022 and 2023 is 11,363 t (see Appendix 1B) and the OFL recommendation for both 2022 and 2023 is 15,150 t. These recommendations are based on a Tier 5 assessment using the projected biomass in 2022 and 2023 from a random effects model fit to the 1990-2021 bottom trawl survey biomass estimates of the assessment area. 
+For pollock in southeast Alaska (Southeast Outside region, east
+of 140° W lon.), the ABC recommendation for both `r year+1` and
+`r year+2` is 11,363 t (see Appendix 1B) and the OFL
+recommendation for both `r year+1` and `r year +2` is 15,150 t. These
+recommendations are based on a Tier 5 assessment using the
+projected biomass in 2022 and 2023 from a random effects model
+fit to the 1990-2021 bottom trawl survey biomass estimates of the
+assessment area. 
 
 
 ```{r, child= "01a-main_table.Rmd", eval = T}
