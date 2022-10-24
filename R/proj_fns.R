@@ -4,8 +4,9 @@
 #' @param bigfile A data frame of full projection scenario
 #'   outputs
 #' @export
-get_exec_table <- function(replist, bigfile){
+get_exec_table <- function(replist, bigfile, maxABCratio=1){
   ayr <- tail(replist$years,1)
+  M <- c(.3,.3)
   means <- bigfile %>% filter(Yr > ayr & Yr <= ayr+2) %>%
     group_by(Alternative, Yr, Spp, SpNo) %>%
     summarize_all(mean) %>% ungroup
@@ -21,8 +22,8 @@ get_exec_table <- function(replist, bigfile){
   maxfabc <- fabc
   ofl <- filter(means,  Alternative==2) %>% pull(OFL) %>% round(0)
   maxabc <- filter(means,  Alternative==1) %>% pull(Catch) %>% round(0)
-  abc <- maxabc
-  tab <- rbind(sumbio, ssb, bfrac, fofl, maxfabc, fabc,ofl,maxabc,abc)
+  abc <- maxabc*maxABCratio
+  tab <- rbind(M, sumbio, ssb, bfrac, fofl, maxfabc, fabc,ofl,maxabc,abc)
   tab <- as.data.frame(tab) %>% setNames(c(ayr+1,ayr+2)) %>%
     cbind(name=row.names(tab),.)
   row.names(tab) <- NULL
