@@ -23,10 +23,10 @@ calculate_rho <- function(reps, max_peels=NULL){
     pull(SSB_Pct_Diff)
   message("Percentage range of annual differences:",round(min(rho),1)," to ", round(max(rho),1))
   message("Median absolute error of rho:",round(median(abs(rho))))
-  rho <- rho %>% mean %>% '/'(100) # ugly syntax to /100
+  rho <- mean(rho)/100
   rho.lab <- paste0("Mohn's rho= ", round(rho,3))
   print(rho.lab)
-  round(rho,3)
+  return(round(rho,3))
 }
 
 
