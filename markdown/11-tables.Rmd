@@ -1,13 +1,247 @@
 # Tables
 
-```{r catches}
-
+```{r catch}
 x <- gettab(sheet = 'catch')
 flextable::regulartable(x$tab) %>%  
       flextable::set_caption(x$cap) %>% colformat_double(digits=0)
+```
+\newpage
 
+```{r incidental}
+x <- gettab(sheet = 'incidental')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>% colformat_double(digits=1)
+```
+\newpage
+
+```{r bycatch}
+x <- gettab(sheet = 'bycatch')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>% colformat_double(digits=0)
+```
+\newpage
+
+```{r retained}
+x <- gettab(sheet = 'retained')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=0)
+ 
+```
+\newpage
+
+```{r caa}
+x <- gettab(sheet = 'caa')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=2) %>%
+	  colformat_double(digits=0, big.mark='', j=1)
+```
+\newpage
+
+```{r aged-fsh}
+x <- gettab(sheet = 'aged_fsh')
+flextable::regulartable(x$tab) %>% 
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=0, big.mark='', j=1)
+```
+\newpage
+
+```{r indices}
+x <- gettab(sheet = 'indices', maxcols=6)
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=0) %>% 
+	  colformat_double(digits=0, big.mark='',j=1) %>%
+	  autofit()
+```
+\newpage
+
+```{r shelikof}
+x <- gettab(sheet = 'shelikof')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=0, big.mark=',') %>%
+	  colformat_double(digits=0, big.mark='',j=1) %>%
+	  colformat_double(digits=2, j=4)
+```
+\newpage
+
+```{r aged-srv2}
+x <- gettab(sheet = 'aged_srv2', maxcols=10)
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_num(big.mark=',') %>%
+	  colformat_num(big.mark='',j=1) %>%
+	  colformat_double(digits=2, j=4)
+```
+\newpage
+
+```{r naa-srv2}
+x <- gettab(sheet = 'naa_srv2')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=2) %>%
+  	  colformat_double(digits=0, big.mark='',j=1) %>%
+	  hline(i=18:19) %>% autofit()
 ```
 
-\pagebreak
+
+\newpage
+
+```{r naa-srv1}
+x <- gettab(sheet = 'naa_srv1')
+flextable::regulartable(x$tab) %>%  
+   flextable::set_caption(x$cap) %>%
+  colformat_double(digits=2) %>% 
+  colformat_num(digits=0, big.mark='',j=1) %>% autofit
+```
+\newpage
+
+```{r paa-srv3}
+x <- gettab(sheet = 'paa_srv3', maxcols=17)
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=3) %>% 
+colformat_num(digits=0, big.mark='',j=1) %>% 
+ colformat_num(digits=0, big.mark=',',j=17) %>% 
+		autofit
+
+```
+\newpage
 
 
+```{r age-error}
+x <- gettab(sheet = 'age_error')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=3) %>%
+	  colformat_num(digits=0,j=1)
+```
+\newpage
+
+```{r natM}
+x <- gettab(sheet = 'natM')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>% 
+	  colformat_double(digits=2)  %>% 
+	  colformat_num(digits=0, big.mark='',j=1) %>% 
+	  	  colformat_double(digits=1, big.mark=',',j=3) 
+```
+\newpage
+
+```{r mat}
+x <- gettab(sheet = 'mat')
+flextable::regulartable(x$tab) %>%  
+      flextable::set_caption(x$cap) %>%
+	  colformat_double(digits=3) %>%
+	  colformat_num(digits=0, big.mark='',j=1) %>% 
+  	  colformat_double(digits=0, big.mark=',',j=12) 
+```
+\newpage
+
+```{r waa-fsh}
+waa_fsh <- datfile$wt_fsh %>% data.frame(ayears,.) %>%
+	setNames(c('Year',1:10)) %>%
+       subset(Year %in% datfile$fshyrs)
+     cap <-'Fishery weight at age (kg) for GOA pollock'
+flextable::regulartable(waa_fsh) %>%  
+      flextable::set_caption(cap)  %>% 
+	  colformat_double(digits=3)%>%
+	   colformat_num(digits=0, big.mark='', j=1) %>%
+ 	flextable::fontsize(size=8)
+```
+\newpage
+
+```{r waa-srv1}
+waa_srv1 <- datfile$wt_srv1 %>% data.frame(ayears,.) %>%
+	setNames(c('Year',1:10)) %>%
+       subset(Year %in% datfile$srvyrs1 & Year >=1981)
+     cap <-'Weight at age (kg) of pollock in the winter acoustic survey'
+flextable::regulartable(waa_srv1) %>%  
+      flextable::set_caption(cap)  %>% 
+	  colformat_double(digits=3)%>%
+	   colformat_num(digits=0, big.mark='', j=1) %>%
+ 	flextable::fontsize(size=8)
+```
+\newpage
+
+```{r waa-srv2}
+waa_srv2 <- datfile$wt_srv2 %>% data.frame(ayears,.) %>%
+	setNames(c('Year',1:10)) %>%
+       subset(Year %in% datfile$srvyrs2 & Year >=1984)
+     cap <-'Weight at age (kg) of pollock in the summer NMFS bottom trawl survey'
+flextable::regulartable(waa_srv2) %>%  
+      flextable::set_caption(cap)  %>% 
+	  colformat_double(digits=3)%>%
+	   colformat_num(digits=0, big.mark='', j=1) %>%
+ 	flextable::fontsize(size=8)
+```
+\newpage
+
+```{r waa-srv6}
+waa_srv6 <- datfile$wt_srv6 %>% data.frame(ayears,.) %>%
+	setNames(c('Year',1:10)) %>%
+       subset(Year %in% datfile$srvyrs6)
+     cap <-'Weight at age (kg) of pollock in the NMFS summerw acoustic survey'
+flextable::regulartable(waa_srv6) %>%  
+      flextable::set_caption(cap)  %>% 
+	  colformat_double(digits=3)%>%
+	   colformat_num(digits=0, big.mark='', j=1) %>%
+ 	flextable::fontsize(size=8)
+```
+\newpage
+
+```{r selex}
+ selex <- repfile$Fishery_selectivity
+ yrs <- dimnames(selex)[[1]] %>% as.numeric
+ s1 <- selex[yrs %in% 1970:1981,]%>% apply(2,mean) %>% as.numeric
+ s2 <- selex[yrs %in% 1982:1988,]%>% apply(2,mean) %>% as.numeric
+ s3 <- selex[yrs %in% 1989:2000,] %>% apply(2,mean) %>% as.numeric
+ s4 <- selex[yrs %in% 2001:2014,] %>% apply(2,mean) %>% as.numeric 
+ s5 <- selex[yrs %in% (year-6):(year-1),] %>% apply(2,mean) %>% as.numeric 
+ s6 <- repfile$Survey_1_selectivity
+ ## grab catchabilities for age 1 and 2s and use for selectivity 
+ s6[1:2] <- c(repfile$Survey_4_q, repfile$Survey_5_q)
+ s7 <- repfile$Survey_6_selectivity
+ s8 <- repfile$Survey_2_selectivity
+ s9 <- repfile$Survey_3_selectivity
+ tab <- data.frame(1:10,s1,s2,s3,s4,s5,s6,s7,s8,s9)
+x <- c("Age","Foreign (1970-81)", "Foreign and JV (1982-1988)",
+	"Domestic (1989-2000)", "Domestic (2001-2014)", 
+	paste0("Recent domestic (", year-6,"-",year-1,")"),
+	"Shelikof acoustic survey" ,
+	"Summer acoustic survey","Bottom trawl survey", 
+	"ADF&G bottom trawl")
+tab <- setNames(tab, x)
+ regulartable(tab) %>% 
+ set_caption("Estimated selectivity at age
+	for GOA pollock fisheries and surveys.  The fisheries and
+	surveys were modeled using double logistic selectivity
+	functions.  Acoustic survey catchablity at age 1 and age 2 are
+	estimated separately. ") %>%
+	colformat_double(digits=3)
+	 regulartable(tab) %>% colformat_double(digits=3)
+```
+\newpage
+
+```{r naa}
+naa <- 1e3*repfile$Numbers_at_age %>% as.data.frame() %>%
+ ## not sure why I need to divide by 1e3 here.. weird
+    cbind(year=ayears/1e3,.)
+row.names(naa) <- NULL
+x2 <- naa[1,]*NA
+x3 <- data.frame(year='Average',t(colMeans(naa[,-1])))%>%
+  setNames(names(naa))
+naa2 <- rbind(naa,x2,x3)  
+cap <- "Total estimated abundance at age (millions) of GOA pollock from the age-structured assessment model"
+regulartable(naa2) %>% set_caption(cap) %>%
+  colformat_double(digits=0, big.mark=',')
+```
+
+<!-- ```{r xx} -->
+<!-- x <- gettab(sheet = 'xx') -->
+<!-- flextable::regulartable(x$tab) %>%   -->
+<!--       flextable::set_caption(x$cap) %>% colformat_double(digits=0) -->
+<!-- ``` -->
+<!-- \newpage -->

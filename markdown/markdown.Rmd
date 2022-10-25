@@ -10,7 +10,7 @@ date: "November 2021"
 
 # don't do anything below this line unless you are cool with the consequences
 output: 
-  bookdown::html_document2:
+  bookdown::pdf_document2:
      reference_docx: "template.docx"
      toc: false
      number_sections: false
@@ -57,20 +57,25 @@ title: `r title`
 ```{r load, warning=F, message=F}
 # load
 library(safe)
-library(flextable)
+suppressWarnings(library(flextable))
+set_flextable_defaults(font.size = 10, padding.bottom = 0, table.layout='autofit')
+library(readxl)
 # globals
 figdir <- function(x) file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/figures/',x)
-gettab <- function(sheet, ...){
+gettab <- function(sheet, skip=1, maxcols=NULL, ...){
   p <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/2022_GOApollock tables.xlsx'
   stopifnot(file.exists(p))
-  cap <- readxl::read_xlsx(path=p, sheet=sheet, col_names=FALSE, range='A1', col_types = 'text')
+  cap <- suppressMessages(readxl::read_xlsx(path=p, sheet=sheet, col_names=FALSE, range='A1', col_types = 'text'))
   cap <- as.character(cap[1,1]) # ditch merged cell stuff
-  tab <- readxl::read_xlsx(path=p, sheet=sheet, skip=1, ...)
+  tab <- suppressMessages(readxl::read_xlsx(path=p, sheet=sheet,
+	skip=skip, ...))
+  if(!is.null(maxcols)) tab <- tab[,1:maxcols]
   return(list(cap=cap, tab=tab))
 }
 
 species = params$species
 year = 2022
+ayears <- 1970:year
 date = 'October 22, 2022'
 model = "base"
 end_proj = year + 15

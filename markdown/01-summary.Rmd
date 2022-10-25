@@ -1,5 +1,21 @@
 # Executive Summary
 
+Testing tables
+\@ref(tab:catch)
+\@ref(tab:incidental)
+\@ref(tab:bycatch)
+\@ref(tab:retained)
+\@ref(tab:caa)
+\@ref(tab:aged-fsh)
+\@ref(tab:indices)
+\@ref(tab:shelikof)
+\@ref(tab:aged-srv2)
+\@ref(tab:naa-srv2)
+\@ref(tab:naa-srv1)
+\@ref(tab:paa-srv3)
+\@ref(tab:natM)
+\@ref(tab:waa-fsh)
+
 ## Summary of Changes in Assessment Inputs
 
 ### Changes to input data
