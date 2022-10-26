@@ -18,4 +18,13 @@ Additional recommendations that could be done by other teams at the AFSC, but ar
 A full ESP was developed for GOA pollock in 2020 and reviewed by the Plan Team at its September and November 2019 meetings. The GOA Groundfish Plan Team encouraged the authors to consider potential avenues for updating ESPs rather than producing full ESPs in the future. This year we provide a partial ESP in Appendix 1A that updates key indicators and reruns the Bayesian adaptive sampling model. We are soliciting feedback from the Plan Team and the SSC on the appropriate format and information to be included in an ESP update.
 
 # Acknowledgements
-We thank the AFSC survey personnel for the collection of data and providing the biomass estimates, and Wayne Palsson for providing summarized data. We are grateful to all the fishery observers working with the Fishery Monitoring and Analysis (FMA) Division who collect vital data for the stock assessments, and the staff of the AFSC Age and Growth Unit for the ageing of otoliths used to determine the age compositions in the assessment. We also thank Kally Spalinger for providing ADF&G survey data.
+We thank the AFSC survey personnel for the collection of data and
+providing the biomass estimates, and Wayne Palsson for providing
+summarized data. We are grateful to all the fishery observers
+working with the Fishery Monitoring and Analysis (FMA) Division
+who collect vital data for the stock assessments, and the staff
+of the AFSC Age and Growth Unit for the ageing of otoliths used
+to determine the age compositions in the assessment. We also
+thank Kally Spalinger for providing ADF&G survey data.
+
+\pagebreak

@@ -6,7 +6,7 @@ params:
   area: "Gulf of Alaska"
   tier: 3
 author: "Cole C. Monnahan, Martin W. Dorn, Alison L. Deary, et al"
-date: "November 2021"
+date: "November 2022"
 
 # don't do anything below this line unless you are cool with the consequences
 output: 
@@ -58,8 +58,10 @@ title: `r title`
 # load
 library(safe)
 suppressWarnings(library(flextable))
-set_flextable_defaults(font.size = 10, padding.bottom = 0, table.layout='autofit')
+set_flextable_defaults(font.size = 10, padding.top = 0, padding.bottom=0, table.layout='autofit')
 library(readxl)
+## library(dplyr)
+## library(tidyr)
 # globals
 figdir <- function(x) file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/figures/',x)
 gettab <- function(sheet, skip=1, maxcols=NULL, ...){
@@ -83,21 +85,23 @@ best_f = 999 # from the best_f function in groundfishr package
 
 myres <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results'
 
-## Read in the key output files
+## Read in the key output files from this year
 repfile <- readRDS(file.path(myres, 'repfile.RDS'))
 datfile <- readRDS(file.path(myres, 'datfile.RDS'))
 stdfile <- readRDS(file.path(myres, 'stdfile.RDS'))
+proj_scens <- read.csv(file.path(myres, 'proj_scens.csv'))
 ## retro_reports <- readRDS(file.path(myres, 'retro_reports.RDS'))
 # todo: read from proj output
 c1 = 999 # estimated catch in current year
 c2 = 999 # proj catch year + 1
 c3 = 999 # proj catch year + 2
 ## retro_stds <- readRDS(file.path(myres, 'retro_stds.RDS'))
-exec_table <- read.csv(file.path(myres, 'exec_table.csv'))
 
+## This exec_table is constructed externally to have the old and
+## new estimates
+exec_table <- read.csv(file.path(myres, 'exec_table.csv'))
 F <- function(x, digits=0) formatC(round(x,digits), format='d', big.mark=',')
 Finv <- function(x) as.numeric(gsub(',','',x))
-
 sumbio <- F(exec_table[2,3])
 ssb <- F(exec_table[3,3])
 b100 <- F(exec_table[4,3])
@@ -119,7 +123,9 @@ abc.last <- F(exec_table[12,1])
 abcN <- Finv(abc)
 abcN.last <- Finv(abc.last)
 
-
+## also need the old repfile for figures
+repfile.last <- GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/", endyr=2021)
+## stdfile.last <- GOApollock::read_pk_std(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/", endyr=2021)
 # todo: build a function/switch to auto run the tier(a/b) - also for overfishing/overfished
 ```
 
@@ -144,8 +150,8 @@ abcN.last <- Finv(abc.last)
 ```{r, child="07-results.Rmd", eval = T}
 ```
 
-# ```{r, child="08-abc.Rmd", eval = T}
-# ```
+<!-- ```{r, child="08-abc.Rmd", eval = T} -->
+<!-- ``` -->
 
 ```{r, child="09-ecosystem.Rmd", eval = T}
 ```
@@ -153,7 +159,7 @@ abcN.last <- Finv(abc.last)
 ```{r, child="10-gaps.Rmd", eval = T}
 ```
 \pagebreak
-\allsectionsfont{\centering}
+<!-- \allsectionsfont{\centering} -->
 # References
 <div id="refs"></div>
 

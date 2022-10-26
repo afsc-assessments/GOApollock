@@ -1,11 +1,11 @@
 # Executive Summary
 
 Testing tables
-\@ref(tab:catch)
+\@ref(tab:catches)
 \@ref(tab:incidental)
-\@ref(tab:bycatch)
 \@ref(tab:retained)
 \@ref(tab:caa)
+\@ref(tab:bycatch)
 \@ref(tab:aged-fsh)
 \@ref(tab:indices)
 \@ref(tab:shelikof)
@@ -13,8 +13,18 @@ Testing tables
 \@ref(tab:naa-srv2)
 \@ref(tab:naa-srv1)
 \@ref(tab:paa-srv3)
+\@ref(tab:age-error)
 \@ref(tab:natM)
+\@ref(tab:naa-est)
 \@ref(tab:waa-fsh)
+\@ref(tab:waa-srv26)
+\@ref(tab:waa-srv1)
+\@ref(tab:selex)
+\@ref(tab:timeseries)
+\@ref(tab:rec-ssb)
+\@ref(tab:spr-inputs)
+\@ref(tab:model-history)
+\@ref(tab:proj-scens)
 
 ## Summary of Changes in Assessment Inputs
 

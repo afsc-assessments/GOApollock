@@ -69,12 +69,25 @@ single, gulf-wide stock assessment. This evaluation may also
 benefit from considering recent studies on the genetic structure
 of walleye pollock across Alaska and the North Pacific*
 
-Recent genetic studies have not conclusively identified the stock
-substructure sufficiently to justify changing to a gulf-wide
-assessment.  Samples from the SE GOA were recently taken and
-analyses are underway, but the AFSC genetics team needs more time
-to complete them (I. Spies pers. comm. Sep '22). This issue will
-be revisited once those analyses are completed.
+A genetic analysis using low-coverage whole genome sequencing was
+recently conducted, on which analysis is ongoing. This analysis
+included 617 walleye pollock from Japan, Bering Sea, Chukchi Sea,
+Aleutian Islands, Alaska Peninsula, and Gulf of Alaska. Results
+suggests there is temporally stable stock structure with a
+latitudinal gradient, i.e., Bering Sea pollock are
+distinguishable from those in the Gulf of Alaska and Aleutian
+Islands (I. Spies, personal communication, 2021). Samples from
+the eastern Gulf of Alaska are currently undergoing sequencing to
+determine whether eastern Gulf of Alaska pollock are genetically
+distinct from those in the western Gulf of Alaska. An evaluation
+of stock structure for Gulf of Alaska pollock following the
+template developed by NPFMC stock structure working group was
+provided as an appendix to the 2012 assessment
+[@dorn2012]. Available information supported the current approach
+of assessing and managing pollock in the eastern portion of the
+Gulf of Alaska (Southeast Outside) separately from pollock in the
+central and western portions of the Gulf of Alaska
+(Central/Western/West Yakutat).
  
 
 In December 2021 the SSC highlighted the need to examine how
