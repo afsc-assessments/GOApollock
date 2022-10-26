@@ -26,6 +26,9 @@ Testing tables
 \@ref(tab:model-history)
 \@ref(tab:proj-scens)
 
+Testing figures
+Figures 1.\@ref(fig:catches-seas-by-area)
+
 ## Summary of Changes in Assessment Inputs
 
 ### Changes to input data

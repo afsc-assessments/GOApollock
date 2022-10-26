@@ -10,7 +10,7 @@ date: "November 2022"
 
 # don't do anything below this line unless you are cool with the consequences
 output: 
-  bookdown::pdf_document2:
+  bookdown::word_document2:
      reference_docx: "template.docx"
      toc: false
      number_sections: false
@@ -63,7 +63,15 @@ library(readxl)
 ## library(dplyr)
 ## library(tidyr)
 # globals
-figdir <- function(x) file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/figures/',x)
+addfig <- function(x){
+  ff <- file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/figures/',x)
+  if(!file.exists(ff)){
+    warning(paste("File",ff, "does not exists, subbing in dummy one for now"))
+     addfig('depletion.png')
+	} else {
+	 knitr::include_graphics(ff)
+ }
+ }
 gettab <- function(sheet, skip=1, maxcols=NULL, ...){
   p <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/2022_GOApollock tables.xlsx'
   stopifnot(file.exists(p))
@@ -164,13 +172,13 @@ repfile.last <- GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assess
 <div id="refs"></div>
 
 ```{r, child="11-tables.Rmd", eval = T}
-```
+``` 
 
 ```{r, child="12-figures.Rmd", eval = T}
 ```
 
-```{r, child="13-append_a.Rmd", eval = T}
-```
+<!-- ```{r, child="13-append_a.Rmd", eval = T} -->
+<!-- ``` -->
 
-```{r, child="14-append_vast.Rmd", eval = T}
-```
+<!-- ```{r, child="14-append_vast.Rmd", eval = T} -->
+<!-- ``` -->
