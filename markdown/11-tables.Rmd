@@ -1,104 +1,107 @@
+
+
 # Tables
 
- ```{r catches} 
+```{r catches, eval=TRUE} 
  x <- gettab(sheet = 'catch') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>%
  colformat_double(digits=0) %>% fontsize(size=9) 
- ``` 
-\pagebreak
+``` 
+ 
+\newline
 
- ```{r incidental} 
+```{r incidental, eval=TRUE} 
  x <- gettab(sheet = 'incidental') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% colformat_double(digits=1) 
- ``` 
+``` 
 
- ```{r bycatch} 
+```{r bycatch} 
  x <- gettab(sheet = 'bycatch') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% colformat_double(digits=0) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r retained} 
+```{r retained} 
  x <- gettab(sheet = 'retained') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_double(digits=0) %>% fontsize(size=9)
  
- ``` 
+``` 
  \pagebreak 
 
- ```{r caa} 
+```{r caa} 
  x <- gettab(sheet = 'caa') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_double(digits=2) %>% 
  	  colformat_double(digits=0, big.mark='', j=1)  %>% fontsize(size=7)
- ``` 
+``` 
  \pagebreak 
 
- ```{r aged-fsh} 
+```{r aged-fsh} 
  x <- gettab(sheet = 'aged_fsh') 
  flextable(x$tab) %>%  
        set_caption(x$cap) %>% 
  	  colformat_double(digits=0, big.mark='', j=1) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r indices} 
+```{r indices} 
  x <- gettab(sheet = 'indices', maxcols=6) 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_double(digits=0) %>%  
  	  colformat_double(digits=0, big.mark='',j=1) %>% 
  	  autofit() 
- ``` 
+``` 
  \pagebreak 
 
- ```{r shelikof} 
+```{r shelikof} 
  x <- gettab(sheet = 'shelikof') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_double(digits=0, big.mark=',') %>% 
  	  colformat_double(digits=0, big.mark='',j=1) %>% 
  	  colformat_double(digits=2, j=4)  %>% fontsize(size=7)
- ``` 
+``` 
  \pagebreak 
 
- ```{r aged-srv2} 
+```{r aged-srv2} 
  x <- gettab(sheet = 'aged_srv2', maxcols=10) 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_num(big.mark=',') %>% 
  	  colformat_num(big.mark='',j=1) %>% 
  	  colformat_double(digits=2, j=4) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r naa-srv2} 
+```{r naa-srv2} 
  x <- gettab(sheet = 'naa_srv2') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_double(digits=1) %>% 
    	  colformat_double(digits=0, big.mark='',j=1) %>% 
  	  hline(i=18:19) %>% autofit()  %>% fontsize(size=8)
- ``` 
+``` 
 
 
  \pagebreak 
 
- ```{r naa-srv1} 
+```{r naa-srv1} 
  x <- gettab(sheet = 'naa_srv1') 
  flextable(x$tab) %>%   
     set_caption(x$cap) %>% 
    colformat_double(digits=1) %>%  
    colformat_num(digits=0, big.mark='',j=1) %>% autofit  %>% fontsize(size=7)
- ``` 
+``` 
  \pagebreak 
 
- ```{r paa-srv3} 
+```{r paa-srv3} 
  x <- gettab(sheet = 'paa_srv3', maxcols=17) 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
@@ -107,20 +110,20 @@
   colformat_num(digits=0, big.mark=',',j=17) %>%  
  		autofit  %>% fontsize(size=8)
 
- ``` 
+``` 
  \pagebreak 
 
 
- ```{r age-error} 
+```{r age-error} 
  x <- gettab(sheet = 'age_error') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_double(digits=3) %>% 
  	  colformat_num(digits=0,j=1) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r natM} 
+```{r natM} 
  x <- gettab(sheet = 'natM') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>%  
@@ -128,20 +131,20 @@
  	  colformat_num(digits=0, big.mark='',j=1) %>%  
  	  	  colformat_double(digits=1, big.mark=',',j=3)   %>% 
 		  fontsize(size=9)
- ``` 
+``` 
  \pagebreak 
 
- ```{r mat} 
+```{r mat} 
  x <- gettab(sheet = 'mat') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% 
  	  colformat_double(digits=3) %>% 
  	  colformat_num(digits=0, big.mark='',j=1) %>%  
    	  colformat_double(digits=0, big.mark=',',j=12)  
- ``` 
+``` 
  \pagebreak 
 
- ```{r waa-fsh} 
+```{r waa-fsh} 
  waa_fsh <- datfile$wt_fsh %>% data.frame(ayears,.) %>% 
  	setNames(c('Year',1:10)) %>% 
         subset(Year %in% datfile$fshyrs) 
@@ -151,10 +154,10 @@
  	  colformat_double(digits=3)%>% 
  	   colformat_num(digits=0, big.mark='', j=1) %>% 
   	fontsize(size=8) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r waa-srv1} 
+```{r waa-srv1} 
  waa_srv1 <- datfile$wt_srv1 %>% data.frame(ayears,.) %>% 
  	setNames(c('Year',1:10)) %>% 
         subset(Year %in% datfile$srvyrs1 & Year >=1981) 
@@ -164,10 +167,10 @@
  	  colformat_double(digits=3)%>% 
  	   colformat_num(digits=0, big.mark='', j=1) %>% 
   	fontsize(size=9) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r waa-srv26} 
+```{r waa-srv26} 
  waa_srv2 <- datfile$wt_srv2 %>% data.frame(ayears,.) %>% 
  	setNames(c('Year',1:10)) %>% 
         subset(Year %in% datfile$srvyrs2 & Year >=1984) 
@@ -185,10 +188,10 @@
  	  colformat_double(digits=3)%>% 
  	   colformat_num(digits=0, big.mark='', j=1) %>% 
   	fontsize(size=9) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r selex} 
+```{r selex} 
   selex <- repfile$Fishery_selectivity 
   yrs <- dimnames(selex)[[1]] %>% as.numeric 
   s1 <- selex[yrs %in% 1970:1981,]%>% apply(2,mean) %>% as.numeric 
@@ -213,10 +216,10 @@
   set_caption("Estimated selectivity at age for GOA pollock fisheries and surveys.  The fisheries and surveys were modeled using double logistic selectivity functions.  Acoustic survey catchablity at age 1 and age 2 are estimated separately. ") %>%
  colformat_double(digits=3) %>%
  colformat_double(digits=3) 
- ``` 
+``` 
  \pagebreak 
 
- ```{r naa-est} 
+```{r naa-est}
  naa <- 1e3*repfile$Numbers_at_age %>% as.data.frame() %>% 
   ## not sure why I need to divide by 1e3 here.. weird 
      cbind(Year=ayears/1e3,.) 
@@ -228,7 +231,8 @@
  cap <- "Total estimated abundance at age (millions) of GOA pollock from the age-structured assessment model" 
  flextable(naa2) %>% set_caption(cap) %>% 
    colformat_double(digits=0, big.mark=',') %>% fontsize(size=9)
- ``` 
+   
+```
 
 \pagebreak
 
@@ -269,6 +273,7 @@ flextable(tab) %>% set_caption(cap) %>%
 
 ```
 
+
 ```{r rec-ssb}
  ## uncertainty of recruits and SSB
 rec <- subset(stdfile, name %in% c('recruit')) %>%
@@ -293,6 +298,7 @@ cap <- "Uncertainty of estimates of recruitment and spawning biomass of GOA poll
  align(part='header', align='center')
 ```
 \pagebreak
+
 ```{r spr-inputs}
 
 cols <- c("Age", "Natural\nmortality",
@@ -315,6 +321,7 @@ flextable(tab) %>% set_caption(cap) %>%
  colformat_double(digits=2, j=2)
 ```
 \pagebreak
+
 ```{r model-history}
 x <- gettab(sheet = 'model_history')
 names(x$tab) <- c("Year", "Assessment Method", "Catch recommendation basis", "B40% (t)")
@@ -358,7 +365,7 @@ ftmp(cc,  'Catch (t)')
 
   
 <!-- Ingrid's way of doing this, only works for PDF -->
-<!-- ```{r proj, echo=FALSE} -->
+<!--```{r proj, echo=FALSE} -->
 <!-- library(kableExtra) -->
 <!-- tmp <- proj_scens[, c('Alternative','Yr','SSB', 'Catch','F')] %>% -->
 <!--   dplyr::rename(alt=Alternative, Year=Yr) -->
@@ -389,4 +396,4 @@ ftmp(cc,  'Catch (t)')
 <!--     "\\hspace{1cm} \\centering ", -->
 <!--       t7, -->
 <!--     " \\end{table}"))  -->
-<!-- ``` -->
+<!--``` -->
