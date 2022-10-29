@@ -11,9 +11,9 @@ pollock in the Bering Sea and Aleutian Islands. The separation of
 pollock in Alaskan waters into eastern Bering Sea and Gulf of
 Alaska stocks is supported by analysis of larval drift patterns
 from spawning locations [@bailey1997a], genetic studies of
-allozyme frequencies [@grant1980], mtDNA variability
+allozyme frequencies [@grant1980a], mtDNA variability
 [@mulligan1992a], and microsatellite allele variability
-[@baily1997a]. 
+[@bailey1997a]. 
 
 ## Stock Structure
 
@@ -23,10 +23,10 @@ Alaska are equivocal. There is evidence from allozyme frequency
 and mtDNA that spawning populations in the northern part of the
 Gulf of Alaska (Prince William Sound and Middleton Island) may be
 genetically distinct from the Shelikof Strait spawning population
-[@olsen2002]. However, significant variation in allozyme
+[@olsen2002a]. However, significant variation in allozyme
 frequency was found between Prince William Sound samples in 1997
 and 1998, indicating a lack of stability in genetic structure for
-this spawning population. @olsen2002 suggest that interannual
+this spawning population. @olsen2002a suggest that interannual
 genetic variation may be due to variable reproductive success,
 adult philopatry, source-sink population structure, or
 utilization of the same spawning areas by genetically distinct
@@ -41,7 +41,7 @@ Aleutian Islands (I. Spies, personal communication, 2021). An
 evaluation of stock structure for Gulf of Alaska pollock
 following the template developed by NPFMC stock structure working
 group was provided as an appendix to the 2012 assessment
-[@dorn2012]. Available information supported the current approach
+[@dorn2012a]. Available information supported the current approach
 of assessing and managing pollock in the eastern portion of the
 Gulf of Alaska (Southeast Outside) separately from pollock in the
 central and western portions of the Gulf of Alaska

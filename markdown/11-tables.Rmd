@@ -9,13 +9,15 @@
  colformat_double(digits=0) %>% fontsize(size=9) 
 ``` 
  
-\newline
+\pagebreak
 
 ```{r incidental, eval=TRUE} 
  x <- gettab(sheet = 'incidental') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% colformat_double(digits=1) 
 ``` 
+
+\pagebreak
 
 ```{r bycatch} 
  x <- gettab(sheet = 'bycatch') 
@@ -121,7 +123,6 @@
  	  colformat_double(digits=3) %>% 
  	  colformat_num(digits=0,j=1) 
 ``` 
- \pagebreak 
 
 ```{r natM} 
  x <- gettab(sheet = 'natM') 
@@ -237,7 +238,6 @@
 \pagebreak
 
 ```{r timeseries}
-
 sumbio <- repfile[['Expected_summary_(age_3+)_biomass']]*1e3
 ssb <- repfile[['Expected_spawning_biomass']]*1e3
 rec <- repfile$Recruits*1e3
@@ -273,6 +273,7 @@ flextable(tab) %>% set_caption(cap) %>%
 
 ```
 
+\pagebreak
 
 ```{r rec-ssb}
  ## uncertainty of recruits and SSB
@@ -354,7 +355,7 @@ ftmp <- function(x,y){
 	add_header_lines(values=y) %>%
   colformat_double(digits=0, big.mark=',') %>%
   colformat_num(digits=0, big.mark='', j=1) %>%
-  align(part='header', align='center')
+  align(part='header', align='center') %>% fontsize(size=9)
   }
 
 ftmp(ssb, 'Spawning biomass (t)') %>% set_caption(cap)
@@ -362,7 +363,7 @@ ftmp(ff,  'Fishing mortality') %>% colformat_double(digits=2)
 ftmp(cc,  'Catch (t)')
 
 ```
-
+\pagebreak
   
 <!-- Ingrid's way of doing this, only works for PDF -->
 <!--```{r proj, echo=FALSE} -->

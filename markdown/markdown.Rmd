@@ -72,8 +72,9 @@ addfig <- function(x){
 	 knitr::include_graphics(ff)
  }
  }
+table.path <-   'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/2022_GOApollock tables.xlsx'
 gettab <- function(sheet, skip=1, maxcols=NULL, ...){
-  p <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/2022_GOApollock tables.xlsx'
+  p <- table.path
   stopifnot(file.exists(p))
   cap <- suppressMessages(readxl::read_xlsx(path=p, sheet=sheet, col_names=FALSE, range='A1', col_types = 'text'))
   cap <- as.character(cap[1,1]) # ditch merged cell stuff

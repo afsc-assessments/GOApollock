@@ -45,7 +45,7 @@ Persistent patterns in Pearson residuals for older fish were also
 deemed not a concern at the moment. This is because a new way of
 calculating residuals using a "one step ahead" approach to
 account for correlations in the multinomial distribution
-[@trijoulet2023], which did not show the same pattern, implying
+[@trijoulet2023a], which did not show the same pattern, implying
 it was a consequence of the inadequateness of Pearson residuals
 and not a real misspecification of selectivity.
 
@@ -83,7 +83,7 @@ distinct from those in the western Gulf of Alaska. An evaluation
 of stock structure for Gulf of Alaska pollock following the
 template developed by NPFMC stock structure working group was
 provided as an appendix to the 2012 assessment
-[@dorn2012]. Available information supported the current approach
+[@dorn2012a]. Available information supported the current approach
 of assessing and managing pollock in the eastern portion of the
 Gulf of Alaska (Southeast Outside) separately from pollock in the
 central and western portions of the Gulf of Alaska

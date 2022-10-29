@@ -1,34 +1,5 @@
 # Executive Summary
 
-Testing tables
-\@ref(tab:catches)
-\@ref(tab:incidental)
-\@ref(tab:retained)
-\@ref(tab:caa)
-\@ref(tab:bycatch)
-\@ref(tab:aged-fsh)
-\@ref(tab:indices)
-\@ref(tab:shelikof)
-\@ref(tab:aged-srv2)
-\@ref(tab:naa-srv2)
-\@ref(tab:naa-srv1)
-\@ref(tab:paa-srv3)
-\@ref(tab:age-error)
-\@ref(tab:natM)
-\@ref(tab:naa-est)
-\@ref(tab:waa-fsh)
-\@ref(tab:waa-srv26)
-\@ref(tab:waa-srv1)
-\@ref(tab:selex)
-\@ref(tab:timeseries)
-\@ref(tab:rec-ssb)
-\@ref(tab:spr-inputs)
-\@ref(tab:model-history)
-\@ref(tab:proj-scens)
-
-Testing figures
-Figures 1.\@ref(fig:catches-seas-by-area)
-
 ## Summary of Changes in Assessment Inputs
 
 ### Changes to input data
@@ -40,7 +11,7 @@ Figures 1.\@ref(fig:catches-seas-by-area)
 
 ### Changes in assessment methodology
 Two minor changes were made to the model. First, a penalty of 1.3
-was added to  recruitment deviations in all years. Previously
+was added to recruitment deviations in all years. Previously
 the penalty of 1.0 was applied only to early and late
 deviations. Second, selectivity of the summer acoustic survey was
 estimated. Previously this was assumed 1.0 for all ages. Together
@@ -49,7 +20,7 @@ these changes constitute model 19.1a.
 ## Summary of Results
 
 The base model projection of female spawning biomass in `r year`
-is `r ssb` t, which is `r 100*Finv(ssb)/Finv(b100)` % of unfished
+is `r ssb` t, which is `r round(100*Finv(ssb)/Finv(b100),2)` % of unfished
 spawning biomass (based on average post-1977 recruitment) and
 above B40% (`r b40` t), thereby placing GOA pollock in sub-tier
 “a” of Tier 3. New surveys in 2022 include the winter Shelikof
@@ -69,7 +40,7 @@ reduction from maximum permissible ABC.
 
 The authors’ `r year+1` ABC recommendation for pollock in the
 Gulf of Alaska west of 140° W lon. (W/C/WYK regions) is `r abc`
-t, which is an increase of `r 100*(abcN-abcN.last)/abcN.last`
+t, which is an increase of `r round(100*(abcN-abcN.last)/abcN.last,1)`
 from the `r year-1` ABC. The author’s recommended `r year+2` ABC
 is `r F(exec_table[12,4])` t. The OFL in `r year+1` is `r ofl` t,
 and the OFL in `r year+2` if the ABC is taken in `r year+1` is 

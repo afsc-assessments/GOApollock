@@ -1,26 +1,37 @@
 # Data
 
-The data used in the assessment model consist of estimates of annual catch in tons, fishery age composition, NMFS summer bottom trawl survey estimates of biomass and age and length composition, acoustic survey estimates of biomass and age composition in Shelikof Strait, summer acoustic survey estimates of biomass and age and length composition, and ADF&G bottom trawl survey estimates of biomass and age composition. Binned length composition data are used in the model only when age composition estimates are unavailable, such as the most recent surveys. The following table specifies the data that were used in the GOA pollock assessment:
+The data used in the assessment model consist of estimates of
+annual catch in tons, fishery age composition, NMFS summer bottom
+trawl survey estimates of biomass and age and length composition,
+acoustic survey estimates of biomass and age composition in
+Shelikof Strait, summer acoustic survey estimates of biomass and
+age and length composition, and ADF&G bottom trawl survey
+estimates of biomass and age composition. Binned length
+composition data are used in the model only when age composition
+estimates are unavailable. The following table specifies the data
+that were used in the GOA pollock assessment:
 
 ```{r}
 
-data.frame(Source = c(rep("NMFS Groundfish survey", 2),
-                      rep("U.S. trawl fishery", 3)),
-           Data = c("Survey biomass",
-                    "Age composition",
-                    "Catch",
-                    "Age composition",
-                    "Length composition"),
-           Years = c("1984-1999 (triennial), 2001-2019 (biennial)",
-                     "1984, 1987, 1990, 1993, 1996, 1999, 2003, 2005, 2007, 2009, 2011, 2013, 2015, 2017, 2019",
-                     "1961-2020",
-                     "1998-2002, 2004-2006, 2008, 2010, 2012, 2014, 2016, 2018",
-                     "1991-1997, 2003, 2007, 2009, 2011, 2013, 2015, 2017, 2019"))  %>% 
+data.frame(Source = c(rep("Fishery", 2), 
+           rep("Shelikof Strait acoustic survey", 2),
+		   rep("Summer acoustic survey", 2),
+		   rep("NMFS bottom trawl survey", 2),
+  		   rep("ADF&G trawl survey", 2)),
+           Data = c("Total catch", "Age composition", "Biomass",
+                    "Age composition", 'Biomass', 'Age
+                    composition', 'Area-swept biomass', 'Age
+                    composition', 'Delta-GLM index', 'Age composition'),
+           Years =
+    c('1970-2021','1970-2021','1992-2022','1992-2022',
+    '2013-2021, biennially',    '2013-2021, biennially',
+	'1990-2021, biennially', '1990-2021, biennially',
+	'1988-2022', '2000-2020, biennially')) %>%
   flextable::flextable() %>% 
-    flextable::width(j = ~ Source, width = 1) %>% 
-    flextable::width(j = ~ Data, width = 1.5) %>% 
-   flextable::width(j = ~ Years, width = 4) %>% 
-   flextable::merge_v(j = 1) %>% 
+##    flextable::width(j = ~ Source, width = 1) %>% 
+##    flextable::width(j = ~ Data, width = 1.5) %>% 
+##   flextable::width(j = ~ Years, width = 4) %>% 
+##   flextable::merge_v(j = 1) %>% 
   flextable::font(fontname = "Times", part = "all") %>% 
   flextable::fontsize(size = 10) %>% 
   flextable::theme_vanilla() %>% 
@@ -32,83 +43,473 @@ data.frame(Source = c(rep("NMFS Groundfish survey", 2),
 
 ### Catch
 
-Total catch estimates were obtained from INPFC and ADF&G publications, and databases maintained at the Alaska Fisheries Science Center and the Alaska Regional Office. Foreign catches for 1963-1970 are reported in Forrester et al. (1978). During this period only Japanese vessels reported catch of pollock in the GOA, though there may have been some catches by Soviet Union vessels. Foreign catches 1971-1976 are reported by Forrester et al. (1983). During this period there are reported pollock catches for Japanese, Soviet Union, Polish, and South Korean vessels in the Gulf of Alaska. Foreign and joint venture catches for 1977-1988 are blend estimates from the NORPAC database maintained by the Alaska Fisheries Science Center. Domestic catches for 1970-1980 are reported in Rigby (1984). Domestic catches for 1981-1990 were obtained from PacFIN (Brad Stenberg, pers. comm. Feb 7, 2014). A discard ratio (discard/retained) of 13.5% was assumed for all domestic catches prior to 1991 based on the 1991-1992 average discard ratio. Estimated catch for 1991-2020 was obtained from the Catch Accounting System database maintained by the Alaska Regional Office. These estimates are derived from shoreside electronic logbooks and observer estimates of at-sea discards (Table 1.4). Catches include the state-managed pollock fishery in Prince William Sound (PWS). Since 1996, the pollock Guideline Harvest Level (GHL) of 2.5% for the PWS fishery has been deducted from the total Acceptable Biological Catch (ABC) by the NPFMC Gulf of Alaska Plan Team for management purposes (see SAFE introduction for further information). Non-commercial catches are reported in Appendix 1E. 
+Total catch estimates were obtained from INPFC and ADF&G
+publications, and databases maintained at the Alaska Fisheries
+Science Center and the Alaska Regional Office. Foreign catches
+for 1963-1970 are reported in @forrester1978a. During this period
+only Japanese vessels reported catch of pollock in the GOA,
+though there may have been some catches by Soviet Union
+vessels. Foreign catches 1971-1976 are reported by
+@forrester1983a. During this period there are reported pollock
+catches for Japanese, Soviet Union, Polish, and South Korean
+vessels in the Gulf of Alaska. Foreign and joint venture catches
+for 1977-1988 are blend estimates from the NORPAC database
+maintained by the Alaska Fisheries Science Center. Domestic
+catches for 1970-1980 are reported in @rigby1984a. Domestic
+catches for 1981-1990 were obtained from PacFIN (Brad Stenberg,
+pers. comm. Feb 7, 2014). A discard ratio (discard/retained) of
+13.5% was assumed for all domestic catches prior to 1991 based on
+the 1991-1992 average discard ratio. Estimated catch for
+1991-2020 was obtained from the Catch Accounting System database
+maintained by the Alaska Regional Office. These estimates are
+derived from shoreside electronic logbooks and observer estimates
+of at-sea discards (Table 1.\@ref(tab:retained)). Catches include
+the state-managed pollock fishery in Prince William Sound
+(PWS). Since 1996, the pollock Guideline Harvest Level (GHL) of
+2.5% for the PWS fishery has been deducted from the total
+Acceptable Biological Catch (ABC) by the NPFMC Gulf of Alaska
+Plan Team for management purposes (see SAFE introduction for
+further information). Non-commercial catches are reported in
+Appendix 1E.
 
 ### Age and Size Composition
 
-Catch at age was re-estimated in the 2014 assessment for 1975-1999 from primary databases maintained at AFSC. A simple non-stratified estimator was used, which consisted of compiling a single age-length key for use in every year and the applying the annual length composition to that key. Use of an age-length key was considered necessary because observers used length-stratified sampling designs to collect otoliths prior to 1999 (Barbeaux et al. 2005). Estimates were made separately for the foreign/JV and domestic fisheries in 1987 when both fisheries were sampled. There were no major discrepancies between the re-estimated age composition and estimates that have built up gradually from assessment to assessment. 
+Catch at age was re-estimated in the 2014 assessment for
+1975-1999 from primary databases maintained at AFSC. A simple
+non-stratified estimator was used, which consisted of compiling a
+single age-length key for use in every year and the applying the
+annual length composition to that key. Use of an age-length key
+was considered necessary because observers used length-stratified
+sampling designs to collect otoliths prior to 1999
+[@barbeaux2005a]. Estimates were made separately for the
+foreign/JV and domestic fisheries in 1987 when both fisheries
+were sampled. There were no major discrepancies between the
+re-estimated age composition and estimates that have built up
+gradually from assessment to assessment.
 
-Estimates of fishery age composition from 2000 onwards were derived from at-sea and port sampling of the pollock catch for length and ageing structures (otoliths). The length composition and ageing data were obtained from the NORPAC database maintained at AFSC. Catch age composition was estimated using methods described by Kimura and Chikuni (1989). Age samples were used to construct age-length keys by sex and stratum. These keys were applied to sex and stratum specific length frequency data to estimate age composition, which were then weighted by the catch in numbers in each stratum to obtain an overall age composition. A background age-length key is used fill the gaps in age-length keys by sex and stratum. Sampling levels by stratum for 2000-2015 are documented in the assessments available online at http://www.afsc.noaa.gov/REFM/stocks/Historic_Assess.htm. 
-Age and length samples from the 2020 fishery were stratified by half-year seasons and statistical area as follows: 
+Estimates of fishery age composition from 2000 onwards were
+derived from at-sea and port sampling of the pollock catch for
+length and ageing structures (otoliths). The length composition
+and ageing data were obtained from the NORPAC database maintained
+at AFSC. Catch age composition was estimated using methods
+described by @kimura1989b. Age samples were used to construct
+age-length keys by sex and stratum. These keys were applied to
+sex and stratum specific length frequency data to estimate age
+composition, which were then weighted by the catch in numbers in
+each stratum to obtain an overall age composition. A background
+age-length key is used fill the gaps in age-length keys by sex
+and stratum. Sampling levels by stratum for 2000-2015 are
+documented in the assessments available online at
+http://www.afsc.noaa.gov/REFM/stocks/Historic_Assess.htm.  Age
+and length samples from the `r year-1` fishery were stratified by
+half-year seasons and statistical area as follows:
 
-table TODO
 
-The estimated age composition in 2020 in all areas and all seasons was notable because it was not dominated by age-8 fish (2012 year class) for the first time in many years (Fig. 1.2). Instead, the age-3 fish had the largest percentage with 38% while the age-8 fish only accounting for 29%. Younger fish are likely to become increasingly prominent in the catch-at-age as the 2012 year class begins age out of the population. Fishery catch at age in 1975-2020 is presented in Table 1.5 (See also Fig. 1.3). Sample sizes for ages and lengths are given in Table 1.6.
+```{r} 
+ x <- read_xlsx(path=table.path, sheet = 'fishery_details', range='A1:F7') 
+ flextable(x) %>%   
+ colformat_double(digits=0, big.mark=',') 
+``` 
+
+The estimated age composition in 2021 in all areas and all
+seasons was notable because it was not dominated by age-9 fish
+(2012 year class) for the first time in many years (except last
+year), particularly for the B season
+(Fig. 1.\@ref(fig:catches-map)). Instead, the age-4 fish had the
+largest percentage with 38%, age-3 (2018 cohort) with 23%, and
+the age-9 fish only accounting for 17%. Younger fish are likely
+to become increasingly prominent in the catch-at-age as the 2012
+year class begins age out of the population. Fishery catch at age
+in 1975-`r year` is presented in Table 1.\@ref(tab:caa) (See also
+Fig. 1.\@ref(fig:catches-seas-by-area)). Sample sizes for ages
+and lengths are given in Table 1.\@ref(tab:aged-fsh).
 
 ## Gulf of Alaska Bottom Trawl Survey
 
-Trawl surveys have been conducted by Alaska Fisheries Science Center (AFSC) beginning in 1984 to assess the abundance of groundfish in the Gulf of Alaska (Table 1.7). Starting in 2001, the survey frequency was increased from once every three years to once every two years. The survey uses a stratified random design, with 49 strata based on depth, habitat, and statistical area (von Szalay et al. 2010). Area-swept biomass estimates are obtained using mean CPUE (standardized for trawling distance and mean net width) and stratum area. The survey is conducted from chartered commercial bottom trawlers using standardized poly-Nor‘eastern high opening bottom trawls rigged with roller gear. In a full three-boat survey, 800 tows are completed, but the recent average has been closer to 600 tows. On average, 72% of these tows contain pollock (Table 1.8). Recent years have dropped stations in deeper water which are unlikely to affect the index due to pollock typically being in shallower depths with on average 90.9% below 200 m and 99.6% below 300 m from 1984-2021. 
+Trawl surveys have been conducted by Alaska Fisheries Science
+Center (AFSC) beginning in 1984 to assess the abundance of
+groundfish in the Gulf of Alaska (Table
+1.\@ref(tab:aged-srv2). Starting in 2001, the survey frequency
+was increased from once every three years to once every two
+years. The survey uses a stratified random design, with 49 strata
+based on depth, habitat, and statistical area
+[@szalay2010a]. Area-swept biomass estimates are obtained using
+mean CPUE (standardized for trawling distance and mean net width)
+and stratum area. The survey is conducted from chartered
+commercial bottom trawlers using standardized poly-Nor'eastern
+high opening bottom trawls rigged with roller gear. In a full
+three-boat survey, 800 tows are completed, but the recent average
+has been closer to 600 tows. On average, 72% of these tows
+contain pollock (Table 1.\@ref(tab:aged-srv2)). Recent years have
+dropped stations in deeper water which are unlikely to affect the
+index due to pollock typically being in shallower depths with on
+average 90.9% below 200 m and 99.6% below 300 m from 1984-2021.
 
 ### Biomass Estimates 
-The time series of pollock biomass used in the assessment model is based on the surveyed area in the Gulf of Alaska west of 140° W long., obtained by adding the biomass estimates for the Shumagin-610, Chirikof-620, Kodiak-630 statistical areas, and the western portion of Yakutat-640 statistical area. Biomass estimates for the west Yakutat area were obtained by splitting strata and survey CPUE data at 140° W long. and re-estimating biomass for west Yakutat. In 2001, when eastern Gulf of Alaska was not surveyed, a random effects model was used to interpolate a value for west Yakutat for use in the assessment model. 
+The time series of pollock biomass used in the assessment model
+is based on the surveyed area in the Gulf of Alaska west of 140°
+W long., obtained by adding the biomass estimates for the
+Shumagin-610, Chirikof-620, Kodiak-630 statistical areas, and the
+western portion of Yakutat-640 statistical area. Biomass
+estimates for the west Yakutat area were obtained by splitting
+strata and survey CPUE data at 140° W long. and re-estimating
+biomass for west Yakutat. In 2001, when eastern Gulf of Alaska
+was not surveyed, a random effects model was used to interpolate
+a value for west Yakutat for use in the assessment model.
 
-The Alaska Fisheries Science Center’s (AFSC) Resource Assessment and Conservation Engineering (RACE) Division conducted the seventeenth comprehensive bottom trawl survey since 1984 during the summer of 2021 (Fig. 1.4). The 2021 gulfwide biomass estimate of pollock was 528,841 t, which is an increase of 72.2% from the 2019 estimate, which was the second lowest in the time series after 2001. The biomass estimate for the portion of the Gulf of Alaska west of 140º W long. used in the assessment model is 494,743 t. The coefficient of variation (CV) of this estimate was 0.17, which is slightly below the average for the entire time series. Surveys from 1990 onwards are used in the assessment due to the difficulty in standardizing the surveys in 1984 and 1987, when Japanese vessels with different gear were used. 
+The Alaska Fisheries Science Center’s (AFSC) Resource Assessment
+and Conservation Engineering (RACE) Division conducted the
+seventeenth comprehensive bottom trawl survey since 1984 during
+the summer of 2021 (Fig. 1.\@ref(fig:map-BT-cpue). The 2021
+gulfwide biomass estimate of pollock was 528,841 t, which is an
+increase of 72.2% from the 2019 estimate, which was the second
+lowest in the time series after 2001. The biomass estimate for
+the portion of the Gulf of Alaska west of 140º W long. used in
+the assessment model is 494,743 t. The coefficient of variation
+(CV) of this estimate was 0.17, which is slightly below the
+average for the entire time series. Surveys from 1990 onwards are
+used in the assessment due to the difficulty in standardizing the
+surveys in 1984 and 1987, when Japanese vessels with different
+gear were used.
 
 ### Age Composition 
 
-Estimates of numbers at age from the bottom trawl survey are obtained from random otolith samples and length frequency samples (Table 1.9). Numbers at age are estimated by statistical area (Shumagin-610, Chirikof-620, Kodiak-630, Yakutat-640 and Southeastern-650) using a global age-length key for all strata in each single year, and CPUE-weighted length frequency data by statistical area. The combined Shumagin, Chirikof and Kodiak age composition is used in the assessment model (Fig. 1.4). No new ages were available this year, and instead length compositions were used in the model (Fig. 1.5) but 2019 ages indicated the continued dominance of the 2012 year class (age-7 fish) in the Western and Central GOA (Fig. 1.6). Age-1 pollock were strongly present in the Chirikof, Kodiak, and Yakutat statistical areas, but much less abundant in the Shumagin and Southeast Alaska areas (Fig. 1.7). 
+Estimates of numbers at age from the bottom trawl survey are
+obtained from random otolith samples and length frequency samples
+(Table 1.\@ref(tab:ages-srv2)). Numbers at age are estimated by
+statistical area (Shumagin-610, Chirikof-620, Kodiak-630,
+Yakutat-640 and Southeastern-650) using a global age-length key
+for all strata in each single year, and CPUE-weighted length
+frequency data by statistical area. The new 2021 combined
+Shumagin, Chirikof and Kodiak age composition is used in the
+assessment model (Fig. 1.\@ref(fig:fig.ages-srv2)), and the 2021
+length composotions were removed. Age-1 pollock (2020 cohort)
+were strongly present in the Chirikof, Kodiak, and Yakutat
+statistical areas, but much less abundant in the Shumagin and
+Southeast Alaska areas (Fig. 1.\@ref(fig:ages-area-srv2)).
 
 ## Shelikof Strait Acoustic Survey
-Winter acoustic surveys to assess the biomass of pre-spawning aggregations pollock in Shelikof Strait have been conducted annually since 1981 (except 1982, 1999, and 2011). Only surveys from 1992 and later are used in the stock assessment due to the higher uncertainty associated with the acoustic estimates produced with the Biosonics echosounder used prior to 1992. Additionally, raw survey data are not easily recoverable for the earlier acoustic surveys, so there is no way to verify (i.e., to reproduce) the estimates. Survey methods and results for 2021 are presented in a NMFS processed report (Honkalehto et al., in prep.). In 2008, the noise-reduced R/V Oscar Dyson became the designated survey vessel for acoustic surveys in the Gulf of Alaska. In winter of 2007, a vessel comparison experiment was conducted between the R/V Miller Freeman (MF) and the R/V Oscar Dyson (OD), which obtained an OD/MF ratio of 1.132 for the acoustic backscatter detected by the two vessels in Shelikof Strait.
+Winter acoustic surveys to assess the biomass of pre-spawning
+aggregations pollock in Shelikof Strait have been conducted
+annually since 1981 (except 1982, 1999, and 2011). Only surveys
+from 1992 and later are used in the stock assessment due to the
+higher uncertainty associated with the acoustic estimates
+produced with the Biosonics echosounder used prior
+to 1992. Additionally, raw survey data are not easily recoverable
+for the earlier acoustic surveys, so there is no way to verify
+(i.e., to reproduce) the estimates. Survey methods and results
+for 2021 are presented in a NMFS processed report
+[@honkalehto-a]. In 2008, the noise-reduced R/V Oscar Dyson
+became the designated survey vessel for acoustic surveys in the
+Gulf of Alaska. In winter of 2007, a vessel comparison experiment
+was conducted between the R/V Miller Freeman (MF) and the R/V
+Oscar Dyson (OD), which obtained an OD/MF ratio of 1.132 for the
+acoustic backscatter detected by the two vessels in Shelikof
+Strait.
 
 ### Biomass Estimates 
-The 2021 biomass estimate for Shelikof Strait is 526,974 t, which is a 15% percent increase from the 2020 estimate (Fig. 1.8). This estimate accounts for trawl selectivity by scaling up the number of retained pollock by selectivity curves estimated with pocket nets attached to the midwater trawl used to sample echosign, continuing an approach that was started in 2018 assessment. Originally, winter 2021 pre-spawning pollock surveys were also planned in the Shumagin Islands area, Chirikof shelf break, and in Prince William Sound and the Kenai Peninsula fjords. Due to travel, vessel, and staffing constraints stemming from protocols required to mitigate the COVID-19 pandemic, only Shelikof, Marmot, and Chirikof were attempted. Eventually Chirikof was dropped due to inclement weather and because real-time observations of the large age-1 2020 year class in Shelikof Strait necessitated collecting sufficient additional trawling to estimate net selectivity for pollock in 2021
+The `r year` biomass estimate for Shelikof Strait for all fish
+is 365,411 t, which is a 30.7% percent decrease from the 2021
+estimate (Fig. 1.\@ref(fig:biomass-area-srv1)). This estimate
+accounts for trawl selectivity by scaling up the number of
+retained pollock by selectivity curves estimated with pocket nets
+attached to the midwater trawl used to sample echosign,
+continuing an approach that was started in 2018
+assessment. Originally, winter 2022 pre-spawning pollock surveys
+were also planned in the Shumagin Islands area, Chirikof shelf
+break, Marmot Bay, and Morzhovoi Bay. Due to travel, vessel, and
+staffing constraints stemming from protocols required to mitigate
+the COVID-19 pandemic, only Shelikof was completed in 2022.
 
-table TODO
+<!-- dropped in 2022 b/c only shelikof
+<!-- The following table provides results from the 2022 winter -->
+<!-- acoustic surveys: -->
 
-Biomass in Marmot Bay in 2021 increased by 18% compared to 2019, the last year it was surveyed. Overall, there appears to be a concentration of spawning activity in Shelikof Strait compared to other areas in the Gulf of Alaska, but the reduced survey coverage outside of Shelikof Strait limits the conclusions that can be drawn.
+<!-- Biomass in Marmot Bay in 2021 increased by 18% compared to 2019, -->
+<!-- the last year it was surveyed. Overall, there appears to be a -->
+<!-- concentration of spawning activity in Shelikof Strait compared to -->
+<!-- other areas in the Gulf of Alaska, but the reduced survey -->
+<!-- coverage outside of Shelikof Strait limits the conclusions that -->
+<!-- can be drawn. -->
 
 ### Age Composition 
-Estimates of numbers at age from the Shelikof Strait acoustic survey (Table 1.10, Fig. 1.9) were obtained using an age-length key compiled from random otolith samples and applied to weighted length frequency samples. Sample sizes for ages and lengths are given Table 1.11. Estimates of age composition in Shelikof Strait in 2021 indicate reduced dominance of the nine year old 2012 year class, and a mode of age 4 fish (2017 year class), indicating a new year class is starting to comprise the majority of the spawning and exploitable portion of the population.
+Estimates of numbers at age from the Shelikof Strait acoustic
+survey (Table 1.\@ref(tab:naa-srv1), Fig. 1.\@ref(fig:ages-srv1))
+were obtained using an age-length key compiled from random
+otolith samples and applied to weighted length frequency
+samples. Sample sizes for ages and lengths are given Table
+1.\@ref(tab:nages-srv1). Estimates of age composition in Shelikof
+Strait in `r year` indicate reduced dominance of the 2012 year
+class, and a mode of age 2 and 5 fish (2020 and 2017 year
+classes), indicating new year classes are starting to comprise
+the majority of the spawning and exploitable portion of the
+population.
 
-Based on recommendations from the 2012 CIE review, we developed an approach to model the age-1 and age-2 pollock estimates separately from the Shelikof Strait acoustic survey biomass and age composition. Age-1 and age-2 pollock are highly variable but occasionally very abundant in winter acoustic surveys, and by fitting them separately from the 3+ fish it is possible utilize an error distribution that better reflects that variability. Indices are available for both the Shelikof Strait and Shumagin surveys, but a longer time series of net-selectivity corrected indices are available for Shelikof Strait. In addition, model comparisons in the 2018 assessment indicates that a slightly better fit could be obtained with only Shelikof Strait indices. Therefore this time series was used in the model, but this decision should be revisited as additional data become available. The age-2 index in 2020 showed a marked reduction in comparison to the age-1 index in 2019, which indicated high abundance of the 2018 year class. Typically year classes that are abundant in Shelikof Strait at age 1 are also abundant at age 2 in the survey in the following year. The 2018 cohort comprised 15% of the age composition (excluding age 1 and 2 fish) as 3 year olds in 2021, giving further evidence for marked decrease from initial estimates as age 1 fish. Consequently, there is considerable uncertainty regarding the fate of 2018 year class, which may have exited Shelikof Strait for some reason and be distributed elsewhere in the GOA, or suffered extremely high mortality.
+Based on recommendations from the 2012 CIE review, we developed
+an approach to model the age-1 and age-2 pollock estimates
+separately from the Shelikof Strait acoustic survey biomass and
+age composition. These immature fish are not the main target of
+the pre-spawning survey, but age-1 and age-2 pollock are highly
+variable and occasionally are very abundant in winter acoustic
+surveys. By fitting them separately from the 3+ fish it is
+possible utilize an error distribution that better reflects that
+variability. Indices are available for both the Shelikof Strait
+and Shumagin surveys, but a longer time series of net-selectivity
+corrected indices are available for Shelikof Strait. In addition,
+model comparisons in the 2018 assessment indicates that a
+slightly better fit could be obtained with only Shelikof Strait
+indices. Therefore this time series was used in the model, but
+this decision should be revisited as additional data become
+available. The age-2 index in 2020 showed a marked reduction in
+comparison to the age-1 index in 2019, which indicated high
+abundance of the 2018 year class. Typically year classes that are
+abundant in Shelikof Strait at age 1 are also abundant at age 2
+in the survey in the following year. The 2018 cohort comprised
+15% of the age composition in 2021 (excluding age 1 and 2 fish),
+but 29% as 4 year olds in 2022, giving contradictory evidence for
+marked decrease from initial estimates as age 1
+fish. Consequently, there is considerable uncertainty regarding
+the fate of 2018 year class, which may have exited Shelikof
+Strait for some reason and be distributed elsewhere in the GOA,
+or suffered extremely high mortality. This point is addressed
+further in the risk table below.
 
 ### Spawn timing and availability of pollock to the winter Shelikof survey
-The Shelikof Strait winter acoustic survey is timed to correspond to the aggregation of pre-spawning pollock in Shelikof Strait. However, the timing of spawning has been found to vary from year to year, which may affect the availability of pollock to the survey. Variation in spawn timing is not random, but has been linked to thermal conditions in March and the age structure of the spawning stock (Rogers and Dougherty 2019); spawning tends to occur earlier when temperatures are warmer and when the spawning stock is older on average. Greater age diversity also results in a more protracted spawning period, presumably due to both early (old) and late (young) spawners, although this has not been verified in the field. Dorn et al. (2020) discuss correlations with spawn timing and model residuals. No additional work was done this year but is an ongoing effort.
+The Shelikof Strait winter acoustic survey is timed to correspond
+to the aggregation of pre-spawning pollock in Shelikof
+Strait. However, the timing of spawning has been found to vary
+from year to year, which may affect the availability of pollock
+to the survey. Variation in spawn timing is not random, but has
+been linked to thermal conditions in March and the age structure
+of the spawning stock [@rogers2019a]; spawning tends to occur
+earlier when temperatures are warmer and when the spawning stock
+is older on average. Greater age diversity also results in a more
+protracted spawning period, presumably due to both early (old)
+and late (young) spawners, although this has not been verified in
+the field. A new approach was developed in 2022 and shows great
+promise, but was not put forward this year for
+consideration. Summaries of the work were presented to the Plan
+Team and furhter details can be found under the "Models under
+development" section of [this document](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf).
+
 
 ## Summer Acoustic Survey
-Five complete acoustic surveys, in 2013, 2015, 2017, 2019 and 2021, have been conducted by AFSC on the R/V Oscar Dyson in the Gulf of Alaska during summer (Jones et al. 2014, 2017, 2019, in prep.; Levine et al. in prep.). The area surveyed covers the Gulf of Alaska shelf and upper slope and associated bays and troughs, from a westward extent of 170° W Lon, and extends to an eastward extent of 140° W lon. Prince William Sound was also surveyed in 2013, 2015, and 2019. The survey consists of widely-spaced parallel transects along the shelf, and more closely spaced transects in troughs, bays, and Shelikof Strait. Mid-water and bottom trawls are used to identify acoustic targets. The 2021 biomass estimate for summer acoustic survey is 431,148 t, which is a 25% percent decrease from the 2019 estimate (Table 1.7). Age composition data were not available, but preliminary results in 2021 indicated that the very abundant 2012 year class was present but with reduced contribution, and strong modes of both presumed age-1 and age-4 fish were distributed broadly throughout the GOA (Fig. 1.10). Analysis of the 2019 and 2021 survey was not complicated by the presence of age-0 pollock, which was a problem in previous summer acoustic surveys because age-0 pollock backscatter cannot be readily distinguished from age 1+ pollock.
+Five complete acoustic surveys, in 2013, 2015, 2017, 2019 and
+2021, have been conducted by AFSC on the R/V Oscar Dyson in the
+Gulf of Alaska during summer
+[@jones2014a;@jones2017a;@jones2019a;@jones-a]. The area surveyed
+covers the Gulf of Alaska shelf and upper slope and associated
+bays and troughs, from a westward extent of 170° W Lon, and
+extends to an eastward extent of 140° W lon. Prince William Sound
+was also surveyed in 2013, 2015, and 2019. The survey consists of
+widely-spaced parallel transects along the shelf, and more
+closely spaced transects in troughs, bays, and Shelikof
+Strait. Mid-water and bottom trawls are used to identify acoustic
+targets. The 2021 biomass estimate for summer acoustic survey is
+431,148 t, which is a 25% percent decrease from the 2019 estimate
+(Table 1.\@ref(tab:indices)). Age composition data were available
+in 2022 and showed strong 2017, 2018, and 2020 year classes.
+Analysis of the 2019 and 2021 survey was not complicated by the
+presence of age-0 pollock, which was a problem in previous summer
+acoustic surveys because age-0 pollock backscatter cannot be
+readily distinguished from age 1+ pollock.
 
 ## Alaska Department of Fish and Game Crab/Groundfish Trawl Survey
-The Alaska Department of Fish and Game (ADF&G) has conducted bottom trawl surveys of nearshore areas of the Gulf of Alaska since 1987 (depths from 18-246 m, median of 106 m; Fig. 1.11). Although these surveys are designed to monitor population trends of Tanner crab and red king crab, pollock and other fish are also sampled. Standardized survey methods using a 400-mesh eastern trawl were employed from 1987 to the present. The survey is designed to sample at fixed stations from mostly nearshore areas from Kodiak Island to Unimak Pass, and does not cover the entire shelf area (Fig. 1.11). The average number of tows completed during the survey is 337. On average, 87% of these tows contain pollock. Details of the ADF&G trawl gear and sampling procedures are in Spalinger (2012). 
+The Alaska Department of Fish and Game (ADF&G) has conducted
+bottom trawl surveys of nearshore areas of the Gulf of Alaska
+since 1987 (depths from 9-137 m, median of 60 m in 2022;
+Fig. 1.\@ref(fig:adfg-locations)). Although these surveys are
+designed to monitor population trends of Tanner crab and red king
+crab, pollock and other fish are also sampled. Standardized
+survey methods using a 400-mesh eastern trawl were employed from
+1987 to the present. The survey is designed to sample at fixed
+stations from mostly nearshore areas from Kodiak Island to Unimak
+Pass, and does not cover the entire shelf area
+(Fig. 1.\@ref(fig:adfg-locations)). The average number of tows
+completed during the survey is 353. On average, about 87% of
+these tows contained pollock. Details of the ADF&G trawl gear and
+sampling procedures are in Spalinger (2012).
 
-The 2021 area-swept biomass estimate for pollock for the ADF&G crab/groundfish survey was 64,813 t, and increase of 9.2% from the 2020 biomass estimate (Table 1.7). The 2021 pollock estimate for this survey is approximately 70% of the long-term average.
+The 2022 area-swept biomass estimate for pollock for the ADF&G
+crab/groundfish survey was 71,196 t, and increase of 9.2% from
+the 2021 biomass estimate (Table 1.\@ref(tab:indices)). The 2022
+pollock estimate for this survey is approximately 78% of the
+long-term average.
+
 ### Biomass Estimates
-A simple delta GLM model was applied to the ADF&G tow by tow data for 1988-2021 to obtain annual abundance indices. Data from all years were filtered to exclude missing latitude and longitudes and missing tows made in lower Shelikof Strait (between 154.7° W lon. and 156.7° W lon.) were excluded because these stations were sampled irregularly. The delta GLM model fit a separate model to the presence-absence observations and to the positive observations. A fixed effects model was used with the year, geographic area, and depth as factors. Strata were defined according to ADF&G district (Kodiak, Chignik, South Peninsula) and depth (<30 fm, 30-100 fm, >100 fm). Alternative depth strata were evaluated, and model results were found to be robust to different depth strata assumptions. The same model structure was used for both the presence-absence observations and the positive observations. The assumed likelihoods were binomial for presence-absence observations and gamma for the positive observations, after evaluation of several alternatives, including lognormal, gamma, and inverse Gaussian, and which is in line with recommendations for index standardization (Thorson et al. 2021). The model was fit using brms package in R (Bürkner 2017, 2018), which fits Bayesian non-linear regression models using the modeling framework Stan (Stan Development Team 2020). Comparison of delta-GLM indices the area-swept estimates indicated similar trends (Fig. 1.12). Variances were based on MCMC sampling from the posterior distribution, and CVs for the annual index ranged from 0.10 to 0.18. These values likely understate the uncertainty of the indices with respect to population trends, since the area covered by the survey is a relatively small percentage of the GOA shelf area, and so the CVs are scaled up to have an average of 0.25. 
+
+A simple delta GLM model was applied to the ADF&G tow by tow data
+for 1988-`r year` to obtain annual abundance indices. Data from
+all years were filtered to exclude missing latitude and
+longitudes and missing tows made in lower Shelikof Strait
+(between 154.7° W lon. and 156.7° W lon.) were excluded because
+these stations were sampled irregularly. The delta GLM model fit
+a separate model to the presence-absence observations and to the
+positive observations. A fixed effects model was used with the
+year, geographic area, and depth as factors. Strata were defined
+according to ADF&G district (Kodiak, Chignik, South Peninsula)
+and depth (<30 fm, 30-100 fm, >100 fm). Alternative depth strata
+were evaluated previously, and model results were found to be
+robust to different depth strata assumptions. The same model
+structure was used for both the presence-absence observations and
+the positive observations. The assumed likelihoods were binomial
+for presence-absence observations and gamma for the positive
+observations, after evaluation of several alternatives, including
+lognormal, gamma, and inverse Gaussian, and which is in line with
+recommendations for index standardization [@thorson2021a]. The
+model was fit using 'brms' package in R
+[@buerkner2017a;@buerkner2018a], which fits Bayesian non-linear
+regression models using the modeling framework Stan
+[@stanteam2020a]. Comparison of delta-GLM indices the area-swept
+estimates indicated similar trends
+(Fig. 1.\@ref(fig:adfg-index)). Variances were based on MCMC
+sampling from the posterior distribution, and CVs for the annual
+index ranged from 0.10 to 0.17. These values likely understate
+the uncertainty of the indices with respect to population trends,
+since the area covered by the survey is a relatively small
+percentage of the GOA shelf area, and so the CVs are scaled up to
+have an average of 0.25.
 
 ### Age Compositions
-Ages were determined by age readers in the AFSC age and growth unit from samples of pollock otoliths collected during 2000-2020 ADF&G surveys in even-numbered years (average sample size = 583; Table 1.12, Fig. 1.13). Comparison with fishery age composition shows that older fish (> age-8) are more common in the ADF&G crab/groundfish survey. This is consistent with the assessment model, which estimates a domed-shaped selectivity pattern for the fishery, but an asymptotic selectivity pattern for the ADF&G survey. 
+Ages were determined by age readers in the AFSC age and growth
+unit from samples of pollock otoliths collected during 2000-
+`r tail(datfile$srv3_acyrs,1)` ADF&G surveys in even-numbered years
+(average sample size = 583; Table 1.\@ref(tab:paa-srv3),
+Fig. 1.\@ref(fig:ages-srv3)). Comparison with fishery age
+composition shows that older fish (> age-8) are more common in
+the ADF&G crab/groundfish survey. This is consistent with the
+assessment model, which estimates a domed-shaped selectivity
+pattern for the fishery, but an asymptotic selectivity pattern
+for the ADF&G survey.
 
 ## Data sets considered but not used
 ### Egg production estimates of spawning biomass
-Estimates of spawning biomass in Shelikof Strait based on egg production methods were produced during 1981-92 (Table 1.7). A complete description of the estimation process is given in Picquelle and Megrey (1993). Egg production estimates were discontinued in 1992 because the Shelikof Strait acoustic survey provided similar information. The egg production estimates are not used in the assessment model because the surveys are no longer being conducted, and because the acoustic surveys in Shelikof Strait show a similar trend over the period when both were conducted. 
+Estimates of spawning biomass in Shelikof Strait based on egg
+production methods were produced during 1981-92 (Table
+1.\@ref(tab:indices)). A complete description of the estimation
+process is given in @picquelle1993a. Egg production estimates were
+discontinued in 1992 because the Shelikof Strait acoustic survey
+provided similar information. The egg production estimates are
+also not used in the assessment model because the surveys are no
+longer being conducted, and because the acoustic surveys in
+Shelikof Strait show a similar trend over the period when both
+were conducted.
 
 ### Pre-1984 bottom trawl surveys
-Considerable survey work was carried out in the Gulf of Alaska prior to the start of the NMFS triennial bottom trawl surveys in 1984. Between 1961 and the mid-1980s, the most common bottom trawl used for surveying was the 400-mesh eastern trawl. This trawl (or variants thereof) was used by IPHC for juvenile halibut surveys in the 1960s, 1970s, and early 1980s, and by NMFS for groundfish surveys in the 1970s. Von Szalay and Brown (2001) estimated a fishing power correction (FPC) for the ADF&G 400-mesh eastern trawl of 3.84 (SE = 1.26), indicating that 400-mesh eastern trawl CPUE for pollock would need to be multiplied by this factor to be comparable to the NMFS poly-Nor’eastern trawl. 
+Considerable survey work was carried out in the Gulf of Alaska
+prior to the start of the NMFS triennial bottom trawl surveys
+in 1984. Between 1961 and the mid-1980s, the most common bottom
+trawl used for surveying was the 400-mesh eastern trawl. This
+trawl (or variants thereof) was used by IPHC for juvenile halibut
+surveys in the 1960s, 1970s, and early 1980s, and by NMFS for
+groundfish surveys in the 1970s. @szalay2001a
+estimated a fishing power correction (FPC) for the ADF&G 400-mesh
+eastern trawl of 3.84 (SE = 1.26), indicating that 400-mesh
+eastern trawl CPUE for pollock would need to be multiplied by
+this factor to be comparable to the NMFS poly-Nor’eastern trawl.
 
-In most cases, earlier surveys in the Gulf of Alaska were not designed to be comprehensive, with the general strategy being to cover the Gulf of Alaska west of Cape Spencer over a period of years, or to survey a large area to obtain an index for group of groundfish, i.e., flatfish or rockfish. For example, Ronholt et al. (1978) combined surveys for several years to obtain gulfwide estimates of pollock biomass for 1973-1976. There are several difficulties with such an approach, including the possibility of double-counting or missing a portion of the stock that happened to migrate between surveyed areas. Due to the difficulty in constructing a consistent time series, the historical survey estimates are no longer used in the assessment model.
+In most cases, earlier surveys in the Gulf of Alaska were not
+designed to be comprehensive, with the general strategy being to
+cover the Gulf of Alaska west of Cape Spencer over a period of
+years, or to survey a large area to obtain an index for group of
+groundfish, i.e., flatfish or rockfish. For example,
+@ronholt1978a combined surveys for several years to obtain
+gulfwide estimates of pollock biomass for 1973-1976. There are
+several difficulties with such an approach, including the
+possibility of double-counting or missing a portion of the stock
+that happened to migrate between surveyed areas. Due to the
+difficulty in constructing a consistent time series, the
+historical survey estimates are no longer used in the assessment
+model.
 
-Multi-year combined survey estimates indicate a large increase in pollock biomass in the Gulf of Alaska occurred between the early 1960s and the mid 1970s. Increases in pollock biomass between the1960s and 1970s were also noted by Alton et al. (1987). In the 1961 survey, pollock were a relatively minor component of the groundfish community with a mean CPUE of 16 kg/hr. (Ronholt et al. 1978). Arrowtooth flounder was the most common groundfish with a mean CPUE of 91 kg/hr. In the 1973-76 surveys, the CPUE of arrowtooth flounder was similar to the 1961 survey (83 kg/hr.), but pollock CPUE had increased 20-fold to 321 kg/hr., and was by far the dominant groundfish species in the Gulf of Alaska. Mueter and Norcross (2002) also found that pollock was low in the relative abundance in 1960s, became the dominant species in Gulf of Alaska groundfish community in the 1970s, and subsequently declined in relative abundance. 
+Multi-year combined survey estimates indicate a large increase in
+pollock biomass in the Gulf of Alaska occurred between the early
+1960s and the mid 1970s. Increases in pollock biomass between
+the1960s and 1970s were also noted by @alton1987a. In the 1961
+survey, pollock were a relatively minor component of the
+groundfish community with a mean CPUE of 16 kg/hr
+[@ronholt1978a]. Arrowtooth flounder was the most common
+groundfish with a mean CPUE of 91 kg/hr. In the 1973-76 surveys,
+the CPUE of arrowtooth flounder was similar to the 1961 survey
+(83 kg/hr), but pollock CPUE had increased 20-fold to 321 kg/hr,
+and was by far the dominant groundfish species in the Gulf of
+Alaska. @mueter2002a also found that pollock was low in the
+relative abundance in 1960s, became the dominant species in Gulf
+of Alaska groundfish community in the 1970s, and subsequently
+declined in relative abundance.
 
-Questions concerning the comparability of pollock CPUE data from historical trawl surveys with later surveys probably can never be fully resolved. However, because of the large magnitude of the change in CPUE between the surveys in the 1960s and the early 1970s using similar trawling gear, the conclusion that there was a large increase in pollock biomass seems robust. Early speculation about the rise of pollock in the Gulf of Alaska in the early 1970s implicated the large biomass removals of Pacific ocean perch, a potential competitor for euphausid prey (Somerton 1979, Alton et al. 1987). More recent work has focused on role of climate change (Anderson and Piatt 1999, Bailey 2000). These easrlier surveys suggest that population biomass in the 1960s, prior to large-scale commercial exploitation of the stock, may have been lower than at any time since then. 
+Questions concerning the comparability of pollock CPUE data from
+historical trawl surveys with later surveys probably can never be
+fully resolved. However, because of the large magnitude of the
+change in CPUE between the surveys in the 1960s and the early
+1970s using similar trawling gear, the conclusion that there was
+a large increase in pollock biomass seems robust. Early
+speculation about the rise of pollock in the Gulf of Alaska in
+the early 1970s implicated the large biomass removals of Pacific
+ocean perch, a potential competitor for euphausid prey
+[@somerton1979a; @alton1987a]. More recent work has focused on
+role of climate change [@anderson1999a; @bailey2000a]. These
+earlier surveys suggest that population biomass in the 1960s,
+prior to large-scale commercial exploitation of the stock, may
+have been lower than at any time since then.
 
 ## Qualitative Trends
-To qualitatively assess recent trends in abundance, each survey time series was standardized by dividing the annual estimate by the average since 1990. Shelikof Strait acoustic survey estimates prior to 2008 were rescaled to be comparable to subsequent surveys conducted by the R/V Oscar Dyson. Although there is considerable variability in each survey time series, a fairly clear downward trend is evident to 2000, followed by a stable, though variable, trend to 2008, followed by a strong increase to 2013 (Fig. 1.14). From 2016 to 2019 there was a strong divergence among the trends, but with the large reduction in biomass in 2020 for the Shelikof Strait survey, and an increase in the ADF&G index, relative abundance has come back into reasonable alignment since 2020.
-Indices derived from fisheries catch data were also evaluated for trends in biological characteristics (Fig. 1.15). The percent of females in the catch shows some variability but no obvious trend, and is usually close to 50-50. In 2016, percent female dropped to 40%, but increased to 43% in 2017 and remained similar through 2020. Evaluation of sex ratios by season indicated that this decrease was mostly due a low percentage of females during the A and B seasons prior to spawning. However the sex ratio during the C and D seasons was close to 50-50, suggesting the skewed sex in winter was related to spawning behavior, rather than an indication of a population characteristic. The mean age shows interannual variability due to strong year classes passing through the population, but there are no downward trends that would suggest excessive mortality rates. The percent of old fish in the catch (nominally defined as age 8 and older) is also highly variable due to variability in year class strength. The percent of old fish declined in 2015-2018 as the strong 2012 year class recruited to the fishery, but increased when the 2012 year class became age 8 in 2020. Under a constant F40% harvest rate, the mean percent of age 8 and older fish in the catch would be approximately 8%. An annual index of catch at age diversity was computed using the Shannon-Wiener information index,
+To qualitatively assess recent trends in abundance, each survey
+time series was standardized by dividing the annual estimate by
+the average since 1990. Shelikof Strait acoustic survey estimates
+prior to 2008 were rescaled to be comparable to subsequent
+surveys conducted by the R/V Oscar Dyson. Although there is
+considerable variability in each survey time series, a fairly
+clear downward trend is evident to 2000, followed by a stable,
+though variable, trend to 2008, followed by a strong increase to
+2013 (Fig. 1.\@ref(fig:fig-indices)). From 2016 to 2019 there was
+a strong divergence among the trends, but with the large
+reduction in biomass in 2020 for the Shelikof Strait survey, and
+an increase in the ADF&G index, relative abundance has come back
+into reasonable alignment since 2020. Indices derived from
+fisheries catch data were also evaluated for trends in biological
+characteristics (Fig. 1.\@ref(fig:fsh-chars)). The percent of
+females in the catch shows some variability but no obvious trend,
+and is usually close to 50-50. In 2016, percent female dropped to
+40%, but has slowly increased up to 47% in 2022. Evaluation of
+sex ratios by season indicated that this decrease was mostly due
+a low percentage of females during the A and B seasons prior to
+spawning. However the sex ratio during the C and D seasons was
+close to 50-50, suggesting the skewed sex in winter was related
+to spawning behavior, rather than an indication of a population
+characteristic. The mean age shows interannual variability due to
+strong year classes passing through the population, but there are
+no downward trends that would suggest excessive mortality
+rates. The percent of old fish in the catch (nominally defined as
+age 8 and older) is also highly variable due to variability in
+year class strength. The percent of old fish declined in
+2015-2018 as the strong 2012 year class recruited to the fishery,
+but increased when the 2012 year class became age 8 in 2020. With
+large incoming cohorts and the decline of the 2012 cohort, the
+mean age has begun to decrease again. Under a constant F40%
+harvest rate, the mean percent of age 8 and older fish in the
+catch would be approximately 8%.
 
-$$ -\sum_a{ p_a \ln {p_a}}
+An annual index of catch at age diversity was computed using the
+Shannon-Wiener information index, $H'$, defined as
+
+$$H'= -\sum_a{ p_a \ln {p_a}}
 $$
 
-where $p_a$ is the proportion at age and higher values correspond to higher diversity. Increases in fishing mortality would tend to reduce age diversity, but year class variability would also influence it. Age diversity was relatively stable during 1975-2015, but declined sharply to a low in 2016 and has been increasing since due to the dominance of the 2012 year class in the catch (Fig. 1.15). In 2020 the age diversity returned to near the long-term average.
+where $p_a$ is the proportion at age and higher values correspond
+to higher diversity. Increases in fishing mortality would tend to
+reduce age diversity, but year class variability would also
+influence it. Age diversity was relatively stable during
+1975-2015, but declined sharply to a low in 2016 and has been
+increasing since due to the dominance of the 2012 year class in
+the catch (Fig. 1.\@ref(fig:fsh-chars)). In 2021 the age
+diversity returned to near the long-term average.
 
-The 2012 year class, which is both very strong, and which has experienced anomalous environmental conditions during the marine heatwave in the North Pacific during 2015-2017, has displayed unusual life history characteristics. These include early maturation, reduced growth, but apparently not reduced total mortality (Fig. 1.16). It is unclear whether these changes are a result of density dependence or environmental forcing.
+The 2012 year class, which is both very strong, and which has
+experienced anomalous environmental conditions during the marine
+heatwave in the North Pacific during 2015-2017, has displayed
+unusual life history characteristics. These include early
+maturation, reduced growth, but apparently not reduced total
+mortality (Fig. 1.\@ref(fig:2021-bio)). It is unclear whether
+these changes are a result of density dependence or environmental
+forcing.

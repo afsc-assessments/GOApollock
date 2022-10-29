@@ -27,25 +27,27 @@ Incidental catch in the Gulf of Alaska directed pollock fishery
 is low. For tows classified as pollock targets in the Gulf of
 Alaska between 2016 and 2020, on average about 96% of the catch
 by weight of FMP species consisted of pollock (Table
-1.2). Nominal pollock targets are defined by the dominance of
-pollock in the catch, and may include tows where other species
-were targeted, but pollock were caught instead. The most common
-managed species in the incidental catch are arrowtooth flounder,
-Pacific ocean perch, Pacific cod, sablefish, shallow-water
-flatfish, and flathead sole (Table 1.2). Sablefish incidental
-catch has trended upwards since 2018, perhaps reflecting both the
-recent increase in sablefish abundance and a wider spatial
-distribution. The most common recent non-target species are
-grenadiers, squid, capelin, jellyfish and miscellaneous fish
-(Table 1.2). Bycatch estimates for prohibited species over the
-period 2016-2020 are given in Table 1.3. Chinook salmon are the
-most important prohibited species caught as bycatch in the
-pollock fishery. A sharp spike in Chinook salmon bycatch in 2010
-led the Council to adopt management measures to reduce Chinook
-salmon bycatch, including a cap of 25,000 Chinook salmon bycatch
-in the directed pollock fishery. Estimated Chinook salmon bycatch
-since 2010 has been less than the peak in 2010, with increases in
-2016, 2017, and 2019, and reduced to 10,867 in 2020.
+1.\@ref(tab:incidental)). Nominal pollock targets are defined by
+the dominance of pollock in the catch, and may include tows where
+other species were targeted, but pollock were caught instead. The
+most common managed species in the incidental catch are
+arrowtooth flounder, Pacific ocean perch, Pacific cod, sablefish,
+shallow-water flatfish, and flathead sole (Table
+1.\@ref(tab:incidental)). Sablefish incidental catch has trended
+upwards since 2018, perhaps reflecting both the recent increase
+in sablefish abundance and a wider spatial distribution. The most
+common recent non-target species are grenadiers, squid, capelin,
+jellyfish and miscellaneous fish (Table
+1.\@ref(tab:incidental)). Bycatch estimates for prohibited
+species over the period 2016-2020 are given in Table
+1.\@ref(tab:bycatch). Chinook salmon are the most important
+prohibited species caught as bycatch in the pollock fishery. A
+sharp spike in Chinook salmon bycatch in 2010 led the Council to
+adopt management measures to reduce Chinook salmon bycatch,
+including a cap of 25,000 Chinook salmon bycatch in the directed
+pollock fishery. Estimated Chinook salmon bycatch since 2010 has
+been less than the peak in 2010, with increases in 2016, 2017,
+and 2019, and reduced to 10,595 in 2021.
 
 ## Management Measures 
 
@@ -74,5 +76,5 @@ B seasons into a single season (redesignated as the A season),
 and the C and D seasons into a single season (redesignated as the
 B season), and changes the annual start date of the redesignated
 pollock B season from August 25 to September 1. These changes
-will be implemented beginning in 2021 and affect the seasonal
+were implemented beginning in 2021 and affect the seasonal
 allocation only in the Central and Western GOA.

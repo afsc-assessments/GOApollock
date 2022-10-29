@@ -1,7 +1,21 @@
 # Results
 ## Model selection and evaluation
 ### Model selection
-Prior to identifying a model for consideration, an analysis was conducted of the impact of each new data element on model results. Figure 1.21 shows the changes in estimated spawning biomass as the updated catch projections, catch at age, and surveys were added sequentially. In general, the addition of new data elements did not strongly affect the estimates of recent spawning biomass, with the exception of the updated weight at age from the 2021 Shelikof survey, which was substantially larger than the 2020 estimates. This effect is discussed in the risk table below. This suggests that the new data are reasonably consistent with previous modeling and with each other. Since previous assessments have identified inconsistent input data sets as a major assessment concern, the overall consistency this year suggests that those concerns are much reduced (e.g., Fig. 1.23). 
+Prior to identifying a model for consideration, an analysis was
+conducted of the impact of each new data element on model
+results. Figure 1.\@ref(fig:add-data) shows the changes in
+estimated spawning biomass as the updated catch projections,
+catch at age, and surveys were added sequentially. Most additions
+to the model did not change the trend but did increase the scale
+a fairly small amount, but it was consistently in the same
+direction, adding up to a nearly 30% larger recent spawning
+stock. This is not typically the case, but we have no reason to
+believe this is a concern, as most of these changes are logicial
+and each one fairly small. For instance This effect is discussed
+in the risk table below.  Since previous assessments have
+identified inconsistent input data sets as a major assessment
+concern, the overall consistency this year suggests that those
+concerns are much reduced (e.g., Fig. 1.23).
 
 The intent of this year’s assessment was to provide a straightforward update without considering major changes to the model. We recently explored models that used VAST estimates in place of area-swept biomass estimates for the NMFS bottom trawl survey. The VAST estimates did not fit as well as the area-swept estimates when given similar weighting, and we concluded that additional model evaluation was needed before using the VAST estimates. Several other modeling approaches for GOA pollock are under development, including incorporation of predator consumption (Barnes et al. 2020) in the assessment model, use of mean hatch date from the EcoFOFI early larval survey to inform catchability to the Shelikof Strait survey, and model-based estimates of Shelikof and summer acoustic indices using VAST. We selected model 19.1 as the preferred model, and a final turning step was done using the Francis (2011) approach which reweighted all composition components, including the summer acoustic age composition for the first time, but model results were nearly unchanged (Fig. 1.23).
 

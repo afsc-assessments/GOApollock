@@ -11,7 +11,7 @@ data[15,-1] <- as.list(c(year, year+1, year+1, year+2))
 safe::main_table(data, year, tier=3, c1, c2, c3)
 ```
  
- ## Status Summary for Gulf of Alaska Pollock in the Southeast Outside Area
+## Status Summary for Gulf of Alaska Pollock in the Southeast Outside Area
 
 
 ```{r}
@@ -30,5 +30,6 @@ data[9,-1] <- c(11363,11363,11363,11363)
 data[11,-1] <- as.list(c(year, year+1, year+1, year+2))
 
 
-safe::main_table(data=data, year=year, tier=5)
+safe::main_table(data=data, year=year, tier=5) 
+
 ```
