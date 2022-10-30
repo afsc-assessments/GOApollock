@@ -19,7 +19,7 @@ calculate_rho <- function(reps, max_peels=NULL){
   ## compare to that same year in the full run and calculate
   ## relative differences. Already did this above so just grab the
   ## right years to average
-  rho <- ssb%>% filter(2021-peel==year & year!=2021) %>%
+  rho <- ssb%>% filter(max(year)-peel==year & year!=max(year)) %>%
     pull(SSB_Pct_Diff)
   message("Percentage range of annual differences:",round(min(rho),1)," to ", round(max(rho),1))
   message("Median absolute error of rho:",round(median(abs(rho))))
