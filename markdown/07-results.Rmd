@@ -167,9 +167,7 @@ not indicate a concern with retrospective bias.
 
 ## Stock productivity
 
-Recruitment of GOA pollock is more variable (CV = `r
-with(repfile,
-round(sd(Recruits[-length(years)])/mean(Recruits[-length(years)]),2))`
+Recruitment of GOA pollock is more variable (CV = `r CVrec`
 over 1978-`r year-1`) than Eastern Bering Sea pollock (CV =
 0.60). Other North Pacific groundfish stocks, such as sablefish
 and Pacific ocean perch, also have high recruitment

@@ -91,7 +91,7 @@ date = 'October 22, 2022'
 model = "base"
 end_proj = year + 15
 best_f = 999 # from the best_f function in groundfishr package
-
+spr0 <- 0.0761106
 myres <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results'
 
 ## Read in the key output files from this year
@@ -128,13 +128,28 @@ b35.last <- F(exec_table[6,1])
 ofl.last <- F(exec_table[10,1])
 maxabc.last <- F(exec_table[11,1])
 abc.last <- F(exec_table[12,1])
+pct.b40.change <- (Finv(b40)-Finv(b40.last))/Finv(b40.last)
+pct.b40.changeF <- (paste0(format(round(100*pct.b40.change,1),nsmall=1),ifelse(pct.b40.change>0, '% increase ', '% decrease ')))
+
 
 abcN <- Finv(abc)
 abcN.last <- Finv(abc.last)
 
 ## also need the old repfile for figures
-repfile.last <- GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/", endyr=2021)
+repfile.last <-
+GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/",
+endyr=2021)
+repfile.last <-
+GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m21_9_final/",
+endyr=2021)
+
 ## stdfile.last <- GOApollock::read_pk_std(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/", endyr=2021)
+
+avgrec <- with(repfile, round(mean(Recruits[years %in% 1978:(tail(years)-1)]),3))
+CVrec <- with(repfile, round(sd(Recruits[years %in% 1978:(tail(years)-1)])/avgrec,1))
+avgrec.last <- with(repfile.last, round(mean(Recruits[years %in% 1978:(tail(years,1)-1)]),3))
+pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
+
 # todo: build a function/switch to auto run the tier(a/b) - also for overfishing/overfished
 ```
 
@@ -159,8 +174,8 @@ repfile.last <- GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assess
 ```{r, child="07-results.Rmd", eval = T}
 ```
 
-<!-- ```{r, child="08-abc.Rmd", eval = T} -->
-<!-- ``` -->
+```{r, child="08-abc.Rmd", eval = T}
+```
 
 ```{r, child="09-ecosystem.Rmd", eval = T}
 ```

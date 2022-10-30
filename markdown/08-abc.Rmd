@@ -3,28 +3,49 @@
 
 ## Reference fishing mortality rates and spawning biomass levels
 
-Since 1997, GOA pollock have been managed under Tier 3 of the NPFMC tier system.
-In Tier 3, reference mortality rates are based on spawning biomass per recruit (SPR), while biomass reference levels are estimated by multiplying the SPR by average recruitment.
-Estimates of the FSPR harvest rates were obtained using the life history characteristics of GOA pollock (Table 1.23).
-Spawning biomass reference levels were based on mean 1978-2020 age-1 recruitment (5.655 billion), which is 3% lower than the mean value in last year's assessment.
-Spawning was assumed to occur on March 15th, and a long-term average of maturity at age (1983-2021) was used with mean spawning weight at age from the Shelikof Strait acoustic surveys in 2017-2021 to estimate current reproductive potential.
-Fishery weight at age was assumed to be the most recent estimate from the RE model.
-Pollock weight-at-age is highly variable, showing a sustained increase, followed by a steep decline until a sharp increase in 2021 (Fig. 1.21).
-The factors causing this pattern are unclear, but are likely to involve both density-dependent factors and environmental forcing.
-The SPR at F=0 was estimated as 0.076 kg/recruit at age one.
-FSPR rates depend on the selectivity pattern of the fishery.
-Selectivity has changed as the fishery evolved from a foreign fishery occurring along the shelf break to a domestic fishery on spawning aggregations and in nearshore waters.
-For SPR calculations, selectivity was based on the average for 2017-2021 to reflect current selectivity patterns.
-GOA pollock FSPR harvest rates are given below:
+Since 1997, GOA pollock have been managed under Tier 3 of the
+NPFMC tier system.  In Tier 3, reference mortality rates are
+based on spawning biomass per recruit (SPR), while biomass
+reference levels are estimated by multiplying the SPR by average
+recruitment.  Estimates of the FSPR harvest rates were obtained
+using the life history characteristics of GOA pollock (Table
+1.\@ref(tab:spr-inputs).  Spawning biomass reference levels were
+based on mean 1978-`r year-1` age-1 recruitment (`r avgrec`
+billion), which is `r pct.avgrec.change`% higher than the mean
+value in last year's assessment. Spawning was assumed to occur on
+March 15th, and a long-term average of maturity at age (1983-`r
+year`) was used with mean spawning weight at age from the
+Shelikof Strait acoustic surveys in 2017-`r year` to estimate
+current reproductive potential.  Fishery weight at age was
+assumed to be the most recent estimate from the RE model.
+Pollock weight-at-age is highly variable, showing a sustained
+increase, followed by a steep decline until a sharp increase in
+2021 (Fig. 1.\@ref(fig:waa-srv1)). The factors causing this
+pattern are unclear, but are likely to involve both
+density-dependent factors and environmental forcing. The SPR at
+F=0 was estimated as `r spr0` kg/recruit at age one.  FSPR rates
+depend on the selectivity pattern of the fishery.  Selectivity
+has changed as the fishery evolved from a foreign fishery
+occurring along the shelf break to a domestic fishery on spawning
+aggregations and in nearshore waters.  For SPR calculations,
+selectivity was based on the average for `r year -4`-`r year` to
+reflect current selectivity patterns. GOA pollock FSPR harvest
+rates are given below:
 
-FSPR rate Fishing mortality Equilibrium under average 1978-2020 recruitment Avg.
-Recr.
-(Million) Total 3+ biom.
-(1000 t) Female spawning biom.
-(1000 t) Catch (1000 t) Harvest fraction 100.0% 0.000 5,656 1,880 429 0 0.0% 40.0% 0.263 5,656 1,105 172 172 15.5% 35.0% 0.311 5,656 1,036 150 187 18.1%
-
-The B40% estimate of 172,000 t represents a 3% decrease from the B40% estimate of 177,000 t in the 2020 assessment (Table 1.24), despite the increase in spawning weight at age in 2021.
-The base model projection of female spawning biomass in 2022 is 186,481 t, which is 43.4% of unfished spawning biomass (based on average post-1977 recruitment) and above B40% (172,000 t), thereby placing GOA pollock in sub-tier "a" of Tier 3.
+```{r}
+tab <- read_xlsx(table.path, sheet='SPR')
+tab[,7] <- paste0(  format(round(100*pull(tab,7),1), nsmall=1),"%")
+flextable(tab) %>%
+  colformat_double(digits=3, j=2) %>%
+  colformat_double(digits=0, big.mark=',') 
+```
+The B40% estimate of `r b40` t represents a `r
+pct.b40.changeF`from the  B40% estimate of `r b40.last` t in the
+`r year-1` assessment (Table 1.\@ref(tab:model-history)). The base model
+projection of female spawning biomass in 2022 is 
+186,481 t, which is 43.4% of unfished spawning biomass (based on
+average post-1977 recruitment) and above B40% (172,000 t),
+thereby placing GOA pollock in sub-tier "a" of Tier 3. 
 
 ## 2022 acceptable biological catch
 
@@ -207,7 +228,7 @@ This report involves the answers to three questions: 1) Is the stock being subje
 2) Is the stock currently overfished?
 3) Is the stock approaching an overfished condition?
 
-*Is the stock being subjected to overfishing?* The official catch estimate for the most recent complete year (`r year-1`) is *correct this later* r catch %\>% filter(Year==year-1) %\>% pull(Catch) %\>% format(., big.mark = ",")`t.  This is less than the`r year-1\` OFL of 5,402 t.
+*Is the stock being subjected to overfishing?* The official catch estimate for the most recent complete year (`r year-1`) is *correct this later* r catch %\>% filter(Year==year-1) %\>% pull(Catch) %\>% format(., big.mark = ",")`t.  This is less than the`r year-1` OFL of 5,402 t.
 Therefore, the stock is not being subjected to overfishing.
 
 Harvest Scenarios #6 and #7 are intended to permit determination of the status of a stock with respect to its minimum stock size threshold (MSST).
