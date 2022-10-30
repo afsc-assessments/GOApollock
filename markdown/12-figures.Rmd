@@ -97,6 +97,10 @@
  addfig("add_data.png")
 ```
 
+```{r mod-compare, eval=TRUE, fig.cap="Estimated SSB for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data."}
+addfig("mod_compare.png")
+```
+
 ```{r tv-q, eval=TRUE, fig.cap="Time-varying catchability for the Shelikof Strait acoustic survey (Survey 1), the ADF\\&G crab/groundfish trawl survey (Survey 3), and constant catchability for the age-1 and age-2 Shelikof indices (Surveys 4 and 5; representing selectivity), and for the summer NMFS acoustic survey (Survey 6), for model 19.1a. Ribbons and lines represent the 95% CI"}
  addfig("tv_q.png")
 ```
@@ -133,6 +137,10 @@
  addfig("index_fits2.png")
 ```
 
+```{r fig-selex, eval=TRUE, fig.cap="Model predicted (line) and observed survey biomass (points and 95% confidence intervals)  for the age 1 and age 2 winter Shelikof surveys. "}
+ addfig("selex_svys.png")
+```
+
 ```{r selex-tv-fsh, eval=TRUE, fig.cap="Estimates of time-varying double-logistic fishery selectivity for GOA pollock for the base model. The selectivity is scaled so the maximum in each year is 1.0."}
  addfig("selex_tv_fsh.png")
 ```
@@ -141,7 +149,7 @@
  addfig("ssb_status_rec.png")
 ```
 
-```{r stats, eval=TRUE, fig.cap="Annual fishing mortality as measured in percentage of unfished spawning biomass per recruit (top).  GOA pollock spawning biomass relative to the unfished level and fishing mortality relative to FMSY (bottom). The ratio of fishing mortality to FMSY is calculated using the estimated selectivity pattern in that year. Estimates of B100% spawning biomass are based on current estimates of maturity at age, weight at age, and mean recruitment.  Because these estimates change as new data become available, this figure can only be used in a general way to evaluate management performance relative to biomass and fishing mortality reference levels."}
+```{r status, eval=TRUE, fig.cap="Annual fishing mortality as measured in percentage of unfished spawning biomass per recruit (top).  GOA pollock spawning biomass relative to the unfished level and fishing mortality relative to FMSY (bottom). The ratio of fishing mortality to FMSY is calculated using the estimated selectivity pattern in that year. Estimates of B100% spawning biomass are based on current estimates of maturity at age, weight at age, and mean recruitment.  Because these estimates change as new data become available, this figure can only be used in a general way to evaluate management performance relative to biomass and fishing mortality reference levels."}
  addfig("status.png")
 ```
 

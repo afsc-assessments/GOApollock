@@ -9,36 +9,199 @@ catch at age, and surveys were added sequentially. Most additions
 to the model did not change the trend but did increase the scale
 a fairly small amount, but it was consistently in the same
 direction, adding up to a nearly 30% larger recent spawning
-stock. This is not typically the case, but we have no reason to
-believe this is a concern, as most of these changes are logicial
-and each one fairly small. For instance This effect is discussed
-in the risk table below.  Since previous assessments have
-identified inconsistent input data sets as a major assessment
-concern, the overall consistency this year suggests that those
-concerns are much reduced (e.g., Fig. 1.23).
+stock. This is not typically the case, and this year both the
+additions of new data and the model updates increased the scale
+of spawning biomass (Fig. 1.\@ref(fig:mod-compare)). This change
+is driven largely by changes in recruits estimated
+(Fig. 1.\@ref(fig:mod-compare2)). Notably the 2012 year class
+estimates were impacted by both, presumably with the new age data
+suggesting the cohort is still large and the new selectivity on
+survey 6 being lower for those older ages. The change is scale is
+not particularly surprising given the known sensitivity for this
+model (as explored more thoroughly in e.g., @monnahan2021a) and
+the Plan Team presentations in 2022 ([link to
+pdf](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf))
+The stock trend was stable across data additions and model
+changes.
 
-The intent of this year’s assessment was to provide a straightforward update without considering major changes to the model. We recently explored models that used VAST estimates in place of area-swept biomass estimates for the NMFS bottom trawl survey. The VAST estimates did not fit as well as the area-swept estimates when given similar weighting, and we concluded that additional model evaluation was needed before using the VAST estimates. Several other modeling approaches for GOA pollock are under development, including incorporation of predator consumption (Barnes et al. 2020) in the assessment model, use of mean hatch date from the EcoFOFI early larval survey to inform catchability to the Shelikof Strait survey, and model-based estimates of Shelikof and summer acoustic indices using VAST. We selected model 19.1 as the preferred model, and a final turning step was done using the Francis (2011) approach which reweighted all composition components, including the summer acoustic age composition for the first time, but model results were nearly unchanged (Fig. 1.23).
+The intent of this year's assessment was to provide a
+straightforward update without considering major changes to the
+model. We recently explored models that used VAST estimates in
+place of area-swept biomass estimates for the NMFS bottom trawl
+survey. The VAST estimates did not fit as well as the area-swept
+estimates when given similar weighting, and we concluded that
+additional model evaluation was needed before using the VAST
+estimates. Several other modeling approaches for GOA pollock are
+under development, including incorporation of predator
+consumption [@barnes2020a] in the assessment model, use of mean
+hatch date from the EcoFOFI early larval survey to inform
+catchability to the Shelikof Strait survey, and model-based
+estimates of Shelikof and summer acoustic indices using VAST. We
+selected model 19.1a as the preferred model, and a final turning
+step was done using the @francis2011a approach which reweighted
+all composition components, including the summer acoustic age
+composition for the first time, but model results were similar
+(Fig. 1.\@ref(fig:add-data)).
 
 ### Model evaluation
-The fit of model 19.1 to age composition data was evaluated using plots of observed and predicted age composition and residual plots. Figure 1.24 show the estimates of time-varying catchability for the Shelikof Strait acoustic survey and the ADF&G crab/groundfish survey. The catchability for the Shelikof Strait acoustic survey approaches one but does not exceed it and has declined in the last two years. Plots show the fit to fishery age composition (Fig. 1.25, Fig. 1.26), Shelikof Strait acoustic survey age composition (Fig. 1.27, Fig. 1.28), NMFS trawl survey age composition (Fig. 1.29), and ADF&G trawl survey age composition (Fig. 1.30). Model fits to fishery age composition data are adequate in most years, though the very strong 2012 year class shows up as a positive residual in for the 2016-2019 due to stronger than expected abundance in the age composition, while the older ages tended to have negative residuals. This may indicate that the fishery is targeting on the 2012 year class. The largest residuals tended to be at ages 1-2 in the NMFS bottom trawl survey due to inconsistencies between the initial estimates of abundance and subsequent information about year class size.
+The fit of model 19.1a to age composition data was evaluated
+using plots of observed and predicted age composition and
+residual plots. Figure 1.\@ref(fig:tv-q) shows the estimates of
+time-varying catchability for the Shelikof Strait acoustic survey
+and the ADF&G crab/groundfish survey, as well as the constant
+catchabilities for the other surveys. The catchability for the
+Shelikof Strait acoustic survey continued to decrease away
+from 1. Catchability for the NMFS bottom trawl and summer
+acoustic surveys were similar (0.81 and 0.76 respectively), while
+the age-1 and age-2 Shelikof survey catchabilities were 0.30 and
+0.34, respectively, reflecting the fact that the survey does not
+target these immature ages. Plots show the fit to fishery age
+composition (Figs. 1.\@ref(fig:obs-exp-fsh),
+1.\@ref(fig:pearson-fsh)), Shelikof Strait acoustic survey age
+composition
+(Figs. 1.\@ref(fig:obs-exp-srv1),1.\@ref(fig:pearson-srv1)), NMFS
+trawl survey age composition
+(Fig. 1.\@ref(fig:obs-exp-pearson-srv2)), and ADF&G trawl survey
+age composition (Fig. 1.\@ref(fig:obs-exp-pearson-srv3)). Model
+fits to fishery age composition data are adequate in most years,
+though the very strong 2012 year class shows up as a positive
+residual in 2016-2019 due to stronger than expected abundance in
+the age composition, while the older ages tended to have negative
+residuals. This may indicate that the fishery is targeting on the
+2012 year class. The largest residuals tended to be at ages 1-2
+in the NMFS bottom trawl survey due to inconsistencies between
+the initial estimates of abundance and subsequent information
+about year class size. But overall there were no major issues in
+fitting the age composition data.
 
-The fit to the 2021 Shelikof survey age was notably poor with a very large negative residual for age 3 fish (Fig. 1.27). A similar pattern is observed in the 2020 age 2 residual for the ADF&G compositional data (Fig. 1.30). These both point to a smaller 2018 cohort than originally observed and estimated. However, the fit to age 2 fish in the 2020 fishery data is much better, potentially due to lower selectivity at that age, and that it is time varying. Consequently, there is still conflict and uncertainty in the data about the size of the 2018 cohort. We anticipate new age composition data for the 2021 fishery, NMFS bottom trawl and summer acoustic surveys, and 2022 Shelikof survey to shed further light on the fate of this cohort. 
+In recent assessments there was apparent conflict and uncertainty
+in the data about the size of the 2018 cohort. The new age
+composition data for the 2021 fishery, NMFS bottom trawl and
+summer acoustic surveys, and 2022 Shelikof survey provide further
+information to shed further light on the fate of this cohort. The
+fit to the 2022 Shelikof survey age was again negative for age 4
+fish, making it the second year in a row with a negative residual
+for the 2018 cohort. In contrast the 2021 NMFS bottom trawl
+survey and fishery saw large proportions of this cohort and
+fitted well. This disparity in the 2018 cohort is discussed more
+in the risk table section, but the model estimate for this cohort
+did not change much from 2021 (\@ref(tab:timeseries)).
 
-Model fits to survey biomass estimates are reasonably good for all surveys except the period 2015-2019 (Fig. 1.31). There are large positive residuals for the Shelikof Strait acoustic survey in 2017, 2018 and 2019, and strong negative residuals for the NMFS bottom trawl survey for 2017 and 2019. In addition, the model is unable to fit the extremely low values for the ADF&G survey in 2015-2017. The fit to the summer acoustic survey is reasonable even during the most recent period. The model shows good fits to both the 2021 Shelikof Strait acoustic survey and the 2021 NMFS bottom trawl, while the 2021 ADF&G bottom trawl and 2021 summer acoustic survey fits were reasonable. The fit to the age-1 and age-2 Shelikof acoustic indices was considered acceptable (Fig. 1.32). 
+Model fits to survey biomass estimates are reasonably good for
+all surveys except the period 2015-2019
+(Fig. 1.\@ref(fig:index-fits)). There are large positive
+residuals for the Shelikof Strait acoustic survey in 2017, 2018
+and 2019, and strong negative residuals for the NMFS bottom trawl
+survey for 2017 and 2019. In addition, the model is unable to fit
+the extremely low values for the ADF&G survey in 2015-2017. The
+fit to the summer acoustic survey is reasonable even during the
+most recent period. The model shows good fits to both the 2021
+Shelikof Strait acoustic survey and the 2021 NMFS bottom trawl,
+while the 2021 ADF&G bottom trawl and 2021 summer acoustic survey
+fits were reasonable. The fit to the age-1 and age-2 Shelikof
+acoustic indices was considered acceptable
+(Fig. 1.\@ref(fig:index-fits2)).
 
 ## Time series results
-Parameter estimates and model output are presented in a series of tables and figures. Estimated survey and fishery selectivity for different periods are given in Table 1.19 (see also Fig. 1.33). Table 1.20 gives the estimated population numbers at age for the years 1970-2021. Table 1.21 gives the estimated time series of age 3+ population biomass, age-1 recruitment, and harvest rate (catch/3+ biomass) for 1977-2021 (see also Fig. 1.34). Table 1.22 gives coefficients of variation and 95% confidence intervals for age-1 recruitment and spawning stock biomass. Stock size peaked in the early 1980s at approximately 120% of the proxy for unfished stock size (B100% = mean 1978-2020 recruitment multiplied by the spawning biomass per recruit in the absence of fishing (SPR@F=0, see below for how this is calculated). In 2002, the stock dropped below the B40% for the first time since the early 1980s, and reached a minimum in 2003 of 35% of unfished stock size. Over the years 2009-2013 stock size showed a strong upward trend, increasing from 43% to 78% of unfished stock size, but declined to 54% of unfished stock size in 2015. The spawning stock peaked in 2017 at 83% as the strong 2012 year class matured, and has declined subsequently to 46% in 2021. 
-Figure 1.35 shows the historical pattern of exploitation of the stock both as a time series of SPR and fishing mortality compared to the current estimates of biomass and fishing mortality reference points. Except from the mid-1970s to mid-1980s fishing mortalities have generally been lower than the current OFL definition, and in nearly all years were lower than the FMSY proxy of F35% .
+Parameter estimates and model output are presented in a series of
+tables and figures. Estimated survey and fishery selectivity for
+different periods are given in Table 1.\@ref(tab:selex) (see also
+Figs. 1.\@ref(fig:fig-selex) and 1.\@ref(fig:selex-tv-fsh). Table
+1.\@ref(tab:naa-est) gives the estimated population numbers at
+age for the years 1970-`r year`. Table 1.\@ref(tab:timeseries)
+gives the estimated time series of age 3+ population biomass,
+age-1 recruitment, status, and harvest rate (catch/3+ biomass) for
+1977-`r year` (see also Fig. 1.\@ref(fig:ssb-status-rec). Table
+1.\@ref(tab:rec-ssb) gives coefficients of variation and 95%
+confidence intervals for age-1 recruitment and spawning stock
+biomass. Stock size peaked in the early 1980s at approximately
+113% of the proxy for unfished stock size (B100% = mean 1978-`r
+year-1` recruitment multiplied by the spawning biomass per recruit
+in the absence of fishing (SPR@F=0), see below for how this is
+calculated). In 2002, the stock dropped below the B40% for the
+first time since the early 1980s, and reached a minimum in 2003
+of 36% of unfished stock size. Over the years 2009-2013 stock
+size showed a strong upward trend, increasing from 46% to 86% of
+unfished stock size, but declined to 54% of unfished stock size
+in 2015. The spawning stock peaked in 2017 at 90% as the strong
+2012 year class matured, and has declined subsequently to 52%
+in 2022. Figure 1.\@ref(fig:status) shows the historical pattern
+of exploitation of the stock both as a time series of SPR and
+fishing mortality compared to the current estimates of biomass
+and fishing mortality reference points. Except from the mid-1970s
+to mid-1980s fishing mortalities have generally been lower than
+the current OFL definition, and in nearly all years were lower
+than the FMSY proxy of F35% .
 
 ## Comparison of historical assessment results
 
-A comparison of assessment results for the years 1993-2021 indicates the current estimated trend in spawning biomass for 1990-2021 is consistent with previous estimates (Fig. 1.36). All time series show a similar pattern of decreasing spawning biomass in the 1990s, a period of greater stability in 2000s, followed by an increase starting in 2008. The estimated 2021 age composition from the current assessment were very similar to the projected 2021 age composition from the 2020 assessment (Fig. 1.37). Generally, the two models agree except for the age 1 recruits, where the 2020 model assumed average recruitment, but the 2021 has data from the Shelikof survey which showed a strong year class. This difference does not strongly affect the OFL and ABC for next year because these fish are not in the exploitable population. 
+A comparison of assessment results for the years 1999-`r year`
+indicates the current estimated trend in spawning biomass for
+1990-`r year` is consistent with previous estimates
+(Fig. 1.\@ref(fig:historical)). All time series show a similar
+pattern of decreasing spawning biomass in the 1990s, a period of
+greater stability in 2000s, followed by an increase starting
+in 2008. The estimated 2021 age composition from the current
+assessment were very similar to the projected 2021 age
+composition from the 2020 assessment
+(Fig. 1.\@ref(fig:pred-endN)). Generally, the two models agree
+except for the age 1 recruits, where the `r year-1` model assumed
+average recruitment, but the `r year` has data from the Shelikof
+survey which showed a weak year class. This difference does not
+strongly affect the OFL and ABC for next year because these fish
+are not in the exploitable population.
 
 ## Retrospective analysis of base model
-A retrospective analysis consists of dropping the data year-by-year from the current model, and provides an evaluation of the stability of the current model as new data are added. Figure 1.38 shows a retrospective plot with data sequentially removed back to 2011. There is up to 37% error in the estimates of spawning biomass (if the current assessment is accepted as truth), but usually the errors are much smaller (median absolute error is 11%). There is relatively minor positive retrospective pattern to errors in the assessment, and the revised Mohn’s $\rho$ (Mohn 1999) across all ten peels for ending year spawning biomass is 0.056, which does not indicate a concern with retrospective bias.
+A retrospective analysis consists of dropping the data
+year-by-year from the current model, and provides an evaluation
+of the stability of the current model as new data are
+added. Figure 1.\@ref(fig:retros) shows a retrospective plot with
+data sequentially removed back to `r year-10`. The range of
+errors in the estimates of spawning biomass (if the current
+assessment is accepted as truth) is -28% to 17%, but usually the
+errors are much smaller (median absolute error is 15%). There is
+relatively minor positive retrospective pattern to errors in the
+assessment, and the revised Mohn’s $\rho$ [@mohn1999a] across all
+ten peels for ending year spawning biomass is -0.081, which does
+not indicate a concern with retrospective bias.
 
 ## Stock productivity
 
-Recruitment of GOA pollock is more variable (CV = 1.27 over 1978-2020) than Eastern Bering Sea pollock (CV = 0.60). Other North Pacific groundfish stocks, such as sablefish and Pacific ocean perch, also have high recruitment variability. However, unlike sablefish and Pacific ocean perch, pollock have a short generation time (~8 years), so that large year classes do not persist in the population long enough to have a buffering effect on population variability. Because of these intrinsic population characteristics, the typical pattern of biomass variability for GOA pollock will be sharp increases due to strong recruitment, followed by periods of gradual decline until the next strong year class recruits to the population. GOA pollock is more likely to show this pattern than other groundfish stocks in the North Pacific due to the combination of a short generation time and high recruitment variability. 
+Recruitment of GOA pollock is more variable (CV = `r
+with(repfile,
+round(sd(Recruits[-length(years)])/mean(Recruits[-length(years)]),2))`
+over 1978-`r year-1`) than Eastern Bering Sea pollock (CV =
+0.60). Other North Pacific groundfish stocks, such as sablefish
+and Pacific ocean perch, also have high recruitment
+variability. However, unlike sablefish and Pacific ocean perch,
+pollock have a short generation time (~8 years), so that large
+year classes do not persist in the population long enough to have
+a buffering effect on population variability. Because of these
+intrinsic population characteristics, the typical pattern of
+biomass variability for GOA pollock will be sharp increases due
+to strong recruitment, followed by periods of gradual decline
+until the next strong year class recruits to the population. GOA
+pollock is more likely to show this pattern than other groundfish
+stocks in the North Pacific due to the combination of a short
+generation time and high recruitment variability.
 
-Since 1980, strong year classes have occurred periodically every four to six years (Fig. 1.34). Because of high recruitment variability, the mean relationship between spawning biomass and recruitment is difficult to estimate despite good contrast in spawning biomass. Strong and weak year classes have been produced at high and low level of spawning biomass. Spawner productivity is higher on average at low spawning biomass compared to high spawning biomass, indicating that survival of eggs to recruitment is density-dependent (Fig. 1.39). However, this pattern of density-dependent survival only emerges on a decadal scale, and could be confounded with environmental variability on the same temporal scale. The decadal trends in spawner productivity have produced the pattern of increase and decline in the GOA pollock population. The last two decades have been a period of relatively low spawner productivity, though there appears to be a recent increase. Age-1 recruitment in 2020 is estimated to be to be very weak, but the 2021 recruitment is above average, although these estimates will remain very uncertain until additional data become available.
+Since 1980, strong year classes have occurred periodically every
+four to six years (Fig. 1.\@ref(fig:ssb-status-rec)). Because of
+high recruitment variability, the mean relationship between
+spawning biomass and recruitment is difficult to estimate despite
+good contrast in spawning biomass. Strong and weak year classes
+have been produced at high and low level of spawning
+biomass. Spawner productivity is higher on average at low
+spawning biomass compared to high spawning biomass, indicating
+that survival of eggs to recruitment is density-dependent
+(Fig. 1.\@ref(fig:spawn-prod)). However, this pattern of
+density-dependent survival only emerges on a decadal scale, and
+could be confounded with environmental variability on the same
+temporal scale. The decadal trends in spawner productivity have
+produced the pattern of increase and decline in the GOA pollock
+population. The last two decades have been a period of relatively
+low spawner productivity, though there appears to be a recent
+increase. Age-1 recruitment in 2022 is estimated to be to
+be very weak, but the 2021 recruitment is above average, although
+these estimates will remain very uncertain until additional data
+become available (\@ref(fig:ssb-status-rec)).

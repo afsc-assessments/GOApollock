@@ -240,6 +240,7 @@
 ```{r timeseries}
 sumbio <- repfile[['Expected_summary_(age_3+)_biomass']]*1e3
 ssb <- repfile[['Expected_spawning_biomass']]*1e3
+pct.ssb <- paste0(round(100*ssb/(Finv(b100)/1000),0),"%")
 rec <- repfile$Recruits*1e3
 catch <- repfile$Total_catch
 hr <- paste0(round(100*catch/(1000*sumbio),0), '%')
@@ -249,12 +250,13 @@ ssb2 <- c(repfile.last[['Expected_spawning_biomass']]*1e3, NA)
 rec2 <- c(repfile.last$Recruits*1e3,NA)
 hr2 <- paste0(round(100*catch/(1000*sumbio2),0), '%') 
 hr2[length(hr2)] <- NA
-tab <- data.frame(Year=repfile$years, sumbio=sumbio, ssb=ssb,
+tab <- data.frame(Year=repfile$years, sumbio=sumbio, ssb=ssb,pct.ssb=pct.ssb,
            rec=rec,catch=catch,hr, sumbio2, ssb2,rec2,hr2) %>% 
   subset(Year>=1977) 
 cap <- "Estimates of population biomass, recruitment, and harvest of GOA pollock from the age-structured assessment model.  The harvest rate is the catch in biomass divided by the total biomass of age 3+ fish at the start of the year."
 cols <- list(sumbio="3+ total\nbiomass (kt)", 
              ssb="SSB (kt)", 
+			 pct.ssb="% of SB100",
              rec="Age 1 recruits\n(millions)",
              catch="Catch (t)",
 			 hr="Harvest\nrate", 
@@ -265,10 +267,10 @@ cols <- list(sumbio="3+ total\nbiomass (kt)",
 flextable(tab) %>% set_caption(cap) %>% 
  set_header_labels(values=cols) %>%
  add_header_row(values=c("","2022 assessment", "2021 assessment"),
- colwidths=c(1,5,4)) %>%
+ colwidths=c(1,6,4)) %>%
  colformat_double(digits=0, big.mark=',') %>%
  colformat_num(digits=0, big.mark='', j=1) %>%
- vline(j=6) %>%
+ vline(j=7) %>%
  align(part='header', align='center') %>% fontsize(size=9)
 
 ```
