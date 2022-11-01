@@ -18,10 +18,7 @@ data.frame(Source = c(rep("Fishery", 2),
 		   rep("Summer acoustic survey", 2),
 		   rep("NMFS bottom trawl survey", 2),
   		   rep("ADF&G trawl survey", 2)),
-           Data = c("Total catch", "Age composition", "Biomass",
-                    "Age composition", 'Biomass', 'Age
-                    composition', 'Area-swept biomass', 'Age
-                    composition', 'Delta-GLM index', 'Age composition'),
+           Data = c("Total catch", "Age composition", "Biomass", "Age composition", 'Biomass', 'Age composition', 'Area-swept biomass', 'Age composition', 'Delta-GLM index', 'Age composition'),
            Years =
     c('1970-2021','1970-2021','1992-2022','1992-2022',
     '2013-2021, biennially',    '2013-2021, biennially',
@@ -108,7 +105,7 @@ half-year seasons and statistical area as follows:
 ```{r} 
  x <- read_xlsx(path=table.path, sheet = 'fishery_details', range='A1:F7') 
  flextable(x) %>%   
- colformat_double(digits=0, big.mark=',') 
+ colformat_double(digits=0, big.mark=',')  
 ``` 
 
 The estimated age composition in 2021 in all areas and all
@@ -121,15 +118,15 @@ the age-9 fish only accounting for 17%. Younger fish are likely
 to become increasingly prominent in the catch-at-age as the 2012
 year class begins age out of the population. Fishery catch at age
 in 1975-`r year` is presented in Table 1.\@ref(tab:caa) (See also
-Fig. 1.\@ref(fig:catches-seas-by-area)). Sample sizes for ages
+Fig. 1.\@ref(fig:ages-fsh)). Sample sizes for ages
 and lengths are given in Table 1.\@ref(tab:aged-fsh).
 
 ## Gulf of Alaska Bottom Trawl Survey
 
 Trawl surveys have been conducted by Alaska Fisheries Science
 Center (AFSC) beginning in 1984 to assess the abundance of
-groundfish in the Gulf of Alaska (Table
-1.\@ref(tab:aged-srv2). Starting in 2001, the survey frequency
+groundfish in the Gulf of Alaska (Tables 1.\@ref(tab:indices) and
+1.\@ref(tab:aged-srv2)). Starting in 2001, the survey frequency
 was increased from once every three years to once every two
 years. The survey uses a stratified random design, with 49 strata
 based on depth, habitat, and statistical area
@@ -176,17 +173,18 @@ gear were used.
 
 Estimates of numbers at age from the bottom trawl survey are
 obtained from random otolith samples and length frequency samples
-(Table 1.\@ref(tab:ages-srv2)). Numbers at age are estimated by
+(Table 1.\@ref(tab:aged-srv2)). Numbers at age are estimated by
 statistical area (Shumagin-610, Chirikof-620, Kodiak-630,
 Yakutat-640 and Southeastern-650) using a global age-length key
 for all strata in each single year, and CPUE-weighted length
 frequency data by statistical area. The new 2021 combined
 Shumagin, Chirikof and Kodiak age composition is used in the
-assessment model (Fig. 1.\@ref(fig:fig.ages-srv2)), and the 2021
-length composotions were removed. Age-1 pollock (2020 cohort)
-were strongly present in the Chirikof, Kodiak, and Yakutat
-statistical areas, but much less abundant in the Shumagin and
-Southeast Alaska areas (Fig. 1.\@ref(fig:ages-area-srv2)).
+assessment model (Fig. 1.\@ref(fig:ages-srv2), Table
+1.\@ref(tab:naa-srv2)), and the 2021 length composotions were
+removed. Age-1 pollock (2020 cohort) were strongly present in the
+Chirikof, Kodiak, and Yakutat statistical areas, but much less
+abundant in the Shumagin and Southeast Alaska areas
+(Fig. 1.\@ref(fig:ages-area-srv2)).
 
 ## Shelikof Strait Acoustic Survey
 Winter acoustic surveys to assess the biomass of pre-spawning
@@ -238,7 +236,7 @@ survey (Table 1.\@ref(tab:naa-srv1), Fig. 1.\@ref(fig:ages-srv1))
 were obtained using an age-length key compiled from random
 otolith samples and applied to weighted length frequency
 samples. Sample sizes for ages and lengths are given Table
-1.\@ref(tab:nages-srv1). Estimates of age composition in Shelikof
+1.\@ref(tab:aged-srv1). Estimates of age composition in Shelikof
 Strait in `r year` indicate reduced dominance of the 2012 year
 class, and a mode of age 2 and 5 fish (2020 and 2017 year
 classes), indicating new year classes are starting to comprise
@@ -308,7 +306,8 @@ Strait. Mid-water and bottom trawls are used to identify acoustic
 targets. The 2021 biomass estimate for summer acoustic survey is
 431,148 t, which is a 25% percent decrease from the 2019 estimate
 (Table 1.\@ref(tab:indices)). Age composition data were available
-in 2022 and showed strong 2017, 2018, and 2020 year classes.
+in 2022 and showed strong 2017, 2018, and 2020 year classes
+(Fig. 1.\@ref(fig:naa-srv26)).
 Analysis of the 2019 and 2021 survey was not complicated by the
 presence of age-0 pollock, which was a problem in previous summer
 acoustic surveys because age-0 pollock backscatter cannot be
@@ -510,6 +509,6 @@ experienced anomalous environmental conditions during the marine
 heatwave in the North Pacific during 2015-2017, has displayed
 unusual life history characteristics. These include early
 maturation, reduced growth, but apparently not reduced total
-mortality (Fig. 1.\@ref(fig:2021-bio)). It is unclear whether
+mortality (Fig. 1.\@ref(fig:2012-bio)). It is unclear whether
 these changes are a result of density dependence or environmental
 forcing.

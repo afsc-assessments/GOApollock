@@ -62,15 +62,6 @@
 ``` 
  \pagebreak 
 
-```{r shelikof} 
- x <- gettab(sheet = 'shelikof') 
- flextable(x$tab) %>%   
-       set_caption(x$cap) %>% 
- 	  colformat_double(digits=0, big.mark=',') %>% 
- 	  colformat_double(digits=0, big.mark='',j=1) %>% 
- 	  colformat_double(digits=2, j=4)  %>% fontsize(size=7)
-``` 
- \pagebreak 
 
 ```{r aged-srv2} 
  x <- gettab(sheet = 'aged_srv2', maxcols=10) 
@@ -88,7 +79,7 @@
        set_caption(x$cap) %>% 
  	  colformat_double(digits=1) %>% 
    	  colformat_double(digits=0, big.mark='',j=1) %>% 
- 	  hline(i=18:19) %>% autofit()  %>% fontsize(size=8)
+ 	  hline(i=18:19) %>% autofit()  %>% fontsize(size=7)
 ``` 
 
 
@@ -101,7 +92,18 @@
    colformat_double(digits=1) %>%  
    colformat_num(digits=0, big.mark='',j=1) %>% autofit  %>% fontsize(size=7)
 ``` 
+
  \pagebreak 
+```{r aged-srv1} 
+ x <- gettab(sheet = 'aged_srv1') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=0, big.mark=',') %>% 
+ 	  colformat_double(digits=0, big.mark='',j=1) %>% 
+ 	  colformat_double(digits=2, j=4)  %>% fontsize(size=6)
+``` 
+ \pagebreak 
+
 
 ```{r paa-srv3} 
  x <- gettab(sheet = 'paa_srv3', maxcols=17) 
@@ -110,7 +112,7 @@
  	  colformat_double(digits=3) %>%  
  colformat_num(digits=0, big.mark='',j=1) %>%  
   colformat_num(digits=0, big.mark=',',j=17) %>%  
- 		autofit  %>% fontsize(size=8)
+ 		autofit  %>% fontsize(size=7)
 
 ``` 
  \pagebreak 
@@ -298,7 +300,7 @@ cap <- "Uncertainty of estimates of recruitment and spawning biomass of GOA poll
  colformat_double(digits=2, j=c(3,7)) %>%
  colformat_num(digits=0, big.mark='', j=1) %>%
  vline(j=5) %>%
- align(part='header', align='center')
+ align(part='header', align='center') %>% fontsize(size=9)
 ```
 \pagebreak
 

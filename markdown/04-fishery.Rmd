@@ -25,8 +25,8 @@ the east side of Kodiak Island and along the Alaska Peninsula.
 ### Bycatch and Discards
 Incidental catch in the Gulf of Alaska directed pollock fishery
 is low. For tows classified as pollock targets in the Gulf of
-Alaska between 2016 and 2020, on average about 96% of the catch
-by weight of FMP species consisted of pollock (Table
+Alaska between 2016 and `r year-1`, on average about 96% of the
+catch by weight of FMP species consisted of pollock (Table
 1.\@ref(tab:incidental)). Nominal pollock targets are defined by
 the dominance of pollock in the catch, and may include tows where
 other species were targeted, but pollock were caught instead. The
@@ -39,7 +39,7 @@ in sablefish abundance and a wider spatial distribution. The most
 common recent non-target species are grenadiers, squid, capelin,
 jellyfish and miscellaneous fish (Table
 1.\@ref(tab:incidental)). Bycatch estimates for prohibited
-species over the period 2016-2020 are given in Table
+species over the period `r year-5`-`r year-1` are given in Table
 1.\@ref(tab:bycatch). Chinook salmon are the most important
 prohibited species caught as bycatch in the pollock fishery. A
 sharp spike in Chinook salmon bycatch in 2010 led the Council to

@@ -1,7 +1,7 @@
 
 # Figures
 
- 
+
 ```{r catches-map, eval=TRUE, fig.cap="Distribution of pollock catch in the 2020 fishery shown for 1/2 degree latitude by 1 degree longitude blocks by season in the Gulf of Alaska as determined by fishery observer-recorded haul retrieval locations. Blocks with less than 1.0 t of pollock catch are not shown. The area of the circle is proportional to the catch."} 
  addfig('catches_map.png')
 ```
@@ -62,7 +62,7 @@
 ```
 
 ```{r 2012-bio, eval=TRUE, fig.cap="Comparison of 2012 year class maturation, growth, and mortality with average characteristics. Maturity is based on sampling during winter acoustic surveys. Weight at age is a comparison of the 2012 year class in the winter acoustic survey with the average weight at age since 2013 excluding the 2012 year class. The mortality plot is catch curve analysis of the Shelikof Strait survey. The negative of the slope of a linear regression of log(N) on age is an estimate of total mortality (Z)."}
- addfig("2021_bio.png")
+ addfig("2012_bio.png")
 ```
 
 ```{r BT-prior, eval=TRUE, fig.cap="Prior on bottom trawl catchability used in the base model, and the estimate and uncertainty from the base model."}
@@ -100,6 +100,11 @@
 ```{r mod-compare, eval=TRUE, fig.cap="Estimated SSB for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data."}
 addfig("mod_compare.png")
 ```
+
+```{r mod-compare2, eval=TRUE, fig.cap="Absolute differences in SSB, summary biomass, and recruits (panels) from the final 2021 model for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data."}
+addfig("mod_compare2.png")
+```
+
 
 ```{r tv-q, eval=TRUE, fig.cap="Time-varying catchability for the Shelikof Strait acoustic survey (Survey 1), the ADF\\&G crab/groundfish trawl survey (Survey 3), and constant catchability for the age-1 and age-2 Shelikof indices (Surveys 4 and 5; representing selectivity), and for the summer NMFS acoustic survey (Survey 6), for model 19.1a. Ribbons and lines represent the 95% CI"}
  addfig("tv_q.png")

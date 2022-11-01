@@ -13,14 +13,14 @@ using the life history characteristics of GOA pollock (Table
 based on mean 1978-`r year-1` age-1 recruitment (`r avgrec`
 billion), which is `r pct.avgrec.change`% higher than the mean
 value in last year's assessment. Spawning was assumed to occur on
-March 15th, and a long-term average of maturity at age (1983-`r
-year`) was used with mean spawning weight at age from the
+March 15th, and a long-term average of maturity at age (1983-
+`r year`) was used with mean spawning weight at age from the
 Shelikof Strait acoustic surveys in 2017-`r year` to estimate
 current reproductive potential.  Fishery weight at age was
 assumed to be the most recent estimate from the RE model.
 Pollock weight-at-age is highly variable, showing a sustained
 increase, followed by a steep decline until a sharp increase in
-2021 (Fig. 1.\@ref(fig:waa-srv1)). The factors causing this
+2021 (Fig. 1.\@ref(fig:fig-waa-srv1)). The factors causing this
 pattern are unclear, but are likely to involve both
 density-dependent factors and environmental forcing. The SPR at
 F=0 was estimated as `r spr0` kg/recruit at age one.  FSPR rates
@@ -34,290 +34,548 @@ rates are given below:
 
 ```{r}
 tab <- read_xlsx(table.path, sheet='SPR')
-tab[,7] <- paste0(  format(round(100*pull(tab,7),1), nsmall=1),"%")
+tab[,7] <- paste0(  format(round(100*dplyr::pull(tab,7),1), nsmall=1),"%")
 flextable(tab) %>%
   colformat_double(digits=3, j=2) %>%
   colformat_double(digits=0, big.mark=',') 
 ```
-The B40% estimate of `r b40` t represents a `r
-pct.b40.changeF`from the  B40% estimate of `r b40.last` t in the
+The B40% estimate of `r b40` t represents a 
+`r pct.b40.changeF`from the  B40% estimate of `r b40.last` t in the
 `r year-1` assessment (Table 1.\@ref(tab:model-history)). The base model
-projection of female spawning biomass in 2022 is 
-186,481 t, which is 43.4% of unfished spawning biomass (based on
-average post-1977 recruitment) and above B40% (172,000 t),
+projection of female spawning biomass in `r year+1` is 
+`r ssb` t, which is `r pct.status` of unfished spawning biomass (based on
+average post-1977 recruitment) and above B40% (`r b40` t),
 thereby placing GOA pollock in sub-tier "a" of Tier 3. 
 
 ## 2022 acceptable biological catch
 
-The definitions of OFL and maximum permissible FABC under Amendment 56 provide a buffer between the overfishing level and the intended harvest rate, as required by NMFS national standard guidelines.
-Since estimates of stock biomass from assessment models are uncertain, the buffer between OFL and ABC provides a margin of safety so that assessment error will not result in the OFL being inadvertently exceeded.
-For GOA pollock, the maximum permissible FABC harvest rate (i.e., FABC/FOFL) is 84.4% of the OFL harvest rate.
-Projections for 2022 for the FOFL and the maximum permissible FABC are given in Table 1.25.
-
-2022 acceptable biological catch The definitions of OFL and maximum permissible FABC under Amendment 56 provide a buffer between the overfishing level and the intended harvest rate, as required by NMFS national standard guidelines.
-Since estimates of stock biomass from assessment models are uncertain, the buffer between OFL and ABC provides a margin of safety so that assessment error will not result in the OFL being inadvertently exceeded.
-For GOA pollock, the maximum permissible FABC harvest rate (i.e., FABC/FOFL) is 84.4% of the OFL harvest rate.
-Projections for 2022 for the FOFL and the maximum permissible FABC are given in Table 1.25.
+The definitions of OFL and maximum permissible FABC under
+Amendment 56 provide a buffer between the overfishing level and
+the intended harvest rate, as required by NMFS national standard
+guidelines.  Since estimates of stock biomass from assessment
+models are uncertain, the buffer between OFL and ABC provides a
+margin of safety so that assessment error will not result in the
+OFL being inadvertently exceeded. For GOA pollock, the maximum
+permissible FABC harvest rate (i.e., FABC/FOFL) is 
+`r format(00*fabc/fofl, digits=3)`% of the OFL harvest rate.
+Projections for `r year+1` for the FOFL and the maximum
+permissible FABC are given in Table 1.\@ref(tab:proj-scens).
 
 ### Should the ABC be reduced below the maximum permissible ABC?
+The SSC in its December 2018 minutes recommended that all
+assessment authors use the risk table when determining whether to
+recommend an ABC lower than the maximum permissible.  The
+following template is used to complete the risk table:
 
-The following template is used to complete the risk table:
+```{r}
+library(flextable)
+ library(tidyverse)
+ data.frame(level = c("Level 1: Normal",
+                      "Level 2: Substantially increased concerns",
+                      "Level 3: Major Concern",
+                      "Level 4: Extreme concern"),
+            assess = c("Typical to moderately increased uncertainty/minor unresolved issues in assessment.", 
+                       "Substantially increased assessment uncertainty/ unresolved issues.",
+                       "Major problems with the stock assessment; very poor fits to data; high level of uncertainty; strong retrospective bias.",
+                       "Severe problems with the stock assessment; severe retrospective bias. Assessment considered unreliable."),
+            pop = c("Stock trends are typical for the stock; recent recruitment is within normal range.",
+                    "Stock trends are unusual; abundance increasing or decreasing faster than has been seen recently, or recruitment pattern is atypical.",
+                    "Stock trends are highly unusual; very rapid changes in stock abundance, or highly atypical recruitment patterns.",
+                    "Stock trends are unprecedented; More rapid changes in stock abundance than have ever been seen previously, or a very long stretch of poor recruitment compared to previous patterns."),
+            enviro = c("No apparent environmental/ecosystem concerns",
+                       "Some indicators showing adverse signals relevant to the stock but the pattern is not consistent across all indicators.",
+                       "Multiple indicators showing consistent adverse signals a) across the same trophic level as the stock, and/or b) up or down trophic levels (i.e., predators and prey of the stock)",
+                       "Extreme anomalies in multiple ecosystem indicators that are highly likely to impact the stock; Potential for cascading effects on other ecosystem components"),
+            fish = c("No apparent fishery/resource-use performance and/or behavior concerns",
+                     "Some indicators showing adverse signals but the pattern is not consistent across all indicators",
+                     "Multiple indicators showing consistent adverse signals a) across different sectors, and/or b) different gear types",
+                     "Extreme anomalies in multiple performance  indicators that are highly likely to impact the stock")) %>% 
+   flextable() %>% 
+     font(fontname = "Times", part = "all") %>% 
+     width(j = ~ assess, width = 1.5) %>% 
+     width(j = ~ pop, width = 2) %>% 
+     width(j = ~ enviro, width = 1.5) %>% 
+     width(j = ~ fish, width = 1.5) %>% 
+     set_header_labels(level = "",
+                     assess = "Assessment-related considerations",
+                     pop = "Population dynamics considerations",
+                     enviro = "Environmental/ecosystem considerations",
+                     fish = "Fishery Performance") %>% 
+   font(fontname = "Times", part = "all") %>% 
+   fontsize(size = 10) %>% 
+   theme_vanilla() %>% 
+   italic(part = "header") 
+```
 
-\*\* RISK TABLE HERE\*\*
+The table is applied by evaluating the severity of four types of
+considerations that could be used to support a scientific
+recommendation to reduce the ABC from the maximum permissible.
+These considerations are stock assessment considerations,
+population dynamics considerations, environmental/ecosystem
+considerations, and fishery performance.  Examples of the types
+of concerns that might be relevant include the following:
 
-## Risk Table and ABC recommendation
-
-The SSC in its December 2018 minutes recommended that all assessment authors use the risk table when determining whether to recommend an ABC lower than the maximum permissible.
-The following template is used to complete the risk table:
-
-<!-- ```{r} -->
-<!-- library(flextable) -->
-<!-- library(tidyverse) -->
-
-<!-- data.frame(level = c("Level 1: Normal", -->
-<!--                      "Level 2: Substantially increased concerns", -->
-<!--                      "Level 3: Major Concern", -->
-<!--                      "Level 4: Extreme concern"), -->
-<!--            assess = c("Typical to moderately increased uncertainty/minor unresolved issues in assessment.",  -->
-<!--                       "Substantially increased assessment uncertainty/ unresolved issues.", -->
-<!--                       "Major problems with the stock assessment; very poor fits to data; high level of uncertainty; strong retrospective bias.", -->
-<!--                       "Severe problems with the stock assessment; severe retrospective bias. Assessment considered unreliable."), -->
-<!--            pop = c("Stock trends are typical for the stock; recent recruitment is within normal range.", -->
-<!--                    "Stock trends are unusual; abundance increasing or decreasing faster than has been seen recently, or recruitment pattern is atypical.", -->
-<!--                    "Stock trends are highly unusual; very rapid changes in stock abundance, or highly atypical recruitment patterns.", -->
-<!--                    "Stock trends are unprecedented; More rapid changes in stock abundance than have ever been seen previously, or a very long stretch of poor recruitment compared to previous patterns."), -->
-<!--            enviro = c("No apparent environmental/ecosystem concerns", -->
-<!--                       "Some indicators showing adverse signals relevant to the stock but the pattern is not consistent across all indicators.", -->
-<!--                       "Multiple indicators showing consistent adverse signals a) across the same trophic level as the stock, and/or b) up or down trophic levels (i.e., predators and prey of the stock)", -->
-<!--                       "Extreme anomalies in multiple ecosystem indicators that are highly likely to impact the stock; Potential for cascading effects on other ecosystem components"), -->
-<!--            fish = c("No apparent fishery/resource-use performance and/or behavior concerns", -->
-<!--                     "Some indicators showing adverse signals but the pattern is not consistent across all indicators", -->
-<!--                     "Multiple indicators showing consistent adverse signals a) across different sectors, and/or b) different gear types", -->
-<!--                     "Extreme anomalies in multiple performance  indicators that are highly likely to impact the stock")) %>%  -->
-<!--   flextable() %>%  -->
-<!--     font(fontname = "Times", part = "all") %>%  -->
-<!--     width(j = ~ assess, width = 1.5) %>%  -->
-<!--     width(j = ~ pop, width = 2) %>%  -->
-<!--     width(j = ~ enviro, width = 1.5) %>%  -->
-<!--     width(j = ~ fish, width = 1.5) %>%  -->
-<!--     set_header_labels(level = "", -->
-<!--                     assess = "Assessment-related considerations", -->
-<!--                     pop = "Population dynamics considerations", -->
-<!--                     enviro = "Environmental/ecosystem considerations", -->
-<!--                     fish = "Fishery Performance") %>%  -->
-<!--   font(fontname = "Times", part = "all") %>%  -->
-<!--   fontsize(size = 10) %>%  -->
-<!--   theme_vanilla() %>%  -->
-<!--   italic(part = "header")  -->
-<!-- ``` -->
-
-The table is applied by evaluating the severity of four types of considerations that could be used to support a scientific recommendation to reduce the ABC from the maximum permissible.
-These considerations are stock assessment considerations, population dynamics considerations, environmental/ecosystem considerations, and fishery performance.
-Examples of the types of concerns that might be relevant include the following:
-
-1.  "Assessment considerations---data-inputs: biased ages, skipped surveys, lack of fishery-independent trend data; model fits: poor fits to fits to fishery or survey data, inability to simultaneously fit multiple data inputs; model performance: poor model convergence, multiple minima in the likelihood surface, parameters hitting bounds; estimation uncertainty: poorly-estimated but influential year classes; retrospective bias in biomass estimates.
-2.  "Population dynamics considerations---decreasing biomass trend, poor recent recruitment, inability of the stock to rebuild, abrupt increase or decrease in stock abundance.
-3.  "Environmental/ecosystem considerations---adverse trends in environmental/ecosystem indicators, ecosystem model results, decreases in ecosystem productivity, decreases in prey abundance or availability, increases or increases in predator abundance or productivity.
-4.  "Fishery performance---fishery CPUE is showing a contrasting pattern from the stock biomass trend, unusual spatial pattern of fishing, changes in the percent of TAC taken, changes in the duration of fishery openings."
+1.  Assessment considerations---data-inputs: biased ages,
+    skipped surveys, lack of fishery-independent trend data;
+    model fits: poor fits to fits to fishery or survey data,
+    inability to simultaneously fit multiple data inputs; model
+    performance: poor model convergence, multiple minima in the
+    likelihood surface, parameters hitting bounds; estimation
+    uncertainty: poorly-estimated but influential year classes;
+    retrospective bias in biomass estimates.
+2.  Population dynamics considerations---decreasing biomass
+    trend, poor recent recruitment, inability of the stock to
+    rebuild, abrupt increase or decrease in stock abundance.
+3.  Environmental/ecosystem considerations---adverse trends in
+    environmental/ecosystem indicators, ecosystem model results,
+    decreases in ecosystem productivity, decreases in prey
+    abundance or availability, increases or increases in predator
+    abundance or productivity.
+4.  Fishery performance---fishery CPUE is showing a contrasting
+    pattern from the stock biomass trend, unusual spatial pattern
+    of fishing, changes in the percent of TAC taken, changes in
+    the duration of fishery openings.
 
 #### Assessment considerations
 
-A continuing assessment issue is the severe decline in the 2018 year class abundance between the 2019 and 2020 Shelikof Strait acoustic surveys.
-The 2019 estimate was indicative of a strong year class, but the 2020 estimate of age 2 fish was only 10% of the long-term average.
-Over the full Shelikof Strait time series, high age-1 estimates have always been followed by high age-2 estimates in the next year (Fig. 1.9).
-It was previously hypothesized that the 2018 year class could have moved out of Shelikof Strait or experienced unusually high mortality.
-This year, both the 2020 age 2 ADF&G and 2021 age 3 Shelikof survey observed proportions were low relative to the model expectation (Figs. 1.27 and 1.30), providing further evidence of a reduced 2018 cohort.
-In contrast, the 2020 fishery catch at age was very close to expected for age-2 fish (Fig. 1.24), and there are some apparent age-3 fish in the 2021 length compositions from the summer surveys.
-So despite new data sources, the initial and current size of this cohort is equivocal.
-We fit a model in which the high 2019 age-1 estimate was removed, and found that the 2022 OFL and ABC were more strongly affected (\~9% decrease) than the same exercise in the previous year (\~5% decrease).
-This is because this year class will be more exploitable as age 4 fish in the 2022 fishery (selectivity of 0.76) vs. the 3 year olds in 2021 (selectivity of 0.24).
-As more observations accumulate the fate of this year class should become clearer, and if observations continue to be low we expect that the model will increasingly predict a smaller year class, essentially fitting other data over the large age-1 index value in 2019.
+A continuing assessment issue is the conflicting size of the 2018
+year class abundance between the sources of information.  The
+Shelikof 2019 estimate was indicative of a strong year class, but
+the 2020 estimate of age 2 fish was only 10% of the long-term
+average.  Over the full Shelikof Strait time series, high age-1
+estimates have always been followed by high age-2 estimates in
+the next year (Fig. 1.9).  It was previously hypothesized that
+the 2018 year class could have moved out of Shelikof Strait or
+experienced unusually high mortality. In 2021, both the 2020 age
+2 ADF&G and 2021 age 3 Shelikof survey observed proportions were
+low relative to the model expectation, providing further evidence
+of a reduced 2018 cohort. In contrast, the 2020 fishery catch at
+age was very close to expected for age-2 fish, and there are some
+apparent age-3 fish in the 2021 length compositions from the
+summer surveys. 
 
-Another important issue is the notable increase in spawning weight at age data from the winter Shelikof survey from 2020 (Fig. 1.21), including the heaviest age 2 fish to date.
-The model results are sensitive to the spawning weights used.
-If instead the 2020 data were used in 2021, the 2022 ABC would increase by 8%.
-We used the 2021 for several reasons.
-First, comparing the last three years of data from Shelikof it is quite clear that there has been a shift in length at age, not weight at length, as can be seen in the following figure.
+This year brings important new data sets to the table, which help
+to resolve this uncertainty. Shelikof age compositions provide
+information as age-4s, while the 2021 fishery, NMFS bottom trawl
+and summer acoustic surveys provide information on the 2018
+cohort as age-3s. By plotting Pearson residuals by cohort, it is
+immediately clear that the Shelikof survey is the main source of
+information suggesting a small cohort (i.e., negative residuals),
+while the other surveys and fishery generally suggest a larger
+cohort.
 
-*add figure TODO*
+```{r}
+addfig('resid_by_cohort.png')
+```
 
-Length at age for specimen data from three years (colors), with small circles showing individual fish and larger ones the mean at age.
-Connecting lines are included to help highlight overall patterns by year.
-Based on this data, the length at age for 2021 is more in line with 2019, and 2020 appears to be more of an anomaly.
-Second, there was nothing new about either survey protocol or execution, nor the ageing process that would explain these patterns.
-Finally, weight at age had been declining for older fish since about 2012, and the increase this year is well within historical and recent norms for most ages.
-Another new issue identified this year is that the absolute scale of the population is driven heavily by the NMFS bottom trawl survey, which in turn is highly influenced by the prior on catchability (Fig. 1.17).
-A more thorough analysis is needed to expand and confirm these results, but it is clear that this prior has a large impact on the results of the assessment.
-The model fits all indices relatively well, except the divergent trends mentioned above, and we generally have no reason to believe the prior is out of line with expert opinion.
-There are some issues to consider with the assessment, but taken together we do not believe they are serious enough to rise above a score of 1---no increased concerns.
+The estimated size of the cohort changed little between the 2021
+and 2022 models, suggesting that the estimate likely has settled
+down at 5.45 billion (CV=18%). This cohort does not appear
+unusual compared to other recent cohort estimates as data are
+added.
+
+```{r}
+addfig('retro_recruits.png')
+```
+
+In summary, the 2018 cohort is slightly larger than average, and
+the initial Shelikof estimate for age-1s was anomalously high,
+while all subseqeunt years were low. The other surveys and
+fishery appear to be inline with this estimate, building a
+consensus of the result. The one notable exception is the the
+2020 ADF&G estimate which also had a large negative age-2
+residual. Since this survey targets larger, older fish it is not
+compelling evidence, but it will be interesting to see how the
+age-4 residual turns out in the 2023 assessment when those data
+are available. The implication is that the 2018 cohort
+availability to the winter pre-spawning Shelikof survey has been
+low for the last three years. It is not apparent why this would
+be, and appears to have no historical precedent. The cohort could
+be spawning in a different area, but since surveys for other
+winter spawning areas have been limited in recent years it is
+only speculation. Future surveys of other spawning areas could
+prove valuable to help resolve this mystery.
+
+Despite the unusual characteristics of this cohort there are no
+assessment model concerns, as cohort size is estimated
+consistently and other data sources are in agreement and the
+model fits them well. We thus gave assessment considerations a
+score of 1 --- no increased concerns.
 
 #### Population dynamics considerations
 
-The large 2012 year class had a strong impact on the recent pollock population, from a steep decline in age diversity (Fig. 1.15) to abnormal growth and maturation (but not mortality as previously suspected; Fig. 1.16), which had led to an increase in concern in 2018.
-However, this year class is no longer the predominant one in the fishery and another large one (2017) has entered the fishery (Fig. 1.3), resulting in a return to normal age diversity in 2020.
-The conflicting signals of the 2018 year class remain a potential population dynamics concern, especially if the large 2020 year class suffers a similar fate.
-Overall the assessment uncertainty seems the primary issue rather than population dynamics issues.
-Consequently, we gave populations dynamics considerations a score of 1---no increased concerns.
+The large 2012 year class had a strong impact on the recent
+pollock population, from a steep decline in age diversity
+(Fig. 1.\@ref(fig:fsh-chars)) to abnormal growth and maturation
+(but not mortality as previously suspected;
+Fig. 1.\@ref(fig:2012-bio)), which had led to an increase in
+concern. However, this year class is no longer the predominant
+one in the fishery and two large ones (2017 and 2018) have
+already entered the fishery, with another large one in 2020 to
+enter in the coming years (Figs. 1.\@ref(fig:ages-fsh) and
+1.\@ref(fig:ssb-status-rec)), resulting in a return to normal age
+diversity since 2020. Consequently, we gave populations
+dynamics considerations a score of 1---no increased concerns.
 
 #### Environmental/Ecosystem considerations
+Appendix 1A provides a detailed look at environmental/ecosystem
+considerations specific to this stock within the ecosystem and
+socioeconomic profile (ESP). Broad-scale information on
+environmental and ecosystem considerations are provided by the
+Gulf of Alaska Ecosystem Status Report (GOA ESR;
+@ferriss2022a). The text below summarizes ecosystem information
+related to GOA pollock provided from both the ESP and GOA ESR.
 
-**Environmental Processes:** It is reasonable to expect that the 2021 and predicted 2022 average deeper ocean temperatures will provide good spawning habitat and average to cooler surface temperatures during a time when they are growing to a size that promotes over-winter survival.
-However, relatively low abundance of age-0 pollock, along with larval cod and northern rock sole, were observed in beach seine surveys around Kodiak and on the Alaskan Peninsula, and in the EcoFOCI spring survey (Rogers, 2021), potentially reflecting poor feeding conditions.
-Low age-0 pollock have been observed in previous years (e.g., 2019, 2016) that had warmer ocean temperatures and average to late phytoplankton bloom timing.
-While 2021 was not characterized as a 'warm year', the WGOA spring surface temperatures were above average and WGOA bloom timing was average with relatively low chlorophyll-a abundance (Watson 2021).
-Ocean temperatures at the surface and at depth on the shelf were around the long-term average in 2021 (not a marine heatwave year, Watson 2021; AFSC Bottom Trawl Survey, Laman 2021; AFSC EcoFOCI survey, Rogers 2021; Seward Line Survey, Danielson 2021), although western GOA started the year with warmer surface waters (satellite data; Watson 2021).
-Numerous temperature time series show signs of cooling from previous surveys (returning to average from recent marine heatwave years 2014-2016, 2019) at the surface and at depth and 2022 surface temperatures are predicted to continue cooling, in alignment with La Niña conditions and a negative Pacific Decadal Oscillation.
-Spring northeasterly winds in Shelikof Strait (downwelling favorable, flowing south through Shelikof Strait) were downwelling favorable, contributing to retention of 2021 larvae and potential for a stronger age-1 year class in 2022, similar to conditions in 2012 and 2020.
-The center of gravity in the northeast direction and area occupied estimates for the GOA pollock population have decreased from 2019 (although area occupied is still high), implying a shift in distribution toward the southwest and a slightly reduced population spread.
+**Environmental Processes:** The 2022 and predicted 2023 ocean
+temperatures are all within known optimal ranges for pollock life
+history stages (spawning 150-300m: 1-7°C, egg 0-200m, 5-6°C,
+larva surface 3-7°C, as referenced in the ESP). It is reasonable
+to expect that the 2022 and predicted 2023 average ocean
+temperatures will provide good spawning habitat, but warmer fall
+surface temperatures may negatively impact growth to a size that
+promotes over-winter survival for this year’s age class. Spring
+surface temperatures over the western and central GOA were
+slightly above average (Appendix 1A: Spring Temperature Surface
+WCGOA Satellite indicator by M. Callahan). Western GOA surface
+temperatures were cooler than average in the winter (Satellite,
+@lemagie2022a), transitioned from cool to above average in spring
+(Satellite, @lemagie2022a, 5.7°C Seward Line, @danielson2022a),
+above average in summer (12.3°C Seward Line, @danielson2022a and
+Satellite, @lemagie2022a) and fall (Satellite,
+@lemagie2022a). To-date, the western GOA is experiencing the 3rd
+consecutive non-marine heatwave year, with one short-term
+heatwave event in July (Satellite, @lemagie2022a); however, the
+central GOA experienced average heatwave events this year which
+is an increase from last year (Appendix 1A: Annual Heatwave GOA
+Model indicator by S. Barbeaux). Spring winds from the northeast
+in Shelikof Strait (downwelling favorable, flowing south through
+Shelikof Strait) were downwelling favorable, contributing to
+retention of 2022 larvae and potential for a stronger age-1 year
+class in 2023, similar to conditions in 2021, 2020, and 2012
+(Appendix 1A: Spring Wind Direction Kodiak Buoy by
+L. Rogers). Over the western and central GOA, spring chlolorphyll
+*a* concentration increased to slightly below average while the
+peak was slightly earlier than last year by still later than
+average (Appendix 1A: Spring Chlorophylla Biomass and Peak WCGOA
+Satellite by M. Callahan). For the western GOA, spring primary
+productivity varied spatially from below to above average
+chlorophyll a concentrations, with slightly later than average
+spring bloom timing (Satellite, @gann2022a). Elevated spring
+productivity was observed along the Seward Line (CGOA), in terms
+of a high phytoplankton size index, inferring increased energy
+transfer from the base of the food web [@strom2022a]. Upcoming
+2023 winter and spring surface temperatures are predicted to be
+cooler than average, in alignment with La Nina conditions and a
+negative Pacific Decadal Oscillation.
 
-**Prey**: Planktivorous foraging conditions were moderate and regionally variable across the GOA in 2021.
-The western GOA had lower spring biomass of small and large copepods around Kodiak, characteristics of previous warm, less productive years (e.g., 2019).
-Planktivorous seabird reproductive success, an indicator of zooplankton availability and nutritional quality, was below average just north of Kodiak (E. Amatuli Island; Drummond 2021), but average just south of Kodiak (Chowiet Island).
-Around the eastern edge of WGOA (Seward Line, Middleton Island) the biomass of large copepods was average to above-average (Seward Line Survey, Hopcroft 2021) and planktivorous seabirds had better reproductive success (Middleton Island, Hatch 2021), indicating improved forage conditions.
-The eastern GOA inside waters of Icy Strait had higher than average large copepods and euphausiids (AFSC SECM Survey, Icy Strait, Fergusson 2021), however planktivorous seabirds had mixed reproductive success.
-The body condition of age2+ pollock was below average (continuing a trend since 2015), although the high standard error around the mean coupled with increased size-at-age trends in 2021 suggest their condition might be recovering from the post 2014 heatwave warm years (Bottom Trawl Survey, O'Leary 2021).
-Winter adult pollock condition from the acoustic survey was average, continuing the increasing trend since very low condition in 2017.
+**Prey**:
+Planktivorous foraging conditions were potentially above average
+across the GOA in 2022 with limited data in western GOA. Moderate
+and regionally variable across the GOA in 2021. The biomass of
+large calanoid copepods was average to above average at the
+eastern edge of western GOA (Seward Line, @hopcroft2022a). Small
+and large calanoid copepods increased to above average, while
+euphausiid biomass decreased to approximately average in eastern
+GOA inside waters (AFSC SECM Survey, Icy Strait, Fergusson
+2022). Planktivorous seabird reproductive success, an indicator
+of zooplankton availability and nutritional quality, was below
+average just south of Kodiak (Chowiet Island), and above average
+in central GOA (Middleton Island on shelf edge off Seward) and
+eastern GOA (St. Lazaria Island near Sitka; @drummond2022a; Hatch
+2022, Appendix 1A: Annual Auklet Reproductive Success Chowiet
+Survey indicator by S. Zador). Catch-per-unit-effort of age-0
+pollock decreased to just above average in the nearshore beach
+seine survey around Kodiak and along the Alaska Peninsula
+suggesting less productive feeding conditions in the nearshore.
 
-**Predators and Competitors**: Potential competitors are large year classes of juvenile sablefish (2016, 2018), an increasing population of Pacific Ocean perch, and pink salmon which are returning in very high numbers in 2021 (Murphy 2021, Shaul 2021).
-The sablefish biomass appears to be shifting to deeper waters along the slope as they mature (Goethel 2021), reducing their overlap with pollock, and the potential for competitive pressure from Pacific Ocean perch on pollock is considered inconclusive.
+**Predators and Competitors**: Predation pressure from key
+groundfish species (arrowtooth flounder, Pacific cod, Pacific
+halibut, and potentially sablefish) is expected to be
+moderate. Pacific cod and halibut biomass have remained
+relatively low, arrowtooth flounder assessment shows slight
+decline in 2022, (and a slight increase in 2022 ADF&G
+survey). The sablefish assessment shows a slight decline and the
+large 2016 age class of sablefish will have moved to adult slope
+habitat with little overlap with pollock, however a larger 2019
+year class of sablefish may bring increased predation pressure
+(Appendix 1A: Annual Sablefish Biomass GOA Model by
+K. Shotwell). Western GOA Steller sea lions slightly increased
+but remain lower than previous biomass peaks (Appendix 1A: Annual
+Steller Sea Lion Adult GOA Survey by K. Sweeney). Cannibalism is
+less prevalent in the GOA as in other Alaskan waters. Potential
+competitors are a large year class of juvenile sablefish (2019)
+as well as other potential strong sablefish year classes, and a
+relatively large population of Pacific Ocean perch (Appendix 1A:
+Annual Sablefish and Pacific Ocean Perch Biomass GOA Model by
+K. Shotwell). Pink salmon contributed lower competitive pressure
+in 2022 given their predictably lower returns in even years
+[@whitehouse2022a;@vulstek2022a].
+
+*Summary for Environmental/Ecosystem Considerations*
+
+* Environment: Moderate thermal conditions for adults and larvae,
+with concerns of potential impacts of fall surface warmth on YOY
+winter survival.
+
+*Prey: Planktivorous and piscivorous foraging conditions were
+above average in the WGOA and EGOA, with high uncertainty due to
+limited zooplankton data (especially euphausiid data which are
+primary prey for juveniles & adults). The age-0 year classes
+sampled in the beach seine survey decreased to slightly above
+average suggesting slightly limited
+prey resources.
+
+*Competitors/Predators: Predation pressure is expected to be
+moderate from key groundfish species (arrowtooth flounder,
+Pacific cod, Pacific halibut, and potentially sablefish) and
+potential competitors for zooplankton may remain moderate given a
+large year class of juvenile sablefish (2019), and large
+population of Pacific Ocean perch but lower (even year) returns
+of pink salmon.
+
+Currently the 2018, 2017 and 2012 year classes are the dominant
+year classes supporting the fishery, and there is no cause to
+suspect unfavorable conditions for those cohorts. Together, the
+most recent data available suggest an ecosystem risk Level 1---
+Normal: No apparent environmental/ecosystem concerns.
+
 
 #### Fishery performance
-Trends in effort-weighted fishery CPUE were examined in the ESP (Appendix 1A) for two seasons, the pre-spawning fishery (A and B seasons) and the summer/fall fishery (C and D seasons). Fishery CPUE is either above (A and B seasons) or close to (C and D seasons) the long-term average, and is very consistent with the abundance trend of exploitable biomass from the assessment. No concerns regarding fishery performance were identified and this element was given a score of 1.
+Trends in effort-weighted fishery CPUE were examined in the ESP
+(Appendix 1A) for two seasons, the pre-spawning fishery (A and B
+seasons) and the summer/fall fishery (C and D seasons). Fishery
+CPUE is either above (A and B seasons) or close to (C and D
+seasons) the long-term average, and is very consistent with the
+abundance trend of exploitable biomass from the assessment. No
+concerns regarding fishery performance were identified and this
+element was given a score of 1.
 
-The results are summarized in the table below:
-
-* insert table TODO *
 
 #### Summary and ABC recommendation
 
-<!-- ```{r} -->
-<!-- l1 = "Level 1: No increased concerns" -->
-<!-- l2 = "Level 2: Substantially increased concerns" -->
-<!-- l3 = "Level 3: Major concern" -->
-<!-- l4 = "Level 4: Extreme concern" -->
+```{r}
+l1 = "Level 1: No increased concerns"
+l2 = "Level 2: Substantially increased concerns"
+l3 = "Level 3: Major concern"
+l4 = "Level 4: Extreme concern"
 
 
-<!-- data.frame(assess = l1, -->
-<!--            pop = l1, -->
-<!--            enviro = l1, -->
-<!--            fish = l1) %>%  -->
-<!--   flextable() %>%  -->
-<!--     width(j = ~ assess, width = 1.5) %>%  -->
-<!--     width(j = ~ pop, width = 1.5) %>%  -->
-<!--     width(j = ~ enviro, width = 1.5) %>%  -->
-<!--     width(j = ~ fish, width = 1.5) %>%  -->
-<!--     set_header_labels(level = "", -->
-<!--                     assess = "Assessment-related considerations", -->
-<!--                     pop = "Population dynamics considerations", -->
-<!--                     enviro = "Environmental/ecosystem considerations", -->
-<!--                     fish = "Fishery Performance") %>%  -->
-<!--   fontsize(size = 10) %>%  -->
-<!--   font(fontname = "Times", part = "all") %>%  -->
-<!--   italic(part = "header")  -->
-<!-- ``` -->
+data.frame(assess = l1,
+           pop = l1,
+           enviro = l1,
+           fish = l1) %>%
+  flextable() %>%
+    width(j = ~ assess, width = 1.5) %>%
+    width(j = ~ pop, width = 1.5) %>%
+    width(j = ~ enviro, width = 1.5) %>%
+    width(j = ~ fish, width = 1.5) %>%
+    set_header_labels(level = "",
+                    assess = "Assessment-related considerations",
+                    pop = "Population dynamics considerations",
+                    enviro = "Environmental/ecosystem considerations",
+                    fish = "Fishery Performance") %>%
+  fontsize(size = 10) %>%
+  font(fontname = "Times", part = "all") %>%
+  italic(part = "header")
+```
 
-Given the lack of elevated scores in the risk table, the author’s recommended ABC is based on the maximum permissible ABC, resulting in a 2022 ABC of 133,081 t, which is an increase of 26% from the 2021 ABC. The author’s recommended 2023 ABC is 131,912 t. The OFL in 2022 is 154,983 t, and the OFL in 2023 if the ABC is taken in 2022 is 153,097 t. We project that the ABC will begin to increase starting in 2024. 
-To evaluate the probability that the stock will drop below the B20% threshold, we projected the stock forward for five years using the author’s recommended fishing mortality schedule. This projection incorporates uncertainty in stock status, uncertainty in the estimate of B20%, and variability in future recruitment. We then sampled from the probability of future spawning biomass using Markov chain Monte Carlo (MCMC) using the no-U-turn sampler available in ADMB (Monnahan and Kristensen 2019). Analysis of the posterior samples indicates that probability of the stock dropping below B20% will be negligible through 2026, conditional upon the model specified here (Fig. 1.41).
+Given the lack of elevated scores in the risk table, the author’s
+recommended ABC is based on the maximum permissible ABC,
+resulting in a `r year+1` ABC of `r maxabc` t, which is a 
+`r pct.abc.changeF`from the `r year` ABC. The author’s recommended
+`r year+2` ABC is `r F(exec_table[12,4])` t. The OFL in 
+`r year+1` is `r ofl` t, and the OFL in `r year+2` if the ABC is
+taken in `r year+1` is `r F(exec_table[10,4])` t.  To evaluate
+the probability that the stock will drop below the B20%
+threshold, we projected the stock forward for five years using
+the author’s recommended fishing mortality schedule. This
+projection incorporates uncertainty in stock status, uncertainty
+in the estimate of B20%, and variability in future
+recruitment. We then sampled from the probability of future
+spawning biomass using Markov chain Monte Carlo (MCMC) using the
+no-U-turn sampler available in ADMB [@monnahan2018a]. Analysis of
+the posterior samples indicates that probability of the stock
+dropping below B20% will be negligible through `r year+5`,
+conditional upon the model specified here
+(Fig. 1.\@ref(fig:depletion)).
 
-### Area Allocation of Harvests
+### Projections and Status Determination
+<!-- !!!! this stuff came from the template, but Martin's SAFE -->
+<!-- didn't have it.. should probably add later
 
-### Status Determination
+<!-- Under the MSFCMA, the Secretary of Commerce is required to report -->
+<!-- on the status of each U.S. fishery with respect to overfishing. -->
+<!-- This report involves the answers to three questions: -->
 
-Under the MSFCMA, the Secretary of Commerce is required to report on the status of each U.S. fishery with respect to overfishing.
-This report involves the answers to three questions: 1) Is the stock being subjected to overfishing?
-2) Is the stock currently overfished?
-3) Is the stock approaching an overfished condition?
+<!-- 1. Is the stock being subjected to overfishing? -->
+<!-- 2. Is the stock currently overfished? -->
+<!-- 3. Is the stock approaching an overfished condition? -->
 
-*Is the stock being subjected to overfishing?* The official catch estimate for the most recent complete year (`r year-1`) is *correct this later* r catch %\>% filter(Year==year-1) %\>% pull(Catch) %\>% format(., big.mark = ",")`t.  This is less than the`r year-1` OFL of 5,402 t.
-Therefore, the stock is not being subjected to overfishing.
+<!-- *Is the stock being subjected to overfishing?* The official catch -->
+<!-- estimate for the most recent complete year (`r year-1`) is -->
+<!-- *correct this later* r catch %\>% filter(Year==year-1) %\>% -->
+<!-- pull(Catch) %\>% format(., big.mark = ",")`t.  This is less than -->
+<!-- the`r year-1` OFL of 5,402 t.  Therefore, the stock is not being -->
+<!-- subjected to overfishing. -->
 
-Harvest Scenarios #6 and #7 are intended to permit determination of the status of a stock with respect to its minimum stock size threshold (MSST).
-Any stock that is below its MSST is defined to be overfished.
-Any stock that is expected to fall below its MSST in the next two years is defined to be approaching an overfished condition.
-Harvest Scenarios #6 and #7 are used in these determinations as follows:
+<!-- Harvest Scenarios #6 and #7 are intended to permit determination -->
+<!-- of the status of a stock with respect to its minimum stock size -->
+<!-- threshold (MSST).  Any stock that is below its MSST is defined to -->
+<!-- be overfished.  Any stock that is expected to fall below its MSST -->
+<!-- in the next two years is defined to be approaching an overfished -->
+<!-- condition.  Harvest Scenarios #6 and #7 are used in these -->
+<!-- determinations as follows: -->
 
-*Is the stock currently overfished?* This depends on the stock's estimated spawning biomass in `r year`:
+<!-- *Is the stock currently overfished?* This depends on the stock's estimated spawning biomass in `r year`: -->
+<!-- -  If spawning biomass for `r year` is estimated to be below ½ -->
+<!--    $B_{35\%}$, the stock is below its MSST. -->
+<!-- -  If spawning biomass for `r year` is estimated to be above -->
+<!--    $B_{35\%}$ the stock is above its MSST. -->
+<!-- -  If spawning biomass for `r year` is estimated to be above ½ -->
+<!-- $B_{35\%}$ but below $B_{35\%}$, the stock's status relative to -->
+<!-- MSST is determined by referring to harvest Scenario #6 (Table -->
+<!-- 10.16). If the mean spawning biomass for 2028 is below -->
+<!-- $B_{35\%}$, the stock is below its MSST. Otherwise, the stock is -->
+<!-- above its MSST.   -->
 
--   
+<!-- *Is the stock approaching an overfished -->
+<!-- condition?* This is determined by referring to harvest Scenario -->
+<!-- #7: -->
+<!-- -  If the mean spawning biomass for `r year+2` is below 1/2 -->
+<!--    $B_{35\%}$, the stock is approaching an overfished condition. -->
+<!-- -  If the mean spawning biomass for `r year+2` is above -->
+<!--    $B_{35\%}$, the stock is not approaching an overfished -->
+<!--    condition. -->
+<!-- -  If the mean spawning biomass for `r year+2` is above 1/2 -->
+<!--    $B_{35\%}$ but below $B_{35\%}$, the determination depends on -->
+<!--    the mean spawning biomass for `r year+12` If the mean spawning -->
+<!--    biomass for `r year+12` is below $B_{35\%}$, the stock is -->
+<!--    approaching an overfished condition. Otherwise, the stock is -->
+<!--    not approaching an overfished condition. Based on the above -->
+<!--    criteria and Table 10.16, the stock is not overfished and is -->
+<!--    not approaching an overfished condition. -->
 
-    a.  If spawning biomass for `r year` is estimated to be below ½ $B_{35\%}$, the stock is below its MSST.
+<!-- The fishing mortality that would have produced a catch for last year equal to last year's OFL is `r best_f`. -->
 
--   
+A standard set of projections is required for each stock managed
+under Tiers 1, 2, or 3 of Amendment 56.  This set of projections
+encompasses seven harvest scenarios designed to satisfy the
+requirements of Amendment 56, the National Environmental Policy
+Act, and the Magnuson-Stevens Fishery Conservation and Management
+Act (MSFCMA). For each scenario, the projections begin with the
+vector of `r year` numbers at age as estimated in the assessment.
+This vector is then projected forward to the beginning of 
+`r year + 1` using the schedules of natural mortality and
+selectivity described in the assessment and the best available
+estimate of total (year-end) catch for `r year`.  In each
+subsequent year, the fishing mortality rate is prescribed on the
+basis of the spawning biomass in that year and the respective
+harvest scenario.  In each year, recruitment is drawn from an
+inverse Gaussian distribution whose parameters consist of maximum
+likelihood estimates determined from recruitments estimated in
+the assessment.  Spawning biomass is computed in each year based
+on the time of peak spawning and the maturity and weight
+schedules described in the assessment.  Total catch after
+`r year` is assumed to equal the catch associated with the
+respective harvest scenario in all years. This projection scheme
+is run 1,000 times to obtain distributions of possible future
+stock sizes, fishing mortality rates, and catches.
 
-    b.  If spawning biomass for `r year` is estimated to be above $B_{35\%}$ the stock is above its MSST.
+Five of the seven standard scenarios will be used in an
+Environmental Assessment prepared in conjunction with the final
+SAFE.  These five scenarios, which are designed to provide a
+range of harvest alternatives that are likely to bracket the
+final TAC for `r year+1`, are as follow ($\text{max}F_{ABC}$ refers
+to the maximum permissible value of $F_{ABC}$ under Amendment
+56):
 
--   
+-   Scenario 1: In all future years, *F* is set equal to $max
+    F_{ABC}$.  (Rationale: Historically, TAC has been constrained
+    by ABC, so this scenario provides a likely upper limit on
+    future TACs.)
 
-    c.  If spawning biomass for `r year` is estimated to be above ½ $B_{35\%}$ but below $B_{35\%}$, the stock's status relative to MSST is determined by referring to harvest Scenario #6 (Table 10.16). If the mean spawning biomass for 2028 is below $B_{35\%}$, the stock is below its MSST. Otherwise, the stock is above its MSST.
+-   Scenario 2: In `r year` and `r year + 1`, *F* is set equal to
+    a constant fraction of $max F_{ABC}$, where this fraction is
+    equal to the ratio of the realized catches in `r year-3`-
+	`r year-1` to the ABC recommended in the assessment for each of
+    those years.  For the remainder of the future years, maximum
+    permissible ABC is used.  (Rationale: In many fisheries the
+    ABC is routinely not fully utilized, so assuming an average
+    ratio catch to ABC will yield more realistic projections.)
 
-*Is the stock approaching an overfished condition?* This is determined by referring to harvest Scenario #7:
+-   Scenario 3: In all future years, *F* is set equal to 50% of
+    $max F_{ABC}$.  (Rationale: This scenario provides a likely
+    lower bound on FABC that still allows future harvest rates to
+    be adjusted downward when stocks fall below reference
+    levels.)
 
--   
-
-    a.  If the mean spawning biomass for `r year+2` is below 1/2 $B_{35\%}$, the stock is approaching an overfished condition.
-
--   
-
-    b.  If the mean spawning biomass for `r year+2` is above $B_{35\%}$, the stock is not approaching an overfished condition.
-
--   
-
-    c.  If the mean spawning biomass for `r year+2` is above 1/2 $B_{35\%}$ but below $B_{35\%}$, the determination depends on the mean spawning biomass for `r year+12` If the mean spawning biomass for `r year+12` is below $B_{35\%}$, the stock is approaching an overfished condition. Otherwise, the stock is not approaching an overfished condition. Based on the above criteria and Table 10.16, the stock is not overfished and is not approaching an overfished condition.
-
-The fishing mortality that would have produced a catch for last year equal to last year's OFL is `r best_f`.
-
-### Specification of OFL and Maximum Permissible ABC
-
-Female spawning biomass for `r year` is estimated at 40,462 t.
-This is above the $B_{40\%}$ value of 33,933 t.
-Under Amendment 56, Tier 3, the maximum permissible fishing mortality for ABC is $F_{40\%}$ and fishing mortality for OFL is $F_{35\%}$.
-Applying these fishing mortality rates for `r year`, yields the following ABC and OFL:
-
-A standard set of projections is required for each stock managed under Tiers 1, 2, or 3 of Amendment 56.
-This set of projections encompasses seven harvest scenarios designed to satisfy the requirements of Amendment 56, the National Environmental Policy Act, and the Magnuson-Stevens Fishery Conservation and Management Act (MSFCMA).
-
-For each scenario, the projections begin with the vector of `r year` numbers at age as estimated in the assessment.
-This vector is then projected forward to the beginning of `r year + 1` using the schedules of natural mortality and selectivity described in the assessment and the best available estimate of total (year-end) catch for `r year`.
-In each subsequent year, the fishing mortality rate is prescribed on the basis of the spawning biomass in that year and the respective harvest scenario.
-In each year, recruitment is drawnfrom an inverse Gaussian distribution whose parameters consist of maximum likelihood estimates determined from recruitments estimated in the assessment.
-Spawning biomass is computed in each year based on the time of peak spawning and the maturity and weight schedules described in the assessment.
-Total catch after `r year` is assumed to equal the catch associated with the respective harvest scenario in all years.
-This projection scheme is run 1,000 times to obtain distributions of possible future stock sizes, fishing mortality rates, and catches.
-
-Five of the seven standard scenarios will be used in an Environmental Assessment prepared in conjunction with the final SAFE.
-These five scenarios, which are designed to provide a range of harvest alternatives that are likely to bracket the final TAC for 2019, are as follow ("$max F_{ABC}$" refers to the maximum permissible value of $F_{ABC}$ under Amendment 56):
-
--   Scenario 1: In all future years, *F* is set equal to $max F_{ABC}$.
-    (Rationale: Historically, TAC has been constrained by ABC, so this scenario provides a likely upper limit on future TACs.)
-
--   Scenario 2: In `r year` and `r year + 1`, *F* is set equal to a constant fraction of $max F_{ABC}$, where this fraction is equal to the ratio of the realized catches in `r year-3`-`r year-1` to the ABC recommended in the assessment for each of those years.
-    For the remainder of the future years, maximum permissible ABC is used.
-    (Rationale: In many fisheries the ABC is routinely not fully utilized, so assuming an average ratio catch to ABC will yield more realistic projections.)
-
--   Scenario 3: In all future years, *F* is set equal to 50% of $max F_{ABC}$.
-    (Rationale: This scenario provides a likely lower bound on FABC that still allows future harvest rates to be adjusted downward when stocks fall below reference levels.)
-
--   Scenario 4: In all future years, *F* is set equal to the 2013-2017 average *F*.
-    (Rationale: For some stocks, TAC can be well below ABC, and recent average *F* may provide a better indicator of $F_{TAC}$ than $F_{ABC}$.)
+-   Scenario 4: In all future years, *F* is set equal to the
+    `r year-4`-`r year` average *F*.  (Rationale: For some stocks, TAC can
+    be well below ABC, and recent average *F* may provide a
+    better indicator of $F_{TAC}$ than $F_{ABC}$.)
 
 -   Scenario 5: In all future years, *F* is set equal to zero.
-    (Rationale: In extreme cases, TAC may be set at a level close to zero.)
+    (Rationale: In extreme cases, TAC may be set at a level close
+    to zero.)
 
-Two other scenarios are needed to satisfy the MSFCMA's requirement to determine whether a stock is currently in an overfished condition or is approaching an overfished condition.
-These two scenarios are as follows (for Tier 3 stocks, the MSY level is defined as $B_{35\%}$):
+Two other scenarios are needed to satisfy the MSFCMA's
+requirement to determine whether a stock is currently in an
+overfished condition or is approaching an overfished condition.
+These two scenarios are as follows (for Tier 3 stocks, the MSY
+level is defined as $B_{35\%}$):
 
--   Scenario 6: In all future years, *F* is set equal to $F_{OFL}$.
-    (Rationale: This scenario determines whether a stock is overfished. If the stock is expected to be 1) above its MSY level in 2018 or 2) above ½ of its MSY level in 2018 and above its MSY level in 2028 under this scenario, then the stock is not overfished.)
+-   Scenario 6: In all future years, *F* is set equal to
+    $F_{OFL}$.  (Rationale: This scenario determines whether a
+    stock is overfished. If the stock is expected to be 1) above
+    its MSY level in `r year` or 2) above 1/2 of its MSY level in
+    `r year` and above its MSY level in `r year+9` under this
+    scenario, then the stock is not overfished.)
 
--   Scenario 7: In `r year` and `r year + 1`, *F* is set equal to max $F_{ABC}$, and in all subsequent years F is set equal to FOFL.
-    (Rationale: This scenario determines whether a stock is approaching an overfished condition. If the stock is 1) above its MSY level in 2020 or 2) above 1/2 of its MSY level in 2020 and expected to be above its MSY level in 2030 under this scenario, then the stock is not approaching an overfished condition.)
+-   Scenario 7: In `r year+1` and `r year + 2`, *F* is set equal
+    to max $F_{ABC}$, and in all subsequent years F is set equal
+    to FOFL.  (Rationale: This scenario determines whether a
+    stock is approaching an overfished condition. If the stock is
+    1) above its MSY level in `r year+2` or 2) above 1/2 of its
+    MSY level in `r year+2` and expected to be above its MSY
+    level in `r year+11` under this scenario, then the stock is
+    not approaching an overfished condition.)
 
-Spawning biomass, fishing mortality, and yield are tabulated for the seven standard projection scenarios (Table 10.16).
-The difference for this assessment for projections is in Scenario 2 (Author's *F*); we use pre-specified catches to increase accuracy of short-term projections in fisheries where the catch is usually less than the ABC.
-This was suggested to help management with setting preliminary ABCs and OFLs for two-year ahead specifications.
+Results from scenarios 1-7 are presented in Table
+1.\@ref(tab:proj-scens). Mean spawning biomass is projected to
+decline to 2026 under full exploitation scenarios, but will
+increase under the F=0 and other low exploitation scenarios
+(Fig. 1.\@ref(fig:fig-proj-scens)). We project catches to
+increase through 2024, and then drop slightly in subsequent
+years.
 
-In addition to the seven standard harvest scenarios, Amendments 48/48 to the BSAI and GOA Groundfish Fishery Management Plans require projections of the likely OFL two years into the future.
-While Scenario 6 gives the best estimate of OFL for `r year`, it does not provide the best estimate of OFL for
-`r year + 1`, because the mean `r year` catch under Scenario 6 is predicated on the `r year` catch being equal to the
-`r year` OFL, whereas the actual `r year` catch will likely be less than the `r year` OFL.
-The executive summary contains the appropriate one- and two-year ahead projections for both ABC and OFL.
+Under the MSFCMA, the Secretary of Commerce is required to report
+on the status of each U.S. fishery with respect to
+overfishing. This report involves the answers to three questions:
+1) Is the stock being subjected to overfishing? 2) Is the stock
+currently overfished? 3) Is the stock approaching an overfished
+condition?
+
+The catch estimate for the most recent complete year (`r year-1`)
+is `r F(tail(datfile$cattot,2)[1])` t, which is less than the
+`r year-1` OFL of `r ofl.last` t. Therefore, the stock is not
+subject to overfishing. The fishing mortality that would have
+produced a catch in `r year-1` equal to the `r year-1` OFL is
+0.233.
+
+Scenarios 6 and 7 are used to make the MSFCMA’s other required
+status determination as follows:
+
+Under scenario 6, spawning biomass is estimated to be `r ssb` t
+in `r year` (see Table 1.\@ref(tab:proj-scens)), which is above
+B35% (`r b35` t). Therefore, GOA pollock is not currently
+overfished.
+
+Under scenario 7, projected mean spawning biomass in `r year +2`
+is `r F(exec_table[3,4])` t, which is above B35% (`r b35`
+t). Therefore, GOA pollock is not approaching an overfished
+condition.
+
+
+The recommended area apportionment to management areas in the
+central and western portions of the Gulf of Alaska
+(central/western/west Yakutat) are provided in Appendix 1D.

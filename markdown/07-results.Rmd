@@ -20,7 +20,7 @@ survey 6 being lower for those older ages. The change is scale is
 not particularly surprising given the known sensitivity for this
 model (as explored more thoroughly in e.g., @monnahan2021a) and
 the Plan Team presentations in 2022 ([link to
-pdf](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf))
+pdf](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf)).
 The stock trend was stable across data additions and model
 changes.
 
@@ -110,28 +110,29 @@ Figs. 1.\@ref(fig:fig-selex) and 1.\@ref(fig:selex-tv-fsh). Table
 1.\@ref(tab:naa-est) gives the estimated population numbers at
 age for the years 1970-`r year`. Table 1.\@ref(tab:timeseries)
 gives the estimated time series of age 3+ population biomass,
-age-1 recruitment, status, and harvest rate (catch/3+ biomass) for
-1977-`r year` (see also Fig. 1.\@ref(fig:ssb-status-rec). Table
-1.\@ref(tab:rec-ssb) gives coefficients of variation and 95%
-confidence intervals for age-1 recruitment and spawning stock
-biomass. Stock size peaked in the early 1980s at approximately
-113% of the proxy for unfished stock size (B100% = mean 1978-`r
-year-1` recruitment multiplied by the spawning biomass per recruit
-in the absence of fishing (SPR@F=0), see below for how this is
-calculated). In 2002, the stock dropped below the B40% for the
-first time since the early 1980s, and reached a minimum in 2003
-of 36% of unfished stock size. Over the years 2009-2013 stock
-size showed a strong upward trend, increasing from 46% to 86% of
-unfished stock size, but declined to 54% of unfished stock size
-in 2015. The spawning stock peaked in 2017 at 90% as the strong
-2012 year class matured, and has declined subsequently to 52%
-in 2022. Figure 1.\@ref(fig:status) shows the historical pattern
-of exploitation of the stock both as a time series of SPR and
-fishing mortality compared to the current estimates of biomass
-and fishing mortality reference points. Except from the mid-1970s
-to mid-1980s fishing mortalities have generally been lower than
-the current OFL definition, and in nearly all years were lower
-than the FMSY proxy of F35% .
+age-1 recruitment, status, and harvest rate (catch/3+ biomass)
+for 1977-`r year` (see also
+Fig. 1.\@ref(fig:ssb-status-rec). Table 1.\@ref(tab:rec-ssb)
+gives coefficients of variation and 95% confidence intervals for
+age-1 recruitment and spawning stock biomass. Stock size peaked
+in the early 1980s at approximately 113% of the proxy for
+unfished stock size (B100% = mean 1978- `r year-1` recruitment
+multiplied by the spawning biomass per recruit in the absence of
+fishing (SPR@F=0), see below for how this is calculated). In
+2002, the stock dropped below the B40% for the first time since
+the early 1980s, and reached a minimum in 2003 of 36% of unfished
+stock size. Over the years 2009-2013 stock size showed a strong
+upward trend, increasing from 46% to 86% of unfished stock size,
+but declined to 54% of unfished stock size in 2015. The spawning
+stock peaked in 2017 at 90% as the strong 2012 year class
+matured, and has declined subsequently to 52% in 2022. Figure
+1.\@ref(fig:status) shows the historical pattern of exploitation
+of the stock both as a time series of SPR and fishing mortality
+compared to the current estimates of biomass and fishing
+mortality reference points. Except from the mid-1970s to
+mid-1980s fishing mortalities have generally been lower than the
+current OFL definition, and in nearly all years were lower than
+the FMSY proxy of F35% .
 
 ## Comparison of historical assessment results
 

@@ -20,18 +20,18 @@ these changes constitute model 19.1a.
 ## Summary of Results
 
 The base model projection of female spawning biomass in `r year`
-is `r ssb` t, which is `r round(100*Finv(ssb)/Finv(b100),2)` % of unfished
-spawning biomass (based on average post-1977 recruitment) and
-above B40% (`r b40` t), thereby placing GOA pollock in sub-tier
-“a” of Tier 3. New surveys in 2022 include the winter Shelikof
-Strait acoustic survey and the ADF&G bottom trawl survey. Similar
-to 2021 these showed similar trends, unlike previous years when
-the surveys showed strongly contrasting trends. The risk matrix
-table recommended by the SSC was used to determine whether to
-recommend an ABC lower than the maximum permissible. The table is
-applied by evaluating the severity of four types of
-considerations that could be used to support a scientific
-recommendation to reduce the ABC from the maximum
+is `r ssb` t, which is `r round(100*Finv(ssb)/Finv(b100),2)`% of
+unfished spawning biomass (based on average post-1977
+recruitment) and above B40% (`r b40` t), thereby placing GOA
+pollock in sub-tier “a” of Tier 3. New surveys in 2022 include
+the winter Shelikof Strait acoustic survey and the ADF&G bottom
+trawl survey. Similar to 2021 these showed similar trends, unlike
+previous years when the surveys showed strongly contrasting
+trends. The risk matrix table recommended by the SSC was used to
+determine whether to recommend an ABC lower than the maximum
+permissible. The table is applied by evaluating the severity of
+four types of considerations that could be used to support a
+scientific recommendation to reduce the ABC from the maximum
 permissible. Although we identified some aspects of the stock
 that merit close tracking, there were no elevated concerns about
 stock assessment, population dynamics, environment/ecosystem, or
@@ -40,8 +40,8 @@ reduction from maximum permissible ABC.
 
 The authors’ `r year+1` ABC recommendation for pollock in the
 Gulf of Alaska west of 140° W lon. (W/C/WYK regions) is `r abc`
-t, which is an increase of `r round(100*(abcN-abcN.last)/abcN.last,1)`
-from the `r year-1` ABC. The author’s recommended `r year+2` ABC
+t, which is an increase of `r round(100*(abcN-abcN.last)/abcN.last,1)`%
+from the `r year` ABC. The author’s recommended `r year+2` ABC
 is `r F(exec_table[12,4])` t. The OFL in `r year+1` is `r ofl` t,
 and the OFL in `r year+2` if the ABC is taken in `r year+1` is 
 `r F(exec_table[10,4])` t. These calculations are based on a
@@ -56,7 +56,8 @@ recommendation for both `r year+1` and `r year +2` is 15,150 t. These
 recommendations are based on a Tier 5 assessment using the
 projected biomass in 2022 and 2023 from a random effects model
 fit to the 1990-2021 bottom trawl survey biomass estimates of the
-assessment area. 
+assessment area. There is no new index this year so this is a
+partial Tier 5 assessment update. 
 
 
 ```{r, child= "01a-main_table.Rmd", eval = T}

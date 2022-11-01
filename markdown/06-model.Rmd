@@ -15,7 +15,7 @@ effect, representing the full-selection fishing mortality, and an
 age effect, representing the selectivity of that age group to the
 fishery. The age effect was modeled using a double-logistic
 function with time-varying parameters [@dorn1990a;
-sullivan1997a]. The model was fit to time series of catch
+@sullivan1997a]. The model was fit to time series of catch
 biomass, survey indices of abundance, and estimates of age and
 length composition from the fishery and surveys. Details of the
 population dynamics and estimation equations are presented in
@@ -135,16 +135,16 @@ distributions at age were estimated for several years using
 age-length keys, and then averaged across years. A conversion
 matrix was estimated using 1992-1998 Shelikof Strait acoustic
 survey data and used for winter survey length frequency data. The
-following length bins were used: 5-16, 17 - 27, 28 - 35, 36 - 42,
-43 - 50, 51 - 55, 56 - 70 (cm). Age data for the most recent
+following length bins were used: 5-16, 17-27, 28-35, 36-42,
+43-50, 51-55, 56-70 (cm). Age data for the most recent
 survey is now routinely available so this option does not need to
 be invoked. A conversion matrix was estimated using second and
 third trimester fishery age and length data during the years
 (1989-1998), and was used when age composition data are
 unavailable for the summer bottom trawl survey, which is only for
 the most recent survey in the year that the survey is
-conducted. The following length bins were used: 5-24, 25 - 34,
-35 - 41, 42 - 45, 46 - 50, 51 - 55, 56 – 70 (cm), so that the
+conducted. The following length bins were used: 5-24, 25-34,
+35-41, 42-45, 46-50, 51-55, 56-70 (cm), so that the
 first four bins would capture most of the summer length
 distribution of the age-1, age-2, age-3 and age-4 fish,
 respectively. Bin definitions were different for the summer and
@@ -170,14 +170,14 @@ used in the model to estimate spawning and population biomass and
 obtain predictions of fishery catch and survey biomass. Pollock
 life history parameters include:
 
--Natural mortality ($M$)
--Proportion mature at age
--Weight at age and year by fishery and by survey
+- Natural mortality ($M$)
+- Proportion mature at age
+- Weight at age and year by fishery and by survey
 
 ### Natural mortality
 @hollowed1990a estimated natural mortality ($M$) using a variety
 of methods including estimates based on: a) growth parameters
-[@alverson1975a; pauly1980a], b) GSI [@gunderson1988a], c)
+[@alverson1975a; @pauly1980a], b) GSI [@gunderson1988a], c)
 monitoring cohort abundance, and d) estimation in the assessment
 model. These methods produced estimates of natural mortality that
 ranged from 0.22 to 0.45. The maximum age observed was 22
@@ -293,7 +293,7 @@ immature stages is problematic. Changes in the timing of spawning
 could also affect maturity at age estimates. @merati1993a
 compared visual maturity stages with ovary histology and a blood
 assay for vitellogenin and found general consistency between the
-different approaches. @merati1993 noted that ovaries classified
+different approaches. @merati1993a noted that ovaries classified
 as late developing stage (i.e., immature) may contain yolked
 eggs, but it was unclear whether these fish would have spawned
 later in the year. The average sample size of female pollock
@@ -333,7 +333,7 @@ Estimates of maturity at age in 2022 from winter acoustic surveys
 using the new method are higher for younger fish, but lower for
 older fish, compared to 2021 and the long-term mean for all ages
 (Fig. 1.\@ref(fig:mat-all) and
-1.\@ref(fig:fig-mat)). Inter-annual changes in maturity at age
+1.\@ref(fig:mat-recent)). Inter-annual changes in maturity at age
 may reflect environmental conditions, pollock population biology,
 effect of strong year classes moving through the population, or
 simply ageing error. Because there did not appear to be an
@@ -370,7 +370,7 @@ based on the length-weight regressions. Weight at age for the
 fishery, the Shelikof Strait acoustic survey, and the NMFS bottom
 trawl survey and the summer acoustic survey are given in Tables
 1.\@ref(tab:waa-fsh), 1.\@ref(tab:waa-srv1), and
-1.\@ref(tab:waa-srv2). Data from the Shelikof Strait acoustic
+1.\@ref(tab:waa-srv26). Data from the Shelikof Strait acoustic
 survey indicates that there has been a substantial change in
 weight at age for older pollock
 (Fig. 1.\@ref(fig:fig-waa-srv1)). For pollock greater than age 6,
@@ -390,7 +390,7 @@ used to estimate of fishery weight at age in `r year` since age
 data were not available. The structural part of the model is an
 underlying von Bertalanffy growth curve. Year and cohort effects
 are estimated as random effects using the ADMB RE module. Further
-details are provided in @ianelli2016. Input data included fishery
+details are provided in @ianelli2016a. Input data included fishery
 weight age for 1975-`r year`. The model also incorporates survey
 data by modeling an offset between fishery and survey weight at
 age. Weight at age for the Shelikof Strait acoustic survey
@@ -404,12 +404,15 @@ quadratic curve to match the mean standard deviations at ages
 deviation at age one was assumed to be equal to the standard
 deviation at age 10. Survey weights at age were assumed to have
 standard deviations that were 1.5 times the fishery weights at
-age. A comparison of RE model estimates from last year of the `r
-year-1` fishery weight at age with the data now available
+age. A comparison of RE model estimates from last year of the 
+`r year-1` fishery weight at age with the data now available
 indicate that the model underestimated weights slightly
-(Fig. 1.\@ref(fig:waa-fsh)). In this assessment, RE model estimates of
+(Fig. 1.\@ref(fig:fig-waa-fsh)). In this assessment, RE model estimates of
 weight at age are used for the fishery in `r year` and for yield
 projections and harvest recommendations.
+
+Appendix 1F details an explatory approach using a state-space
+model to estimate the WAA within the model. 
 
 ## Parameters Estimated Inside the Assessment Model
 A large number of parameters are estimated when using this

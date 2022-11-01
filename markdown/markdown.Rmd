@@ -5,12 +5,12 @@ params:
   species_complex: "no"
   area: "Gulf of Alaska"
   tier: 3
-author: "Cole C. Monnahan, Martin W. Dorn, Alison L. Deary, et al"
+author: "Cole C. Monnahan, Martin W. Dorn, Alison L. Deary, Bridget E. Ferriss, Mike Levin, David W. McGowan, Lauren Rogers, S. Kalei Shotwell, Abigail Tyrell and Stephani Zador "
 date: "November 2022"
 
 # don't do anything below this line unless you are cool with the consequences
 output: 
-  bookdown::html_document2:
+  bookdown::word_document2:
      reference_docx: "template.docx"
      toc: false
      number_sections: false
@@ -58,7 +58,7 @@ title: `r title`
 # load
 library(safe)
 suppressWarnings(library(flextable))
-set_flextable_defaults(font.size = 10, padding.top = 0, padding.bottom=0, table.layout='autofit')
+set_flextable_defaults(font.size = 10, padding.top = 0, padding.bottom=0, table.layout='autofit', font.family='Times New Roman')
 library(readxl)
 ## library(dplyr)
 ## library(tidyr)
@@ -116,9 +116,12 @@ ssb <- F(exec_table[3,3])
 b100 <- F(exec_table[4,3])
 b40 <- F(exec_table[5,3])
 b35 <- F(exec_table[6,3])
+fofl <- exec_table[7,3]
+fabc <- exec_table[8,3]
 ofl <- F(exec_table[10,3])
 maxabc <- F(exec_table[11,3])
 abc <- F(exec_table[12,3])
+pct.status <- paste0(format(round(100*Finv(ssb)/Finv(b100),1),nsmall=1), "%")
 
 sumbio.last <- F(exec_table[2,1])
 ssb.last <- F(exec_table[3,1])
@@ -130,7 +133,8 @@ maxabc.last <- F(exec_table[11,1])
 abc.last <- F(exec_table[12,1])
 pct.b40.change <- (Finv(b40)-Finv(b40.last))/Finv(b40.last)
 pct.b40.changeF <- (paste0(format(round(100*pct.b40.change,1),nsmall=1),ifelse(pct.b40.change>0, '% increase ', '% decrease ')))
-
+pct.abc.change <- (Finv(abc)-Finv(abc.last))/Finv(abc.last)
+pct.abc.changeF <- (paste0(format(round(100*pct.abc.change,1),nsmall=1),ifelse(pct.abc.change>0, '% increase ', '% decrease ')))
 
 abcN <- Finv(abc)
 abcN.last <- Finv(abc.last)
@@ -177,8 +181,8 @@ pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
 ```{r, child="08-abc.Rmd", eval = T}
 ```
 
-```{r, child="09-ecosystem.Rmd", eval = T}
-```
+<!-- ```{r, child="09-ecosystem.Rmd", eval = T} -->
+<!-- ``` -->
 
 ```{r, child="10-gaps.Rmd", eval = T}
 ```

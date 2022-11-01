@@ -6,9 +6,9 @@ None this year.
 Detailed analyses to SSC and Plan Team comments were presented at
 the September PT meeting, including a publically available
 document to which the interested reader is referred 
-([link to pdf](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf))
+([link to pdf](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf)).
 
-Summaries of responses are provided here. 
+Brief summaries of responses are provided here. 
 
 In December 2021 the SSC noted "... *that recruitment deviations
 in the GOA pollock assessment are unconstrained except for the
@@ -45,9 +45,11 @@ Persistent patterns in Pearson residuals for older fish were also
 deemed not a concern at the moment. This is because a new way of
 calculating residuals using a "one step ahead" approach to
 account for correlations in the multinomial distribution
-[@trijoulet2023a], which did not show the same pattern, implying
-it was a consequence of the inadequateness of Pearson residuals
-and not a real misspecification of selectivity.
+[@trijoulet2023a] was implemented. The residuals did not show the
+same pattern, implying it was a consequence of the inadequateness
+of Pearson residuals and not a real misspecification of
+selectivity. These new residuals will be explored in the coming
+year. 
 
 
 In December 2021 the "*SSC suggests simplifying the computations
@@ -56,11 +58,12 @@ possible, without changing the underlying methodology. For
 example, it appears that seasons B1 & B2 (formerly C & D) could
 be combined as they use the same apportionment scheme."*
 
-**The apportionment table will be simplified where possible to
-reflect the new seasonal structure**. Note that this new
-structure was not supposed to change apportionment, and that
-motivates the current table which calculates by the previous four
-seasons and then sums them together into the new seasons.
+The apportionment table was simplified by combining the A1 and A2
+tables (steps 5 and 6) together, and simplifying some of the
+tables. Note that this new structure was not supposed to change
+apportionment, and that motivates the current table which
+calculates by the previous four seasons and then sums them
+together into the new seasons.
 
 *...the SSC encourages the authors and GOA GPT to re-evaluate
 whether assessing Southeast Alaska walleye pollock as a separate
@@ -119,4 +122,6 @@ for 2022, but were presented for Plan Team feedback in September
 stock. In particular a WHAM version of the GOA pollock assessment
 was used to explore estimating the constrait (process error), and
 to quantify the amount by which timing covariates can reduce
-that, in effect parsing spatial and temporal availability.
+that, in effect parsing spatial and temporal
+availability. Prelminary results are very promising and we
+anticipate having something formal to present in 2023.
