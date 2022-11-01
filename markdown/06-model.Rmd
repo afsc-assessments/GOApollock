@@ -9,7 +9,7 @@ pollock. The modeled population includes individuals from age 1
 to age 10, with age 10 defined as a "plus" group, i.e., all
 individuals age 10 and older. Population dynamics were modeled
 using standard formulations for mortality and fishery catch
-[e.g., @fournier1982a; deriso1985a; hilborn1992a]. Year- and
+[e.g., @fournier1982a; @deriso1985a; @hilborn1992a]. Year- and
 age-specific fishing mortality was modeled as a product of a year
 effect, representing the full-selection fishing mortality, and an
 age effect, representing the selectivity of that age group to the

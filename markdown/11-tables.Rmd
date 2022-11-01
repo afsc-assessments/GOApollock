@@ -92,8 +92,8 @@
    colformat_double(digits=1) %>%  
    colformat_num(digits=0, big.mark='',j=1) %>% autofit  %>% fontsize(size=7)
 ``` 
-
  \pagebreak 
+
 ```{r aged-srv1} 
  x <- gettab(sheet = 'aged_srv1') 
  flextable(x$tab) %>%   
