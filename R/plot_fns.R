@@ -62,16 +62,17 @@ plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
 #' @param plotlog Whether to plot in log space or not
 #' @param plot Whether to plot and return the ggplot object
 #'   (TRUE) or return the data (FALSE).
+#' @param alpha1 Transparency for ribbons
+#' @param alpha2 Transparency for lines
 #'
 #' @return Either a ggplot object or the data used for it,
 #' depending on \code{plot} argument.
 #' @export
 #'
-plot_pk_ssb <- function(x, add_uncertainty=TRUE, plotlog=TRUE, uselog=FALSE, plot=TRUE){
+plot_pk_ssb <- function(x, add_uncertainty=TRUE, plotlog=TRUE,
+  uselog=FALSE, plot=TRUE, alpha1=.5, alpha2=.8){
   nmods <- length(x)
   x <- bind_rows(x)
-  alpha1 <- .5 # for ribbon
-  alpha2 <- .8 # for lines
   tmp <- 'Espawnbio'
   if(uselog)  tmp <- 'Espawnbio_log'
   if(uselog & nrow(filter(x, name==tmp))==0){
@@ -149,8 +150,8 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL, minage=NULL){
     bind_rows(x,x0)
   }
   x <- melt_obs_exp(mat, years)
-  pos <- get_pos(x)                     # breaks if after filtering
   if(!is.null(minyr)) x <- filter(x, year>=minyr)
+  pos <- get_pos(x)                     # breaks if after filtering
   if(!is.null(minage)) x$proportion[x$age < minage & !is.na(x$age)] <-  NA
   g <- ggplot(x, aes(age,proportion, color=type, lty=type, label=year)) +
     geom_line(lwd=.8)+
