@@ -10,7 +10,7 @@ date: "November 2022"
 
 # don't do anything below this line unless you are cool with the consequences
 output: 
-  bookdown::word_document2:
+  bookdown::html_document2:
      reference_docx: "template.docx"
      toc: false
      number_sections: false
@@ -191,11 +191,11 @@ pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
 # References
 <div id="refs"></div>
 
-```{r, child="11-tables.Rmd", eval = T}
-``` 
+<!-- ```{r, child="11-tables.Rmd", eval = T} -->
+<!-- ```  -->
 
-```{r, child="12-figures.Rmd", eval = T}
-```
+<!-- ```{r, child="12-figures.Rmd", eval = T} -->
+<!-- ``` -->
 
 <!-- ```{r, child="13-append_a.Rmd", eval = T} -->
 <!-- ``` -->

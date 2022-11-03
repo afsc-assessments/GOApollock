@@ -68,8 +68,6 @@ recommend an ABC lower than the maximum permissible.  The
 following template is used to complete the risk table:
 
 ```{r}
-library(flextable)
- library(tidyverse)
  data.frame(level = c("Level 1: Normal",
                       "Level 2: Substantially increased concerns",
                       "Level 3: Major Concern",
@@ -140,19 +138,20 @@ of concerns that might be relevant include the following:
 
 A continuing assessment issue is the conflicting size of the 2018
 year class abundance between the sources of information.  The
-Shelikof 2019 estimate was indicative of a strong year class, but
-the 2020 estimate of age 2 fish was only 10% of the long-term
-average.  Over the full Shelikof Strait time series, high age-1
-estimates have always been followed by high age-2 estimates in
-the next year (Fig. 1.9).  It was previously hypothesized that
-the 2018 year class could have moved out of Shelikof Strait or
-experienced unusually high mortality. In 2021, both the 2020 age
-2 ADF&G and 2021 age 3 Shelikof survey observed proportions were
-low relative to the model expectation, providing further evidence
-of a reduced 2018 cohort. In contrast, the 2020 fishery catch at
-age was very close to expected for age-2 fish, and there are some
-apparent age-3 fish in the 2021 length compositions from the
-summer surveys. 
+winter pre-spawning Shelikof acoustic survey 2019 estimate was
+indicative of a strong year class, but the 2020 estimate of age 2
+fish was only 10% of the long-term average.  Over the full
+Shelikof time series, high age-1 estimates have always
+been followed by high age-2 estimates in the next year
+(Fig. 1.9).  It was previously hypothesized that the 2018 year
+class could have moved out of Shelikof Strait or experienced
+unusually high mortality. In 2021, both the 2020 age 2 ADF&G and
+2021 age 3 Shelikof survey observed proportions were low relative
+to the model expectation, providing further evidence of a reduced
+2018 cohort. In contrast, the 2020 fishery catch at age was very
+close to expected for age-2 fish, and there are some apparent
+age-3 fish in the 2021 length compositions from the summer
+surveys.
 
 This year brings important new data sets to the table, which help
 to resolve this uncertainty. Shelikof age compositions provide
@@ -188,13 +187,15 @@ residual. Since this survey targets larger, older fish it is not
 compelling evidence, but it will be interesting to see how the
 age-4 residual turns out in the 2023 assessment when those data
 are available. The implication is that the 2018 cohort
-availability to the winter pre-spawning Shelikof survey has been
-low for the last three years. It is not apparent why this would
-be, and appears to have no historical precedent. The cohort could
-be spawning in a different area, but since surveys for other
-winter spawning areas have been limited in recent years it is
-only speculation. Future surveys of other spawning areas could
-prove valuable to help resolve this mystery.
+availability to the Shelikof survey has been low for the last
+three years. It is not apparent why this would be, and appears to
+have no historical precedent. The cohort maybe have been
+distributed in a different area as immature age 2-3 fish, with
+the cohort's availability to the Shelikof survey increasing as a
+larger proportion of the cohort reaches maturity, but since
+surveys for other winter spawning areas have been limited in
+recent years it is only speculation. Future surveys of other
+spawning areas could prove valuable to help resolve this mystery.
 
 Despite the unusual characteristics of this cohort there are no
 assessment model concerns, as cohort size is estimated

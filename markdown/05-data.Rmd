@@ -188,8 +188,8 @@ abundant in the Shumagin and Southeast Alaska areas
 
 ## Shelikof Strait Acoustic Survey
 Winter acoustic surveys to assess the biomass of pre-spawning
-aggregations pollock in Shelikof Strait have been conducted
-annually since 1981 (except 1982, 1999, and 2011). Only surveys
+aggregations of pollock in Shelikof Strait have been conducted
+annually since 1981 (except 1982, 1987, 1999, and 2011). Only surveys
 from 1992 and later are used in the stock assessment due to the
 higher uncertainty associated with the acoustic estimates
 produced with the Biosonics echosounder used prior
@@ -197,7 +197,7 @@ to 1992. Additionally, raw survey data are not easily recoverable
 for the earlier acoustic surveys, so there is no way to verify
 (i.e., to reproduce) the estimates. Survey methods and results
 for 2021 are presented in a NMFS processed report
-[@honkalehto-a]. In 2008, the noise-reduced R/V Oscar Dyson
+[@mcgowan-prep]. In 2008, the noise-reduced R/V Oscar Dyson
 became the designated survey vessel for acoustic surveys in the
 Gulf of Alaska. In winter of 2007, a vessel comparison experiment
 was conducted between the R/V Miller Freeman (MF) and the R/V
@@ -206,13 +206,13 @@ acoustic backscatter detected by the two vessels in Shelikof
 Strait.
 
 ### Biomass Estimates 
-The `r year` biomass estimate for Shelikof Strait for all fish
-is 365,411 t, which is a 30.7% percent decrease from the 2021
-estimate (Fig. 1.\@ref(fig:biomass-area-srv1)). This estimate
-accounts for trawl selectivity by scaling up the number of
-retained pollock by selectivity curves estimated with pocket nets
-attached to the midwater trawl used to sample echosign,
-continuing an approach that was started in 2018
+The `r year` biomass estimate for Shelikof Strait in `r year` for
+all fish is 365,411 t, which is a 30.7% percent decrease from the
+2021 estimate (Fig. 1.\@ref(fig:biomass-area-srv1)). This
+estimate accounts for trawl selectivity by scaling up the number
+of retained pollock by selectivity curves estimated with pocket
+nets attached to the midwater trawl used to sample echosign,
+continuing an approach that was started in the 2018
 assessment. Originally, winter 2022 pre-spawning pollock surveys
 were also planned in the Shumagin Islands area, Chirikof shelf
 break, Marmot Bay, and Morzhovoi Bay. Due to travel, vessel, and
@@ -238,7 +238,7 @@ otolith samples and applied to weighted length frequency
 samples. Sample sizes for ages and lengths are given Table
 1.\@ref(tab:aged-srv1). Estimates of age composition in Shelikof
 Strait in `r year` indicate reduced dominance of the 2012 year
-class, and a mode of age 2 and 5 fish (2020 and 2017 year
+class, and a mode of age 2 and 4-5 fish (2020, 2018 and 2017 year
 classes), indicating new year classes are starting to comprise
 the majority of the spawning and exploitable portion of the
 population.
@@ -295,23 +295,23 @@ development" section of [this document](https://meetings.npfmc.org/CommentReview
 Five complete acoustic surveys, in 2013, 2015, 2017, 2019 and
 2021, have been conducted by AFSC on the R/V Oscar Dyson in the
 Gulf of Alaska during summer
-[@jones2014a;@jones2017a;@jones2019a;@jones-a]. The area surveyed
-covers the Gulf of Alaska shelf and upper slope and associated
-bays and troughs, from a westward extent of 170° W Lon, and
-extends to an eastward extent of 140° W lon. Prince William Sound
-was also surveyed in 2013, 2015, and 2019. The survey consists of
-widely-spaced parallel transects along the shelf, and more
-closely spaced transects in troughs, bays, and Shelikof
-Strait. Mid-water and bottom trawls are used to identify acoustic
-targets. The 2021 biomass estimate for summer acoustic survey is
-431,148 t, which is a 25% percent decrease from the 2019 estimate
-(Table 1.\@ref(tab:indices)). Age composition data were available
-in 2022 and showed strong 2017, 2018, and 2020 year classes
-(Fig. 1.\@ref(fig:naa-srv26)).
-Analysis of the 2019 and 2021 survey was not complicated by the
-presence of age-0 pollock, which was a problem in previous summer
-acoustic surveys because age-0 pollock backscatter cannot be
-readily distinguished from age 1+ pollock.
+[@jones2014a;@jones2017a;@jones2019a;@jones-prep;@levine-prep]. The
+area surveyed covers the Gulf of Alaska shelf and upper slope and
+associated bays and troughs, from a westward extent of 170° W
+Lon, and extends to an eastward extent of 140° W lon. Prince
+William Sound was also surveyed in 2013, 2015, and 2019. The
+survey consists of widely-spaced parallel transects along the
+shelf, and more closely spaced transects in troughs, bays, and
+Shelikof Strait. Mid-water and bottom trawls are used to identify
+acoustic targets. The 2021 biomass estimate for summer acoustic
+survey is 431,148 t, which is a 25% percent decrease from the
+2019 estimate (Table 1.\@ref(tab:indices)). Age composition data
+were available in 2022 and showed strong 2017, 2018, and 2020
+year classes.  Analysis of the 2019
+and 2021 survey was not complicated by the presence of age-0
+pollock, which was a problem in previous summer acoustic surveys
+because age-0 pollock backscatter cannot be readily distinguished
+from age 1+ pollock [@jones2019a].
 
 ## Alaska Department of Fish and Game Crab/Groundfish Trawl Survey
 The Alaska Department of Fish and Game (ADF&G) has conducted

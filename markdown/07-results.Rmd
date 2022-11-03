@@ -85,7 +85,7 @@ for the 2018 cohort. In contrast the 2021 NMFS bottom trawl
 survey and fishery saw large proportions of this cohort and
 fitted well. This disparity in the 2018 cohort is discussed more
 in the risk table section, but the model estimate for this cohort
-did not change much from 2021 (\@ref(tab:timeseries)).
+did not change much from 2021 (Table 1.\@ref(tab:timeseries)).
 
 Model fits to survey biomass estimates are reasonably good for
 all surveys except the period 2015-2019
