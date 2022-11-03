@@ -59,7 +59,7 @@ title: `r title`
 library(safe)
 suppressWarnings(library(flextable))
 set_flextable_defaults(font.size = 10, padding.top = 0, padding.bottom=0, table.layout='autofit', font.family='Times New Roman')
-library(readxl)
+suppressWarnings(library(readxl))
 ## library(dplyr)
 ## library(tidyr)
 # globals
@@ -149,8 +149,8 @@ endyr=2021)
 
 ## stdfile.last <- GOApollock::read_pk_std(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/", endyr=2021)
 
-avgrec <- with(repfile, round(mean(Recruits[years %in% 1978:(tail(years)-1)]),3))
-CVrec <- with(repfile, round(sd(Recruits[years %in% 1978:(tail(years)-1)])/avgrec,1))
+avgrec <- with(repfile, round(mean(Recruits[years %in% 1978:(tail(years,1)-1)]),3))
+CVrec <- with(repfile, round(sd(Recruits[years %in% 1978:(tail(years,1)-1)])/avgrec,1))
 avgrec.last <- with(repfile.last, round(mean(Recruits[years %in% 1978:(tail(years,1)-1)]),3))
 pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
 
@@ -191,11 +191,11 @@ pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
 # References
 <div id="refs"></div>
 
-<!-- ```{r, child="11-tables.Rmd", eval = T} -->
-<!-- ```  -->
+```{r, child="11-tables.Rmd", eval = T}
+``` 
 
-<!-- ```{r, child="12-figures.Rmd", eval = T} -->
-<!-- ``` -->
+```{r, child="12-figures.Rmd", eval = T}
+```
 
 <!-- ```{r, child="13-append_a.Rmd", eval = T} -->
 <!-- ``` -->

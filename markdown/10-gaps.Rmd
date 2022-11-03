@@ -1,21 +1,37 @@
 # Data Gaps and Research Priorities
 
-The following research priorities were identified based on previous CIE reviews and recent Plan Team and SSC discussions: 
-•	Explore alternative functional forms for fishery selectivity.
-•	Jointly estimate process errors for time-varying components like selectivity, catchability and recruitment, using integration via the Laplace approximation or MCMC.
-•	Consider alternative modeling platforms in parallel to the current ADMB assessment.
-•	Explore priors on catchability and the effect on the population scale and potentially how it relates to results from the predation mortality model.
-•	Revisit initial data weights for compositional data, and assumed CVs for indices.
-•	Estimate input variances for weight at age components in the WAA RE model.
-•	Continue to develop spatial GLMM models for survey indices and age composition of GOA pollock
-•	Evaluate pollock population dynamics in a multi-species context using the CEATTLE model.
-•	Explore implications of non-constant natural mortality on pollock assessment and management.
+The following research priorities were identified based on
+previous CIE reviews and recent Plan Team and SSC discussions:
 
-Additional recommendations that could be done by other teams at the AFSC, but are unlikely to be specifically prioritized by the primary assessment author, include:
-•	Efforts to combine acoustic and bottom trawl information in a vertically integrated index
-•	Efforts to improve understanding of changes of weight at age or and maturity at age, either via linkage to copepods/euphausiids or directly to the physical environment
+- Explore alternative functional forms for fishery selectivity.
+- Jointly estimate process errors for time-varying components
+  like selectivity, catchability and recruitment, using
+  integration via the Laplace approximation or MCMC.
+- Consider alternative modeling platforms in parallel to the
+  current ADMB assessment.
+- Explore priors on catchability and the effect on the population
+  scale and potentially how it relates to results from the
+  predation mortality model.
+- Revisit initial data weights for compositional data, and
+  assumed CVs for indices.
+- Estimate input variances for weight at age components in the
+  WAA RE model.
+- Continue to develop spatial GLMM models for survey indices and
+  age composition of GOA pollock
+- Evaluate pollock population dynamics in a multi-species context
+  using the CEATTLE model.
+- Explore implications of non-constant natural mortality on
+  pollock assessment and management.
 
-A full ESP was developed for GOA pollock in 2020 and reviewed by the Plan Team at its September and November 2019 meetings. The GOA Groundfish Plan Team encouraged the authors to consider potential avenues for updating ESPs rather than producing full ESPs in the future. This year we provide a partial ESP in Appendix 1A that updates key indicators and reruns the Bayesian adaptive sampling model. We are soliciting feedback from the Plan Team and the SSC on the appropriate format and information to be included in an ESP update.
+Additional recommendations that could be done by other teams at
+the AFSC, but are unlikely to be specifically prioritized by the
+primary assessment author, include:
+
+- Efforts to combine acoustic and bottom trawl information in a
+  vertically integrated index
+- Efforts to improve understanding of changes of weight at age or
+  and maturity at age, either via linkage to copepods/euphausiids
+  or directly to the physical environment
 
 # Acknowledgements
 We thank the AFSC survey personnel for the collection of data and
