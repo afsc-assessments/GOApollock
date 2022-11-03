@@ -25,28 +25,29 @@ unfished spawning biomass (based on average post-1977
 recruitment) and above B40% (`r b40` t), thereby placing GOA
 pollock in sub-tier “a” of Tier 3. New surveys in 2022 include
 the winter Shelikof Strait acoustic survey and the ADF&G bottom
-trawl survey. Similar to 2021 these showed similar trends, unlike
-previous years when the surveys showed strongly contrasting
-trends. The risk matrix table recommended by the SSC was used to
-determine whether to recommend an ABC lower than the maximum
-permissible. The table is applied by evaluating the severity of
-four types of considerations that could be used to support a
-scientific recommendation to reduce the ABC from the maximum
+trawl survey. These surveys showed similar trends in 2021 and
+2022, unlike previous years when they showed strongly contrasting
+trends. The risk matrix table recommended by the Scientific and
+Statistical Comittee (SSC) was used to determine whether to
+recommend an ABC lower than the maximum permissible. The table is
+applied by evaluating the severity of four types of
+considerations that could be used to support a scientific
+recommendation to reduce the ABC from the maximum
 permissible. Although we identified some aspects of the stock
 that merit close tracking, there were no elevated concerns about
 stock assessment, population dynamics, environment/ecosystem, or
 fisheries performance categories. We therefore recommend no
 reduction from maximum permissible ABC.
 
-The authors’ `r year+1` ABC recommendation for pollock in the
+The recommended `r year+1` ABC for pollock in the
 Gulf of Alaska west of 140° W lon. (W/C/WYK regions) is `r abc`
 t, which is an increase of `r round(100*(abcN-abcN.last)/abcN.last,1)`%
-from the `r year` ABC. The author’s recommended `r year+2` ABC
+from the `r year` ABC. The recommended `r year+2` ABC
 is `r F(exec_table[12,4])` t. The OFL in `r year+1` is `r ofl` t,
 and the OFL in `r year+2` if the ABC is taken in `r year+1` is 
 `r F(exec_table[10,4])` t. These calculations are based on a
 projected `r year` catch of `r F(tail(datfile$cattot,1))`
-t. The estimated scale of the stock increased compared to
+t. The estimated scale of the stock increased about 20% compared to
 previous years, driven both by new data and model changes. 
 
 For pollock in southeast Alaska (Southeast Outside region, east

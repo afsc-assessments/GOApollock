@@ -142,7 +142,7 @@ addfig("mod_compare2.png")
  addfig("index_fits2.png")
 ```
 
-```{r fig-selex, eval=TRUE, fig.cap="Model predicted (line) and observed survey biomass (points and 95% confidence intervals)  for the age 1 and age 2 winter Shelikof surveys. "}
+```{r fig-selex, eval=TRUE, fig.cap="Estimated selectivity at age (lines) and uncertainty (+/- 1 SE; ribbons) for the fishery and surveys. Uncertainty calculations are done in logit space then converted and hence are asymmetric."}
  addfig("selex_svys.png")
 ```
 

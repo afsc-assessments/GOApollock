@@ -4,7 +4,7 @@
 
 
 An age-structured model covering the period from 1970 to `r year`
-(`r length(datfile$years)` years) was used to assess Gulf of Alaska
+(`r length(repfile$years)` years) was used to assess Gulf of Alaska
 pollock. The modeled population includes individuals from age 1
 to age 10, with age 10 defined as a "plus" group, i.e., all
 individuals age 10 and older. Population dynamics were modeled
@@ -51,7 +51,7 @@ version of the model. This change had relatively small impact on
 the estimated recruits and management references.
 
 ### Modeling fishery data
-To accommodate changes in selectivity we estimated year-specific
+To accommodate changes in selectivity, we estimated year-specific
 parameters for the slope and the intercept parameter for the
 ascending logistic portion of selectivity curve (i.e., younger
 fish). Variation in these parameters was constrained using a
@@ -157,9 +157,9 @@ before model tuning. Fishery age composition was given an initial
 sample size of 200 except when the age sample in a given year
 came from fewer than 200 hauls/deliveries, in which case the
 number of hauls/deliveries was used. Both the Shelikof acoustic
-survey and the bottom trawl were given an initial sample size of
-60, and the ADF&G crab/groundfish survey was given a weight of
-30.
+survey and the bottom trawl age compositions were given an
+initial sample size of 60, and the ADF&G crab/groundfish survey
+was given a weight of 30.
 
 
 ## Parameters Estimated Outside the Assessment Model
@@ -411,7 +411,7 @@ indicate that the model underestimated weights slightly
 weight at age are used for the fishery in `r year` and for yield
 projections and harvest recommendations.
 
-Appendix 1F details an explatory approach using a state-space
+Appendix 1F details an exploratory approach using a state-space
 model to estimate the WAA within the model. 
 
 ## Parameters Estimated Inside the Assessment Model

@@ -16,7 +16,7 @@ is driven largely by changes in recruits estimated
 (Fig. 1.\@ref(fig:mod-compare2)). Notably the 2012 year class
 estimates were impacted by both, presumably with the new age data
 suggesting the cohort is still large and the new selectivity on
-survey 6 being lower for those older ages. The change is scale is
+survey 6 being lower for those older ages. The change in scale is
 not particularly surprising given the known sensitivity for this
 model (as explored more thoroughly in e.g., @monnahan2021a) and
 the Plan Team presentations in 2022 ([link to
@@ -40,7 +40,7 @@ estimates of Shelikof and summer acoustic indices using VAST. We
 selected model 19.1a as the preferred model, and a final turning
 step was done using the @francis2011a approach which reweighted
 all composition components, including the summer acoustic age
-composition for the first time, but model results were similar
+composition for the first time, resulting in similar model results
 (Fig. 1.\@ref(fig:add-data)).
 
 ### Model evaluation
@@ -81,8 +81,8 @@ summer acoustic surveys, and 2022 Shelikof survey provide further
 information to shed further light on the fate of this cohort. The
 fit to the 2022 Shelikof survey age was again negative for age 4
 fish, making it the second year in a row with a negative residual
-for the 2018 cohort. In contrast the 2021 NMFS bottom trawl
-survey and fishery saw large proportions of this cohort and
+for the 2018 cohort. In contrast, the 2021 NMFS bottom trawl
+survey and fishery saw large proportions of this cohort and were
 fitted well. This disparity in the 2018 cohort is discussed more
 in the risk table section, but the model estimate for this cohort
 did not change much from 2021 (Table 1.\@ref(tab:timeseries)).
@@ -112,13 +112,13 @@ age for the years 1970-`r year`. Table 1.\@ref(tab:timeseries)
 gives the estimated time series of age 3+ population biomass,
 age-1 recruitment, status, and harvest rate (catch/3+ biomass)
 for 1977-`r year` (see also
-Fig. 1.\@ref(fig:ssb-status-rec). Table 1.\@ref(tab:rec-ssb)
+Fig. 1.\@ref(fig:ssb-status-rec)). Table 1.\@ref(tab:rec-ssb)
 gives coefficients of variation and 95% confidence intervals for
 age-1 recruitment and spawning stock biomass. Stock size peaked
 in the early 1980s at approximately 113% of the proxy for
 unfished stock size (B100% = mean 1978- `r year-1` recruitment
 multiplied by the spawning biomass per recruit in the absence of
-fishing (SPR@F=0), see below for how this is calculated). In
+fishing (SPR at F=0), see below for how this is calculated). In
 2002, the stock dropped below the B40% for the first time since
 the early 1980s, and reached a minimum in 2003 of 36% of unfished
 stock size. Over the years 2009-2013 stock size showed a strong
@@ -203,4 +203,4 @@ low spawner productivity, though there appears to be a recent
 increase. Age-1 recruitment in 2022 is estimated to be to
 be very weak, but the 2021 recruitment is above average, although
 these estimates will remain very uncertain until additional data
-become available (\@ref(fig:ssb-status-rec)).
+become available (Figure 1.\@ref(fig:ssb-status-rec)).

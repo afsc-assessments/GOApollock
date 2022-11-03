@@ -74,7 +74,7 @@ Appendix 1E.
 Catch at age was re-estimated in the 2014 assessment for
 1975-1999 from primary databases maintained at AFSC. A simple
 non-stratified estimator was used, which consisted of compiling a
-single age-length key for use in every year and the applying the
+single age-length key for use in every year and then applying the
 annual length composition to that key. Use of an age-length key
 was considered necessary because observers used length-stratified
 sampling designs to collect otoliths prior to 1999
@@ -157,7 +157,7 @@ a value for west Yakutat for use in the assessment model.
 The Alaska Fisheries Science Center’s (AFSC) Resource Assessment
 and Conservation Engineering (RACE) Division conducted the
 seventeenth comprehensive bottom trawl survey since 1984 during
-the summer of 2021 (Fig. 1.\@ref(fig:map-BT-cpue). The 2021
+the summer of 2021 (Fig. 1.\@ref(fig:map-BT-cpue)). The 2021
 gulfwide biomass estimate of pollock was 528,841 t, which is an
 increase of 72.2% from the 2019 estimate, which was the second
 lowest in the time series after 2001. The biomass estimate for
@@ -180,7 +180,7 @@ for all strata in each single year, and CPUE-weighted length
 frequency data by statistical area. The new 2021 combined
 Shumagin, Chirikof and Kodiak age composition is used in the
 assessment model (Fig. 1.\@ref(fig:ages-srv2), Table
-1.\@ref(tab:naa-srv2)), and the 2021 length composotions were
+1.\@ref(tab:naa-srv2)), and the 2021 length compositions were
 removed. Age-1 pollock (2020 cohort) were strongly present in the
 Chirikof, Kodiak, and Yakutat statistical areas, but much less
 abundant in the Shumagin and Southeast Alaska areas
@@ -260,9 +260,9 @@ indices. Therefore this time series was used in the model, but
 this decision should be revisited as additional data become
 available. The age-2 index in 2020 showed a marked reduction in
 comparison to the age-1 index in 2019, which indicated high
-abundance of the 2018 year class. Typically year classes that are
+abundance of the 2018 year class. Typically, year classes that are
 abundant in Shelikof Strait at age 1 are also abundant at age 2
-in the survey in the following year. The 2018 cohort comprised
+in the survey the following year. The 2018 cohort comprised
 15% of the age composition in 2021 (excluding age 1 and 2 fish),
 but 29% as 4 year olds in 2022, giving contradictory evidence for
 marked decrease from initial estimates as age 1
@@ -330,7 +330,7 @@ these tows contained pollock. Details of the ADF&G trawl gear and
 sampling procedures are in Spalinger (2012).
 
 The 2022 area-swept biomass estimate for pollock for the ADF&G
-crab/groundfish survey was 71,196 t, and increase of 9.2% from
+crab/groundfish survey was 71,196 t, an increase of 9.2% from
 the 2021 biomass estimate (Table 1.\@ref(tab:indices)). The 2022
 pollock estimate for this survey is approximately 78% of the
 long-term average.

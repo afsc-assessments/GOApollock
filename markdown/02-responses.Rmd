@@ -123,5 +123,5 @@ stock. In particular a WHAM version of the GOA pollock assessment
 was used to explore estimating the constrait (process error), and
 to quantify the amount by which timing covariates can reduce
 that, in effect parsing spatial and temporal
-availability. Prelminary results are very promising and we
+availability. Preliminary results are very promising and we
 anticipate having something formal to present in 2023.

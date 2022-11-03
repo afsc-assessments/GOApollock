@@ -9,7 +9,7 @@ based on spawning biomass per recruit (SPR), while biomass
 reference levels are estimated by multiplying the SPR by average
 recruitment.  Estimates of the FSPR harvest rates were obtained
 using the life history characteristics of GOA pollock (Table
-1.\@ref(tab:spr-inputs).  Spawning biomass reference levels were
+1.\@ref(tab:spr-inputs)).  Spawning biomass reference levels were
 based on mean 1978-`r year-1` age-1 recruitment (`r avgrec`
 billion), which is `r pct.avgrec.change`% higher than the mean
 value in last year's assessment. Spawning was assumed to occur on
@@ -57,7 +57,7 @@ models are uncertain, the buffer between OFL and ABC provides a
 margin of safety so that assessment error will not result in the
 OFL being inadvertently exceeded. For GOA pollock, the maximum
 permissible FABC harvest rate (i.e., FABC/FOFL) is 
-`r format(00*fabc/fofl, digits=3)`% of the OFL harvest rate.
+`r format(100*fabc/fofl, digits=3)`% of the OFL harvest rate.
 Projections for `r year+1` for the FOFL and the maximum
 permissible FABC are given in Table 1.\@ref(tab:proj-scens).
 
