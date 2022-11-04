@@ -4,7 +4,7 @@
 \alias{get_exec_table}
 \title{Get table from projection output}
 \usage{
-get_exec_table(replist, bigfile)
+get_exec_table(replist, bigfile, maxABCratio = 1)
 }
 \arguments{
 \item{replist}{A list as read in by \link{read_pk_rep}}
