@@ -23,7 +23,7 @@ increase, followed by a steep decline until a sharp increase in
 2021 (Fig. 1.\@ref(fig:fig-waa-srv1)). The factors causing this
 pattern are unclear, but are likely to involve both
 density-dependent factors and environmental forcing. The SPR at
-F=0 was estimated as `r spr0` kg/recruit at age one.  FSPR rates
+F=0 was estimated as `r round(spr0,3)` kg/recruit at age one.  FSPR rates
 depend on the selectivity pattern of the fishery.  Selectivity
 has changed as the fishery evolved from a foreign fishery
 occurring along the shelf break to a domestic fishery on spawning
@@ -39,13 +39,13 @@ flextable(tab) %>%
   colformat_double(digits=3, j=2) %>%
   colformat_double(digits=0, big.mark=',') 
 ```
-The B40% estimate of `r b40` t represents a 
-`r pct.b40.changeF`from the  B40% estimate of `r b40.last` t in the
-`r year-1` assessment (Table 1.\@ref(tab:model-history)). The base model
-projection of female spawning biomass in `r year+1` is 
-`r ssb` t, which is `r pct.status` of unfished spawning biomass (based on
-average post-1977 recruitment) and above B40% (`r b40` t),
-thereby placing GOA pollock in sub-tier "a" of Tier 3. 
+<!-- The B40% estimate of `r b40` t represents a  -->
+<!-- `r pct.b40.changeF`from the  B40% estimate of `r b40.last` t in the -->
+<!-- `r year-1` assessment (Table 1.\@ref(tab:model-history)). The base model -->
+<!-- projection of female spawning biomass in `r year+1` is  -->
+<!-- `r ssb` t, which is `r pct.status` of unfished spawning biomass (based on -->
+<!-- average post-1977 recruitment) and above B40% (`r b40` t), -->
+<!-- thereby placing GOA pollock in sub-tier "a" of Tier 3.  -->
 
 ## 2022 acceptable biological catch
 
@@ -155,9 +155,9 @@ surveys.
 
 This year brings important new data sets to the table, which help
 to resolve this uncertainty. Shelikof age compositions provide
-information as age-4s, while the 2021 fishery, NMFS bottom trawl
-and summer acoustic surveys provide information on the 2018
-cohort as age-3s. By plotting Pearson residuals by cohort, it is
+information on the 2018 cohort as age-4s, while the 2021 fishery,
+NMFS bottom trawl and summer acoustic surveys provide information
+age-3s. By plotting Pearson residuals by cohort, it is
 immediately clear that the Shelikof survey is the main source of
 information suggesting a small cohort (i.e., negative residuals),
 while the other surveys and fishery generally suggest a larger
@@ -180,7 +180,7 @@ addfig('retro_recruits.png')
 In summary, the 2018 cohort is slightly larger than average, and
 the initial Shelikof estimate for age-1s was anomalously high,
 while all subseqeunt years were low. The other surveys and
-fishery appear to be inline with this estimate, building a
+fishery appear to be in line with this estimate, building a
 consensus of the result. The one notable exception is the the
 2020 ADF&G estimate which also had a large negative age-2
 residual. Since this survey targets larger, older fish it is not
@@ -188,14 +188,16 @@ compelling evidence, but it will be interesting to see how the
 age-4 residual turns out in the 2023 assessment when those data
 are available. The implication is that the 2018 cohort
 availability to the Shelikof survey has been low for the last
-three years. It is not apparent why this would be, and appears to
-have no historical precedent. The cohort maybe have been
-distributed in a different area as immature age 2-3 fish, with
-the cohort's availability to the Shelikof survey increasing as a
-larger proportion of the cohort reaches maturity, but since
-surveys for other winter spawning areas have been limited in
-recent years it is only speculation. Future surveys of other
-spawning areas could prove valuable to help resolve this mystery.
+three years after an anomolously high age-1 estimate. It is not
+apparent why this would be, and appears to have no historical
+precedent. The cohort maybe have been distributed in a different
+area as immature age 2-3 fish, with the cohort's availability to
+the Shelikof survey increasing as a larger proportion of the
+cohort reaches maturity, but since surveys for other winter
+spawning areas have been limited in recent years this can only
+be speculated. Future surveys of other spawning areas could prove
+valuable to help resolve this mystery. It could also be a
+statistical cooincidence.
 
 Despite the unusual characteristics of this cohort there are no
 assessment model concerns, as cohort size is estimated
@@ -386,10 +388,11 @@ resulting in a `r year+1` ABC of `r maxabc` t, which is a
 `r pct.abc.changeF`from the `r year` ABC. The author’s recommended
 `r year+2` ABC is `r F(exec_table[12,4])` t. The OFL in 
 `r year+1` is `r ofl` t, and the OFL in `r year+2` if the ABC is
-taken in `r year+1` is `r F(exec_table[10,4])` t.  To evaluate
-the probability that the stock will drop below the B20%
-threshold, we projected the stock forward for five years using
-the author’s recommended fishing mortality schedule. This
+taken in `r year+1` is `r F(exec_table[10,4])` t.  
+
+To evaluate the probability that the stock will drop below the
+B20% threshold, we projected the stock forward for five years
+using the author’s recommended fishing mortality schedule. This
 projection incorporates uncertainty in stock status, uncertainty
 in the estimate of B20%, and variability in future
 recruitment. We then sampled from the probability of future
@@ -490,34 +493,34 @@ final TAC for `r year+1`, are as follow ($\text{max}F_{ABC}$ refers
 to the maximum permissible value of $F_{ABC}$ under Amendment
 56):
 
--   Scenario 1: In all future years, *F* is set equal to $max
-    F_{ABC}$.  (Rationale: Historically, TAC has been constrained
-    by ABC, so this scenario provides a likely upper limit on
-    future TACs.)
+- Scenario 1: In all future years, *F* is set equal to $max
+  F_{ABC}$. (Rationale: Historically, TAC has been constrained
+  by ABC, so this scenario provides a likely upper limit on
+  future TACs.)
 
--   Scenario 2: In `r year` and `r year + 1`, *F* is set equal to
-    a constant fraction of $max F_{ABC}$, where this fraction is
-    equal to the ratio of the realized catches in `r year-3`-
-	`r year-1` to the ABC recommended in the assessment for each of
-    those years.  For the remainder of the future years, maximum
-    permissible ABC is used.  (Rationale: In many fisheries the
-    ABC is routinely not fully utilized, so assuming an average
-    ratio catch to ABC will yield more realistic projections.)
+- Scenario 2: In `r year` and `r year + 1`, *F* is set equal to a
+  constant fraction of $max F_{ABC}$, where this fraction is
+  equal to the ratio of the realized catches in `r year-3`-
+  `r year-1` to the ABC recommended in the assessment for each of
+  those years.  For the remainder of the future years, maximum
+  permissible ABC is used.  (Rationale: In many fisheries the ABC
+  is routinely not fully utilized, so assuming an average ratio
+  catch to ABC will yield more realistic projections.)
 
--   Scenario 3: In all future years, *F* is set equal to 50% of
-    $max F_{ABC}$.  (Rationale: This scenario provides a likely
+- Scenario 3: In all future years, *F* is set equal to 50% of
+    $max F_{ABC}$. (Rationale: This scenario provides a likely
     lower bound on FABC that still allows future harvest rates to
     be adjusted downward when stocks fall below reference
     levels.)
 
--   Scenario 4: In all future years, *F* is set equal to the
-    `r year-4`-`r year` average *F*.  (Rationale: For some stocks, TAC can
-    be well below ABC, and recent average *F* may provide a
-    better indicator of $F_{TAC}$ than $F_{ABC}$.)
+- Scenario 4: In all future years, *F* is set equal to the 
+  `r year-4`-`r year` average *F*. (Rationale: For some stocks, TAC
+  can be well below ABC, and recent average *F* may provide a
+  better indicator of $F_{TAC}$ than $F_{ABC}$.)
 
--   Scenario 5: In all future years, *F* is set equal to zero.
-    (Rationale: In extreme cases, TAC may be set at a level close
-    to zero.)
+- Scenario 5: In all future years, *F* is set equal to zero.
+  (Rationale: In extreme cases, TAC may be set at a level close
+  to zero.)
 
 Two other scenarios are needed to satisfy the MSFCMA's
 requirement to determine whether a stock is currently in an
@@ -525,21 +528,21 @@ overfished condition or is approaching an overfished condition.
 These two scenarios are as follows (for Tier 3 stocks, the MSY
 level is defined as $B_{35\%}$):
 
--   Scenario 6: In all future years, *F* is set equal to
-    $F_{OFL}$.  (Rationale: This scenario determines whether a
-    stock is overfished. If the stock is expected to be 1) above
-    its MSY level in `r year` or 2) above 1/2 of its MSY level in
-    `r year` and above its MSY level in `r year+9` under this
-    scenario, then the stock is not overfished.)
+- Scenario 6: In all future years, *F* is set equal to $F_{OFL}$.
+  Rationale: This scenario determines whether a stock is
+  overfished. If the stock is expected to be 1) above its MSY
+  level in `r year` or 2) above 1/2 of its MSY level in 
+  `r year` and above its MSY level in `r year+9` under this scenario, then
+  the stock is not overfished.
 
--   Scenario 7: In `r year+1` and `r year + 2`, *F* is set equal
-    to max $F_{ABC}$, and in all subsequent years F is set equal
-    to FOFL.  (Rationale: This scenario determines whether a
-    stock is approaching an overfished condition. If the stock is
-    1) above its MSY level in `r year+2` or 2) above 1/2 of its
-    MSY level in `r year+2` and expected to be above its MSY
-    level in `r year+11` under this scenario, then the stock is
-    not approaching an overfished condition.)
+- Scenario 7: In `r year+1` and `r year + 2`, *F* is set equal to
+  max $F_{ABC}$, and in all subsequent years F is set equal to
+  FOFL.  Rationale: This scenario determines whether a stock is
+  approaching an overfished condition. If the stock is 1) above
+  its MSY level in `r year+2` or 2) above 1/2 of its MSY level in
+  `r year+2` and expected to be above its MSY level in
+  `r year+11` under this scenario, then the stock is not approaching
+  an overfished condition.
 
 Results from scenarios 1-7 are presented in Table
 1.\@ref(tab:proj-scens). Mean spawning biomass is projected to

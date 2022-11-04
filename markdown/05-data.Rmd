@@ -118,7 +118,7 @@ largest percentage with 38%, age-3 (2018 cohort) with 23%, and
 the age-9 fish only accounting for 17%. Younger fish are likely
 to become increasingly prominent in the catch-at-age as the 2012
 year class begins to age out of the population. Fishery catch at
-age in 1975-`r year` is presented in Table 1.\@ref(tab:caa) (See
+age in 1975-`r year-1` is presented in Table 1.\@ref(tab:caa) (See
 also Fig. 1.\@ref(fig:ages-fsh)). Sample sizes for ages and
 lengths are given in Table 1.\@ref(tab:aged-fsh).
 
@@ -151,7 +151,7 @@ Shumagin-610, Chirikof-620, Kodiak-630 statistical areas, and the
 western portion of Yakutat-640 statistical area. Biomass
 estimates for the west Yakutat area were obtained by splitting
 strata and survey CPUE data at 140° W long. and re-estimating
-biomass for west Yakutat. In 2001, when eastern Gulf of Alaska
+biomass for west Yakutat. In 2001, when the eastern Gulf of Alaska
 was not surveyed, a random effects model was used to interpolate
 a value for west Yakutat for use in the assessment model.
 
@@ -197,7 +197,7 @@ produced with the Biosonics echosounder used prior
 to 1992. Additionally, raw survey data are not easily recoverable
 for the earlier acoustic surveys, so there is no way to verify
 (i.e., to reproduce) the estimates. Survey methods and results
-for 2021 are presented in a NMFS processed report
+for `r year` are presented in a NMFS processed report
 [@mcgowan-prep]. In 2008, the noise-reduced R/V Oscar Dyson
 became the designated survey vessel for acoustic surveys in the
 Gulf of Alaska. In winter of 2007, a vessel comparison experiment
@@ -236,7 +236,7 @@ Estimates of numbers at age from the Shelikof Strait acoustic
 survey (Table 1.\@ref(tab:naa-srv1), Fig. 1.\@ref(fig:ages-srv1))
 were obtained using an age-length key compiled from random
 otolith samples and applied to weighted length frequency
-samples. Sample sizes for ages and lengths are given Table
+samples. Sample sizes for ages and lengths are given in Table
 1.\@ref(tab:aged-srv1). Estimates of age composition in Shelikof
 Strait in `r year` indicate reduced dominance of the 2012 year
 class, and a mode of age 2 and 4-5 fish (2020, 2018 and 2017 year
@@ -309,7 +309,7 @@ survey is 431,148 t, which is a 25% percent decrease from the
 2019 estimate (Table 1.\@ref(tab:indices)). Age composition data
 were available in 2022 and showed strong 2017, 2018, and 2020
 year classes.  Analysis of the 2019
-and 2021 survey was not complicated by the presence of age-0
+and 2021 surveys was not complicated by the presence of age-0
 pollock, which was a problem in previous summer acoustic surveys
 because age-0 pollock backscatter cannot be readily distinguished
 from age 1+ pollock [@jones2019a].

@@ -85,7 +85,7 @@ for the 2018 cohort. In contrast, the 2021 NMFS bottom trawl
 survey and fishery saw large proportions of this cohort and were
 fitted well. This disparity in the 2018 cohort is discussed more
 in the risk table section, but the model estimate for this cohort
-did not change much from 2021 (Table 1.\@ref(tab:timeseries)).
+increased 10% from 2021 (Table 1.\@ref(tab:timeseries)).
 
 Model fits to survey biomass estimates are reasonably good for
 all surveys except the period 2015-2019
@@ -119,7 +119,7 @@ in the early 1980s at approximately 113% of the proxy for
 unfished stock size (B100% = mean 1978- `r year-1` recruitment
 multiplied by the spawning biomass per recruit in the absence of
 fishing (SPR at F=0), see below for how this is calculated). In
-2002, the stock dropped below the B40% for the first time since
+2002, the stock dropped below B40% for the first time since
 the early 1980s, and reached a minimum in 2003 of 36% of unfished
 stock size. Over the years 2009-2013 stock size showed a strong
 upward trend, increasing from 46% to 86% of unfished stock size,

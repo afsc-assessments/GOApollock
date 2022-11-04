@@ -6,7 +6,7 @@
  x <- gettab(sheet = 'catch') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>%
- colformat_double(digits=0) %>% fontsize(size=9) 
+ colformat_double(digits=0) %>% fontsize(size=8) 
 ``` 
  
 \pagebreak
@@ -24,7 +24,9 @@
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% colformat_double(digits=0) 
 ``` 
- \pagebreak 
+
+\pagebreak 
+
 
 ```{r retained} 
  x <- gettab(sheet = 'retained') 
@@ -33,7 +35,8 @@
  	  colformat_double(digits=0) %>% fontsize(size=9)
  
 ``` 
- \pagebreak 
+
+\pagebreak 
 
 ```{r caa} 
  x <- gettab(sheet = 'caa') 
@@ -102,7 +105,7 @@
  	  colformat_double(digits=0, big.mark='',j=1) %>% 
  	  colformat_double(digits=2, j=4)  %>% fontsize(size=6)
 ``` 
- \pagebreak 
+\pagebreak 
 
 
 ```{r paa-srv3} 
@@ -115,7 +118,7 @@
  		autofit  %>% fontsize(size=7)
 
 ``` 
- \pagebreak 
+\pagebreak 
 
 
 ```{r age-error} 
@@ -135,7 +138,8 @@
  	  	  colformat_double(digits=1, big.mark=',',j=3)   %>% 
 		  fontsize(size=9)
 ``` 
- \pagebreak 
+
+\pagebreak 
 
 ```{r mat} 
  x <- gettab(sheet = 'mat') 
@@ -145,7 +149,7 @@
  	  colformat_num(digits=0, big.mark='',j=1) %>%  
    	  colformat_double(digits=0, big.mark=',',j=12)  
 ``` 
- \pagebreak 
+\pagebreak 
 
 ```{r waa-fsh} 
  waa_fsh <- datfile$wt_fsh %>% data.frame(ayears,.) %>% 

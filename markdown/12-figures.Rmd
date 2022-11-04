@@ -81,7 +81,7 @@ addfig('data-overview.png')
  addfig("mat_all.png")
 ```
 
-```{r mat-recent, eval=TRUE, fig.cap=paste0("Estimates of the proportion mature at age from weighted visual maturity data collected during", year-4,"-",year, " winter acoustic surveys in the Gulf of Alaska and long-term average proportion mature at age (1983-", year,"). Maturity for age-1 fish is assumed to be zero.")}
+```{r mat-recent, eval=TRUE, fig.cap=paste0("Estimates of the proportion mature at age from weighted visual maturity data collected during ", year-4,"-",year, " winter acoustic surveys in the Gulf of Alaska and long-term average proportion mature at age (1983-", year,"). Maturity for age-1 fish is assumed to be zero.")}
  addfig("mat_recent.png")
 ```
 
@@ -101,16 +101,16 @@ addfig('data-overview.png')
  addfig("add_data.png")
 ```
 
-```{r mod-compare, eval=TRUE, fig.cap="Estimated SSB for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data."}
+```{r mod-compare, eval=TRUE, fig.cap="Estimated SSB for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data. The gray ribbon shows the 95% confidence intervals for the 2021 final model."}
 addfig("mod_compare.png")
 ```
 
 ```{r mod-compare2, eval=TRUE, fig.cap="Absolute differences in SSB, summary biomass, and recruits (panels) from the final 2021 model for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data."}
-addfig("mod_compare2.png")
+addfig("mod_compare3.png")
 ```
 
 
-```{r tv-q, eval=TRUE, fig.cap="Time-varying catchability for the Shelikof Strait acoustic survey (Survey 1), the ADF\\&G crab/groundfish trawl survey (Survey 3), and constant catchability for the age-1 and age-2 Shelikof indices (Surveys 4 and 5; representing selectivity), and for the summer NMFS acoustic survey (Survey 6), for model 19.1a. Ribbons and lines represent the 95% CI"}
+```{r tv-q, eval=TRUE, fig.cap="Time-varying catchability for the Shelikof Strait acoustic survey (Survey 1), the ADF\\&G crab/groundfish trawl survey (Survey 3), and constant catchability for the NMFS bottom trawl (Survey 2) and the age-1 and age-2 Shelikof indices (Surveys 4 and 5; representing selectivity), and for the summer NMFS acoustic survey (Survey 6), for model 19.1a. Ribbons and lines represent the 95% CI"}
  addfig("tv_q.png")
 ```
 
@@ -162,15 +162,15 @@ addfig("mod_compare2.png")
  addfig("status.png")
 ```
 
-```{r historical, eval=TRUE, fig.cap="Estimated female spawning biomass for historical stock assessments conducted between 2000-2021. Lines reprsent the estimate in the assessment year and point is the terminal estimate in that year."} 
+```{r historical, eval=TRUE, fig.cap=paste0("Estimated female spawning biomass for historical stock assessments conducted between 1999-",year,". Lines reprsent the estimate in the assessment year and point is the terminal estimate in that year.")} 
  addfig("historical.png")
 ```
 
-```{r pred-endN, eval=TRUE, fig.cap=paste0("The bottom panel shows the estimated age composition in ",year, " from the ",year-1," and ",year," assessments.")}
+```{r pred-endN, eval=TRUE, fig.cap=paste0("The estimated age composition in ",year, " from the ",year-1," and ",year," assessments. The age-1 recruits have no information in the 2021 assessment and so are the average and hence not comparable")}
  addfig("pred_endN.png")
 ```
 
-```{r retros, eval=TRUE, fig.cap=paste0("Retrospective plot of spawning biomass for models ending in years ",year-9,"-",year-1, " for the ",year," base model. The revised Mohn’s rho (Mohn 1999) for ending year spawning biomass is -0.051.")}
+```{r retros, eval=TRUE, fig.cap=paste0("Retrospective plot of spawning biomass for models ending in years ",year-10,"-",year-1, " for the ",year," base model. The revised Mohn’s rho [@mohn1999a] for ending year spawning biomass is -0.081.")}
  addfig("retros.png")
 ```
 
@@ -182,6 +182,6 @@ addfig("mod_compare2.png")
  addfig("depletion.png")
 ```
 
-```{r fig-proj-scens, eval=TRUE, fig.cap="Projected mean spawning biomass and catches in 2020-2025 under different harvest rates."} 
+```{r fig-proj-scens, eval=TRUE, fig.cap="Projected mean spawning biomass and catches in 2022-2026 under different harvest rates."} 
  addfig("proj_scens.png")
 ```

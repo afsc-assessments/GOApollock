@@ -391,7 +391,7 @@ data were not available. The structural part of the model is an
 underlying von Bertalanffy growth curve. Year and cohort effects
 are estimated as random effects using the ADMB RE module. Further
 details are provided in @ianelli2016a. Input data included fishery
-weight age for 1975-`r year`. The model also incorporates survey
+weight age for 1975-`r year-1`. The model also incorporates survey
 data by modeling an offset between fishery and survey weight at
 age. Weight at age for the Shelikof Strait acoustic survey
 (1981-`r tail(datfile$srv_acyrs1,1)`) and the NMFS bottom trawl
@@ -406,13 +406,14 @@ deviation at age 10. Survey weights at age were assumed to have
 standard deviations that were 1.5 times the fishery weights at
 age. A comparison of RE model estimates from last year of the 
 `r year-1` fishery weight at age with the data now available
-indicate that the model underestimated weights slightly
+indicate that the model overestimated weights slightly
 (Fig. 1.\@ref(fig:fig-waa-fsh)). In this assessment, RE model estimates of
 weight at age are used for the fishery in `r year` and for yield
 projections and harvest recommendations.
 
-Appendix 1F details an exploratory approach using a state-space
-model to estimate the WAA within the model. 
+Appendix 1F details an exploratory and promising approach using a
+state-space model to estimate the WAA within the assessment
+model.
 
 ## Parameters Estimated Inside the Assessment Model
 A large number of parameters are estimated when using this

@@ -41,6 +41,8 @@ working with the Fishery Monitoring and Analysis (FMA) Division
 who collect vital data for the stock assessments, and the staff
 of the AFSC Age and Growth Unit for the ageing of otoliths used
 to determine the age compositions in the assessment. We also
-thank Kally Spalinger for providing ADF&G survey data.
+thank Kally Spalinger for providing ADF&G survey data. Finally,
+we thank Aaron Berger for reviewing an earlier version of the
+document.
 
 \pagebreak

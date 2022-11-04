@@ -1,6 +1,35 @@
 ## Responses to SSC and Plan Team Comments on Assessments in General
 
-None this year.
+From the November 2021 GOA Plan Team minutes: *The Team
+recommends all GOA authors evaluate any bottom trawl survey
+information used in their assessment prior to 1990 including the
+1984 and 1987 surveys and conduct sensitivity analyses to
+evaluate their usefulness to the assessment. This may apply for
+Aleutian Islands surveys but this was only raised during GOA
+assessment considerations.*
+
+NMFS bottom trawl data before 1990 are not used in this
+assessment, as described in the data section below.
+
+From the December 2021 SSC minutes: *With respect to Risk Tables,
+the SSC would like to highlight that "risk" is the risk of the
+ABC exceeding the true (but unknown) OFL, as noted in the October
+2021 SSC Risk Table workshop report. Therefore, for all stocks
+with a risk table, assessment authors should evaluate the risk of
+the ABC exceeding the true (but unknown) OFL and whether a
+reduction from maximum ABC is warranted, even if past TACs or
+exploitation rates are low.*
+
+This will be done.
+
+*The SSC recommends that groundfish, crab and scallop assessment
+authors do not change recommendations in documents between the
+Plan Team and the SSC meetings, because it makes it more
+difficult to understand the context of the Plan Team's rationale
+and seems counter to the public process without seeing a revision
+history of the document.*
+
+This will not be done.
 
 ## Responses to SSC and Plan Team Comments Specific to this Assessment
 Detailed analyses to SSC and Plan Team comments were presented at
@@ -45,11 +74,10 @@ Persistent patterns in Pearson residuals for older fish were also
 deemed not a concern at the moment. This is because a new way of
 calculating residuals using a "one step ahead" approach to
 account for correlations in the multinomial distribution
-[@trijoulet2023a] was implemented. The residuals did not show the
-same pattern, implying it was a consequence of the inadequateness
-of Pearson residuals and not a real misspecification of
-selectivity. These new residuals will be explored in the coming
-year. 
+[@trijoulet2023a] did not show the same pattern, implying it was
+a consequence of the inadequateness of Pearson residuals and not
+a real misspecification of selectivity. These new residuals will
+be explored in the coming year.
 
 
 In December 2021 the "*SSC suggests simplifying the computations
@@ -59,8 +87,8 @@ example, it appears that seasons B1 & B2 (formerly C & D) could
 be combined as they use the same apportionment scheme."*
 
 The apportionment table was simplified by combining the A1 and A2
-tables (steps 5 and 6) together, and simplifying some of the
-tables. Note that this new structure was not supposed to change
+tables (steps 5 and 6) together, and simplifying other
+steps. Note that this new structure was not supposed to change
 apportionment, and that motivates the current table which
 calculates by the previous four seasons and then sums them
 together into the new seasons.
