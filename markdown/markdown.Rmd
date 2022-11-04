@@ -5,7 +5,7 @@ params:
   species_complex: "no"
   area: "Gulf of Alaska"
   tier: 3
-author: "Cole C. Monnahan, Martin W. Dorn, Alison L. Deary, Bridget E. Ferriss, Mike Levin, David W. McGowan, Lauren Rogers, S. Kalei Shotwell, Abigail Tyrell and Stephani Zador "
+author: "Cole C. Monnahan, Martin W. Dorn, Giancarlo M. Correa, Alison L. Deary, Bridget E. Ferriss, Mike Levine, David W. McGowan, Lauren Rogers, S. Kalei Shotwell, Abigail Tyrell and Stephani Zador "
 date: "November 2022"
 
 # don't do anything below this line unless you are cool with the consequences

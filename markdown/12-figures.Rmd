@@ -10,6 +10,10 @@
  addfig('catches_seas_by_area.png')
 ```
 
+``` {r data-overview, fig.cap="Overview of data sources and their relative weights. Circle sizes are relative to catches or data information for surveys within a row. Length compositions are only used in years without age compositions"}
+addfig('data-overview.png')
+```
+
 ```{r ages-fsh, eval=TRUE, fig.cap=paste("GOA pollock fishery age composition (1975-",year-1,").The area of the circle is proportional to the catch. Diagonal lines show strong year classes.")}
  addfig("ages_fsh.png")
 ```
