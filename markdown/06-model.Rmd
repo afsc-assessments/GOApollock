@@ -307,23 +307,23 @@ maturity data collected in a haul. To estimate abundance, each
 acoustic survey distance unit (0.5 nmi of trackline) was assigned
 to a stratum representing nearest survey haul. Each haul’s
 biological data was then used to scale the corresponding acoustic
-backscatter by within that stratum into abundance. To generate
+backscatter within that stratum into abundance. To generate
 abundance weights for specimen data taken for each haul location,
 the abundance estimates of adult pollock ($\geq 30$ cm fork
 length) were summed for each haul-stratum. The 30 cm length
 threshold represents the length at which pollock are 5% mature in
 the entire Shelikof Strait historic survey data. Total adult
-pollock abundances in each stratum scaled by dividing by the mean
+pollock abundances in each stratum was scaled by dividing by the mean
 abundance per stratum (total abundance /number of
 haul-strata). Weights range from 0.05 to 6, as some hauls were
-placed in light sign while others sampled very dense
+placed in low-density regions while others sampled very dense
 aggregations. For each haul, the number of female pollock
 considered mature (prespawning, spawning, or spent) and immature
 (immature or developing) were computed for each age. The maturity
 ogive for maturity-at-age was estimated as a logistic regression
 using a weighted generalized linear model where the dependent
 variable was the binomial spawning state, the independent
-variable was the age, and data from each haul weighted by the
+variable was the age, and data from each haul were weighted by the
 appropriate values as computed above. The length and age at 50%
 maturity was derived (L50%, A50%) from the ratio of the
 regression coefficients. The new maturity estimates had a

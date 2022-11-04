@@ -116,10 +116,10 @@ year), particularly for the B season
 largest percentage with 38%, age-3 (2018 cohort) with 23%, and
 the age-9 fish only accounting for 17%. Younger fish are likely
 to become increasingly prominent in the catch-at-age as the 2012
-year class begins age out of the population. Fishery catch at age
-in 1975-`r year` is presented in Table 1.\@ref(tab:caa) (See also
-Fig. 1.\@ref(fig:ages-fsh)). Sample sizes for ages
-and lengths are given in Table 1.\@ref(tab:aged-fsh).
+year class begins to age out of the population. Fishery catch at
+age in 1975-`r year` is presented in Table 1.\@ref(tab:caa) (See
+also Fig. 1.\@ref(fig:ages-fsh)). Sample sizes for ages and
+lengths are given in Table 1.\@ref(tab:aged-fsh).
 
 ## Gulf of Alaska Bottom Trawl Survey
 
