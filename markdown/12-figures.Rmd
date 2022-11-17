@@ -2,6 +2,10 @@
 # Figures
 
 
+```{r catches-sources, fig.cap="Overview of historical catches by source compared to the ABC/TAC"}
+addfig('catches-source.png')
+```
+
 ```{r catches-map, eval=TRUE, fig.cap="Distribution of pollock catch in the 2020 fishery shown for 1/2 degree latitude by 1 degree longitude blocks by season in the Gulf of Alaska as determined by fishery observer-recorded haul retrieval locations. Blocks with less than 1.0 t of pollock catch are not shown. The area of the circle is proportional to the catch."} 
  addfig('catches_map.png')
 ```

@@ -2,13 +2,13 @@
 The commercial fishery for walleye pollock in the Gulf of Alaska
 started as a foreign fishery in the early 1970s
 [@megrey1989]. Catches increased rapidly during the late 1970s
-and early 1980s (Table 1.\@ref(tab:catches)). A large spawning
-aggregation was discovered in Shelikof Strait in 1981, and a
-fishery developed for which pollock roe was an important
-product. The domestic fishery for pollock developed rapidly in
-the Gulf of Alaska with only a short period of joint venture
-operations in the mid-1980s. The fishery was fully domestic by
-1988.
+and early 1980s (Table 1.\@ref(tab:catches);
+Fig. 1.\@ref(fig:catches-sources)). A large spawning aggregation
+was discovered in Shelikof Strait in 1981, and a fishery
+developed for which pollock roe was an important product. The
+domestic fishery for pollock developed rapidly in the Gulf of
+Alaska with only a short period of joint venture operations in
+the mid-1980s. The fishery was fully domestic by 1988.
 
 ## Description of the Directed Fishery
 ### Catch Patterns

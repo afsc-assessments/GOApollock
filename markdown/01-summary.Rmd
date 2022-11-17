@@ -68,9 +68,9 @@ partial Tier 5 assessment update.
 
 <!-- Text table of area apportionments (if any) for the recommended one- and two-year ahead ABCs and OFLs, with a brief description of the apportionment methodology. -->
 
-<!-- ```{r, child= "01b-apportionment.Rmd", eval = T} -->
+```{r, child= "01b-apportionment.Rmd", eval = T}
 
-<!-- ``` -->
+```
 
 
 <!-- If so are so kind as to provide tables for the plan team, place them here -->
