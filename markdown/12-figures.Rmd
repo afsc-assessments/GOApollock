@@ -1,0 +1,191 @@
+
+# Figures
+
+
+```{r catches-sources, fig.cap="Overview of historical catches by source compared to the ABC/TAC"}
+addfig('catches-source.png')
+```
+
+```{r catches-map, eval=TRUE, fig.cap="Distribution of pollock catch in the 2020 fishery shown for 1/2 degree latitude by 1 degree longitude blocks by season in the Gulf of Alaska as determined by fishery observer-recorded haul retrieval locations. Blocks with less than 1.0 t of pollock catch are not shown. The area of the circle is proportional to the catch."} 
+ addfig('catches_map.png')
+```
+
+``` {r catches-seas-by-area, fig.cap="Distribution of pollock catch in the 2020 fishery shown for 1/2 degree latitude by 1 degree longitude blocks by season in the Gulf of Alaska as determined by fishery observer-recorded haul retrieval locations. Blocks with less than 1.0 t of pollock catch are not shown.  The area of the circle is proportional to the catch. ", eval = TRUE} 
+ addfig('catches_seas_by_area.png')
+```
+
+``` {r data-overview, fig.cap="Overview of data sources and their relative weights. Circle sizes are relative to catches or data information for surveys within a row. Length compositions are only used in years without age compositions"}
+addfig('data-overview.png')
+```
+
+```{r ages-fsh, eval=TRUE, fig.cap=paste("GOA pollock fishery age composition (1975-",year-1,").The area of the circle is proportional to the catch. Diagonal lines show strong year classes.")}
+ addfig("ages_fsh.png")
+```
+
+```{r map-BT-cpue, eval=TRUE, fig.cap="Pollock catch per unit effort (CPUE) for the 2021 NMFS bottom trawl survey in the Gulf of Alaska (heights of purple bars). Red stars indicate hauls with no pollock catch."}
+ addfig("cpue_BT_map.png")
+```
+
+<!-- ```{r xx, eval=TRUE, fig.cap="Length compositions by area for the NMFS bottom trawl survey in 2021."} -->
+<!--  addfig("xx.png") -->
+<!-- ``` -->
+```{r ages-srv2, eval=TRUE, fig.cap=paste0("Estimated abundance at age in the NMFS bottom trawl survey (1984-", tail(datfile$srv_acyrs2,1), ").  The area of the circle is proportional to the estimated abundance.")}
+ addfig("ages_srv2.png")
+```
+
+```{r ages-area-srv2, eval=TRUE, fig.cap=paste0("Age composition of pollock by statistical area for the", tail(datfile$srv_acyrs2,1)," NMFS bottom trawl survey.")}
+ addfig("ages_area_srv2.png")
+```
+
+```{r biomass-area-srv1, eval=TRUE, fig.cap="Biomass trends from winter acoustic surveys of pre-spawning aggregations of pollock in the GOA."}
+ addfig("biomass_area_srv1.png")
+```
+
+```{r ages-srv1, eval=TRUE, fig.cap=paste0("Estimated abundance at age in the Shelikof Strait acoustic survey (1981-", tail(datfile$srv_acyrs1,1)," except 1982, 1987, 1999, and 2011).  The area of the circle is proportional to the estimated abundance.")}
+ addfig("ages_srv1.png")
+```
+
+<!-- ```{r xx, eval=TRUE, fig.cap="Length composition of pollock by survey area for the 2021 summer acoustic survey."}  -->
+<!--  addfig("xx.png") -->
+<!-- ``` -->
+
+```{r adfg-locations, eval=TRUE, fig.cap=paste0("Tow locations for the ",tail(datfile$srvyrs3,1)," ADF\\&G crab/groundfish trawl survey.")}
+ addfig("adfg_locations.png")
+```
+
+```{r adfg-index, eval=TRUE, fig.cap="Comparison of ADF\\&G crab/groundfish trawl area-swept indices with year indices for a delta GLM model with a gamma error assumption for the positive observations. Both time series have been scaled by the mean for the time series."}
+ addfig("adfg_index.png")
+```
+
+```{r ages-srv3, eval=TRUE, fig.cap=paste0("Estimated proportions at age in the ADF\\&G crab/groundfish survey (2000-",tail(datfile$srv_acyrs3,1), ").  The area of the circle is proportional to the estimated abundance.")}
+ addfig("ages_srv3.png")
+```
+
+```{r fig-indices, eval=TRUE, fig.cap="Relative trends in pollock biomass since 1990 for the Shelikof Strait acoustic survey, the NMFS bottom trawl survey, and the ADF\\&G crab/groundfish trawl survey.  Each survey biomass estimate is standardized to the average since 1990. Shelikof Strait acoustic surveys prior to 2008 were re-scaled to be comparable to the surveys conducted from 2008 onwards by the R/V Oscar Dyson."}
+ addfig("indices.png")
+```
+
+```{r fsh-chars, eval=TRUE, fig.cap="GOA pollock fishery catch characteristics."}
+ addfig("fsh_chars.png")
+```
+
+```{r 2012-bio, eval=TRUE, fig.cap="Comparison of 2012 year class maturation, growth, and mortality with average characteristics. Maturity is based on sampling during winter acoustic surveys. Weight at age is a comparison of the 2012 year class in the winter acoustic survey with the average weight at age since 2013 excluding the 2012 year class. The mortality plot is catch curve analysis of the Shelikof Strait survey. The negative of the slope of a linear regression of log(N) on age is an estimate of total mortality (Z)."}
+ addfig("2012_bio.png")
+```
+
+```{r BT-prior, eval=TRUE, fig.cap="Prior on bottom trawl catchability used in the base model, and the estimate and uncertainty from the base model."}
+ addfig("BT_prior.png")
+```
+
+```{r fig-natM, eval=TRUE, fig.cap="Alternative estimates of age-specific natural mortality.  The scaled average was used in the stock assessment model."}
+ addfig("natM.png")
+```
+
+```{r mat-all, eval=TRUE, fig.cap=paste0("Estimates of the proportion mature at age from weighted visual maturity data collected on winter acoustic surveys in the Gulf of Alaska for all years. Maturity for age-1 fish is assumed to be zero.")}
+ addfig("mat_all.png")
+```
+
+```{r mat-recent, eval=TRUE, fig.cap=paste0("Estimates of the proportion mature at age from weighted visual maturity data collected during ", year-4,"-",year, " winter acoustic surveys in the Gulf of Alaska and long-term average proportion mature at age (1983-", year,"). Maturity for age-1 fish is assumed to be zero.")}
+ addfig("mat_recent.png")
+```
+
+```{r a50, eval=TRUE, fig.cap="Age at 50% mature (top) and length at 50% mature (bottom) from annual logistic regressions for female pollock from winter acoustic survey data in the Gulf of Alaska. Estimates since 2003 are weighted by local abundance."}
+ addfig("a50.png")
+```
+
+```{r fig-waa-srv1, eval=TRUE, fig.cap="Estimated weight at age of GOA pollock (ages 2, 4, 6, 8, and 10) from Shelikof Strait acoustic surveys used in the assessment model. In 1999 and 2011, when the acoustic survey was not conducted, weights-at-age were interpolated from surveys in adjacent years."}
+ addfig("waa_srv1.png")
+```
+
+```{r fig-waa-fsh, eval=TRUE, fig.cap=paste0("Comparison of fishery weight at age for ",year-1," with estimates from the random effects model last year and this year’ assessment (top panel). Random effects model estimates for ",year," used in the assessment model and for yield projections (bottom panel).")}
+ addfig("waa_fsh.png")
+```
+
+```{r add-data, eval=TRUE, fig.cap="Changes in estimated spawning biomass as new data were added successively to last year's base model, ordered by row in the legend at the top. The lower panel shows recent years with an expanded scale to highlight differences."}
+ addfig("add_data.png")
+```
+
+```{r mod-compare, eval=TRUE, fig.cap="Estimated SSB for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data. The gray ribbon shows the 95% confidence intervals for the 2021 final model."}
+addfig("mod_compare.png")
+```
+
+```{r mod-compare2, eval=TRUE, fig.cap="Absolute differences in SSB, summary biomass, and recruits (panels) from the final 2021 model for the previous (19.1) and new (19.1a) models run with the 2021 and 2022 data."}
+addfig("mod_compare3.png")
+```
+
+
+```{r tv-q, eval=TRUE, fig.cap="Time-varying catchability for the Shelikof Strait acoustic survey (Survey 1), the ADF\\&G crab/groundfish trawl survey (Survey 3), and constant catchability for the NMFS bottom trawl (Survey 2) and the age-1 and age-2 Shelikof indices (Surveys 4 and 5; representing selectivity), and for the summer NMFS acoustic survey (Survey 6), for model 19.1a. Ribbons and lines represent the 95% CI"}
+ addfig("tv_q.png")
+```
+
+```{r obs-exp-fsh, eval=TRUE, fig.cap="Observed and predicted fishery age composition for GOA pollock from the base model. Dashed blue lines are observations and solid red lines are model expectations."} 
+ addfig("obs_exp_fsh.png")
+```
+
+```{r pearson-fsh, eval=TRUE, fig.cap="Pearson residuals for fishery age composition.  Negative residuals are filled blue and positive filled red. Circle area is proportional to the magnitude of the residual."}
+ addfig("pearson_fsh.png")
+```
+
+```{r obs-exp-srv1, eval=TRUE, fig.cap="Observed and predicted Shelikof Strait acoustic survey age composition for GOA pollock from the base model. Dashed blue lines are observations and solid red lines are model expectations. Age 1 and 2 fish are modeled separately and excluded."}
+ addfig("obs_exp_srv1.png")
+```
+
+```{r pearson-srv1, eval=TRUE, fig.cap="Pearson residuals for Shelikof Strait acoustic survey age composition. Negative residuals are filled blue and positive filled red. Circle area is proportional to the magnitude of the residual."}
+ addfig("pearson_srv1.png")
+```
+
+```{r obs-exp-pearson-srv2, eval=TRUE, fig.cap="Observed and predicted NMFS bottom trawl age composition for GOA pollock from the base model (top). Dashed blue lines are observations and solid red lines are model expectations. Pearson residuals for NMFS bottom trawl survey (bottom). Negative residuals are filled blue and positive filled red. Circle area is proportional to the magnitude of the residual."}
+ addfig("obs_exp_pearson_srv2.png")
+```
+
+```{r obs-exp-pearson-srv3, eval=TRUE, fig.cap="Observed and predicted ADF\\&G bottom trawl age composition for GOA pollock from the base model (top). Dashed blue lines are observations and solid red lines are model expectations. Pearson residuals for ADF\\&G bottom trawl survey (bottom). Negative residuals are filled blue and positive filled red. Circle area is proportional to the magnitude of the residual."}
+ addfig("obs_exp_pearson_srv3.png")
+```
+
+```{r index-fits, eval=TRUE, fig.cap="Model predicted (line) and observed survey biomass (points and 95% confidence intervals) for the four surveys. The Shelikof survey is only for ages 3+."}
+ addfig("index_fits.png")
+```
+
+```{r index-fits2, eval=TRUE, fig.cap="Model predicted (line) and observed survey biomass (points and 95% confidence intervals)  for the age 1 and age 2 winter Shelikof surveys. "}
+ addfig("index_fits2.png")
+```
+
+```{r fig-selex, eval=TRUE, fig.cap="Estimated selectivity at age (lines) and uncertainty (+/- 1 SE; ribbons) for the fishery and surveys. Uncertainty calculations are done in logit space then converted and hence are asymmetric."}
+ addfig("selex_svys.png")
+```
+
+```{r selex-tv-fsh, eval=TRUE, fig.cap="Estimates of time-varying double-logistic fishery selectivity for GOA pollock for the base model. The selectivity is scaled so the maximum in each year is 1.0."}
+ addfig("selex_tv_fsh.png")
+```
+
+```{r ssb-status-rec, eval=TRUE, fig.cap=paste0("Estimated time series of GOA pollock spawning biomass (top) and age 1 recruitment (bottom) for the base model, with horizontal line at the average from 1978-",year-1,". Vertical bars represent two standard deviations.  The B35% and B40% lines represent the current estimate of these benchmarks.")}
+ addfig("ssb_status_rec.png")
+```
+
+```{r status, eval=TRUE, fig.cap="Annual fishing mortality as measured in percentage of unfished spawning biomass per recruit (top).  GOA pollock spawning biomass relative to the unfished level and fishing mortality relative to FMSY (bottom). The ratio of fishing mortality to FMSY is calculated using the estimated selectivity pattern in that year. Estimates of B100% spawning biomass are based on current estimates of maturity at age, weight at age, and mean recruitment.  Because these estimates change as new data become available, this figure can only be used in a general way to evaluate management performance relative to biomass and fishing mortality reference levels."}
+ addfig("status.png")
+```
+
+```{r historical, eval=TRUE, fig.cap=paste0("Estimated female spawning biomass for historical stock assessments conducted between 1999-",year,". Lines reprsent the estimate in the assessment year and point is the terminal estimate in that year.")} 
+ addfig("historical.png")
+```
+
+```{r pred-endN, eval=TRUE, fig.cap=paste0("The estimated age composition in ",year, " from the ",year-1," and ",year," assessments. The age-1 recruits have no information in the 2021 assessment and so are the average and hence not comparable")}
+ addfig("pred_endN.png")
+```
+
+```{r retros, eval=TRUE, fig.cap=paste0("Retrospective plot of spawning biomass for models ending in years ",year-10,"-",year-1, " for the ",year," base model. The revised Mohn’s rho [@mohn1999a] for ending year spawning biomass is -0.081.")}
+ addfig("retros.png")
+```
+
+```{r spawn-prod, eval=TRUE, fig.cap="GOA pollock spawner productivity, log(R/S), in 1970-2019 (top).  A five-year running average is also shown.  Spawner productivity in relation to female spawning biomass (bottom).  The Ricker stock-recruit curve is linear in a plot of spawner productivity against spawning biomass.   "} 
+ addfig("spawn_prod.png")
+```
+
+```{r depletion, eval=TRUE, fig.cap="Uncertainty in spawning biomass in 2022-2026 based on a posterior samples from MCMC from the joint likelihood for the base model where catch is set to the maximum permissible FABC. Shown are the percentage below the horizontal line at 20% for each year."} 
+ addfig("depletion.png")
+```
+
+```{r fig-proj-scens, eval=TRUE, fig.cap="Projected mean spawning biomass and catches in 2022-2026 under different harvest rates."} 
+ addfig("proj_scens.png")
+```

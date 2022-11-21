@@ -11,3 +11,11 @@ pkwham/*/*.cor
 pkwham/*/*.exe
 pkwham/*/*.rep
 pkwham/*/*.par
+markdown/*.html
+markdown/*.pdf
+markdown/*.docx
+markdown/auto
+markdown/markdown.aux
+markdown/markdown.log
+markdown.log
+markdown.tex

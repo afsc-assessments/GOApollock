@@ -1,0 +1,408 @@
+
+
+# Tables
+
+```{r catches, eval=TRUE} 
+ x <- gettab(sheet = 'catch') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>%
+ colformat_double(digits=0) %>% fontsize(size=8) 
+``` 
+ 
+\pagebreak
+
+```{r incidental, eval=TRUE} 
+ x <- gettab(sheet = 'incidental') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% colformat_double(digits=1) 
+``` 
+
+\pagebreak
+
+```{r bycatch} 
+ x <- gettab(sheet = 'bycatch') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% colformat_double(digits=0) 
+``` 
+
+\pagebreak 
+
+
+```{r retained} 
+ x <- gettab(sheet = 'retained') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=0) %>% fontsize(size=9)
+ 
+``` 
+
+\pagebreak 
+
+```{r caa} 
+ x <- gettab(sheet = 'caa') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=2) %>% 
+ 	  colformat_double(digits=0, big.mark='', j=1)  %>% fontsize(size=7)
+``` 
+ \pagebreak 
+
+```{r aged-fsh} 
+ x <- gettab(sheet = 'aged_fsh') 
+ flextable(x$tab) %>%  
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=0, big.mark='', j=1) 
+``` 
+ \pagebreak 
+
+```{r indices} 
+ x <- gettab(sheet = 'indices', maxcols=6) 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=0) %>%  
+ 	  colformat_double(digits=0, big.mark='',j=1) %>% 
+ 	  autofit() 
+``` 
+ \pagebreak 
+
+
+```{r aged-srv2} 
+ x <- gettab(sheet = 'aged_srv2', maxcols=10) 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_num(big.mark=',') %>% 
+ 	  colformat_num(big.mark='',j=1) %>% 
+ 	  colformat_double(digits=2, j=4) 
+``` 
+ \pagebreak 
+
+```{r naa-srv2} 
+ x <- gettab(sheet = 'naa_srv2') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=1) %>% 
+   	  colformat_double(digits=0, big.mark='',j=1) %>% 
+ 	  hline(i=18:19) %>% autofit()  %>% fontsize(size=7)
+``` 
+
+
+ \pagebreak 
+
+```{r naa-srv1} 
+ x <- gettab(sheet = 'naa_srv1') 
+ flextable(x$tab) %>%   
+    set_caption(x$cap) %>% 
+   colformat_double(digits=1) %>%  
+   colformat_num(digits=0, big.mark='',j=1) %>% autofit  %>% fontsize(size=7)
+``` 
+ \pagebreak 
+
+```{r aged-srv1} 
+ x <- gettab(sheet = 'aged_srv1') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=0, big.mark=',') %>% 
+ 	  colformat_double(digits=0, big.mark='',j=1) %>% 
+ 	  colformat_double(digits=2, j=4)  %>% fontsize(size=6)
+``` 
+\pagebreak 
+
+
+```{r paa-srv3} 
+ x <- gettab(sheet = 'paa_srv3', maxcols=17) 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=3) %>%  
+ colformat_num(digits=0, big.mark='',j=1) %>%  
+  colformat_num(digits=0, big.mark=',',j=17) %>%  
+ 		autofit  %>% fontsize(size=7)
+
+``` 
+\pagebreak 
+
+
+```{r age-error} 
+ x <- gettab(sheet = 'age_error') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=3) %>% 
+ 	  colformat_num(digits=0,j=1) 
+``` 
+
+```{r natM} 
+ x <- gettab(sheet = 'natM') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>%  
+ 	  colformat_double(digits=2)  %>%  
+ 	  colformat_num(digits=0, big.mark='',j=1) %>%  
+ 	  	  colformat_double(digits=1, big.mark=',',j=3)   %>% 
+		  fontsize(size=9)
+``` 
+
+\pagebreak 
+
+```{r mat} 
+ x <- gettab(sheet = 'mat') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=3) %>% 
+ 	  colformat_num(digits=0, big.mark='',j=1) %>%  
+   	  colformat_double(digits=0, big.mark=',',j=12)  
+``` 
+\pagebreak 
+
+```{r waa-fsh} 
+ waa_fsh <- datfile$wt_fsh %>% data.frame(ayears,.) %>% 
+ 	setNames(c('Year',1:10)) %>% 
+        subset(Year %in% datfile$fshyrs) 
+      cap <-'Fishery weight at age (kg) for GOA pollock' 
+ flextable(waa_fsh) %>%   
+       set_caption(cap)  %>%  
+ 	  colformat_double(digits=3)%>% 
+ 	   colformat_num(digits=0, big.mark='', j=1) %>% 
+  	fontsize(size=8) 
+``` 
+ \pagebreak 
+
+```{r waa-srv1} 
+ waa_srv1 <- datfile$wt_srv1 %>% data.frame(ayears,.) %>% 
+ 	setNames(c('Year',1:10)) %>% 
+        subset(Year %in% datfile$srvyrs1 & Year >=1981) 
+      cap <-'Weight at age (kg) of pollock in the winter acoustic survey' 
+ flextable(waa_srv1) %>%   
+       set_caption(cap)  %>%  
+ 	  colformat_double(digits=3)%>% 
+ 	   colformat_num(digits=0, big.mark='', j=1) %>% 
+  	fontsize(size=9) 
+``` 
+ \pagebreak 
+
+```{r waa-srv26} 
+ waa_srv2 <- datfile$wt_srv2 %>% data.frame(ayears,.) %>% 
+ 	setNames(c('Year',1:10)) %>% 
+        subset(Year %in% datfile$srvyrs2 & Year >=1984) 
+      cap <-'Weight at age (kg) of pollock in the summer NMFS
+ bottom trawl survey (top) and NMFS summer acoustic survey (bottom)' 
+ flextable(waa_srv2) %>%   
+       set_caption(cap)  %>%  
+ 	  colformat_double(digits=3)%>% 
+ 	   colformat_num(digits=0, big.mark='', j=1) %>% 
+  	fontsize(size=9) 
+ waa_srv6 <- datfile$wt_srv6 %>% data.frame(ayears,.) %>% 
+ 	setNames(c('Year',1:10)) %>% 
+        subset(Year %in% datfile$srvyrs6) 
+ flextable(waa_srv6) %>%   
+ 	  colformat_double(digits=3)%>% 
+ 	   colformat_num(digits=0, big.mark='', j=1) %>% 
+  	fontsize(size=9) 
+``` 
+ \pagebreak 
+
+```{r selex} 
+  selex <- repfile$Fishery_selectivity 
+  yrs <- dimnames(selex)[[1]] %>% as.numeric 
+  s1 <- selex[yrs %in% 1970:1981,]%>% apply(2,mean) %>% as.numeric 
+  s2 <- selex[yrs %in% 1982:1988,]%>% apply(2,mean) %>% as.numeric 
+  s3 <- selex[yrs %in% 1989:2000,] %>% apply(2,mean) %>% as.numeric 
+  s4 <- selex[yrs %in% 2001:2014,] %>% apply(2,mean) %>% as.numeric  
+  s5 <- selex[yrs %in% (year-6):(year-1),] %>% apply(2,mean) %>% as.numeric  
+  s6 <- repfile$Survey_1_selectivity 
+  ## grab catchabilities for age 1 and 2s and use for selectivity  
+  s6[1:2] <- c(repfile$Survey_4_q, repfile$Survey_5_q) 
+  s7 <- repfile$Survey_6_selectivity 
+  s8 <- repfile$Survey_2_selectivity 
+  s9 <- repfile$Survey_3_selectivity 
+ x <- c("Age","Foreign (1970-81)", "Foreign and JV (1982-1988)", 
+ 	"Domestic (1989-2000)", "Domestic (2001-2014)",  
+ 	paste0("Recent domestic (", year-6,"-",year-1,")"), 
+ 	"Shelikof acoustic survey" , 
+ 	"Summer acoustic survey","Bottom trawl survey",  
+ 	"ADF&G bottom trawl") 
+    tab <- data.frame(1:10,s1,s2,s3,s4,s5,s6,s7,s8,s9) %>% setNames( x) 
+  flextable(tab) %>%  
+  set_caption("Estimated selectivity at age for GOA pollock fisheries and surveys.  The fisheries and surveys were modeled using double logistic selectivity functions.  Acoustic survey catchablity at age 1 and age 2 are estimated separately. ") %>%
+ colformat_double(digits=3) %>%
+ colformat_double(digits=3) 
+``` 
+ \pagebreak 
+
+```{r naa-est}
+ naa <- 1e3*repfile$Numbers_at_age %>% as.data.frame() %>% 
+  ## not sure why I need to divide by 1e3 here.. weird 
+     cbind(Year=ayears/1e3,.) 
+ row.names(naa) <- NULL 
+ x2 <- naa[1,]*NA 
+ x3 <- data.frame(year='Average',t(colMeans(naa[,-1])))%>% 
+   setNames(names(naa)) 
+ naa2 <- rbind(naa,x2,x3)   
+ cap <- "Total estimated abundance at age (millions) of GOA pollock from the age-structured assessment model" 
+ flextable(naa2) %>% set_caption(cap) %>% 
+   colformat_double(digits=0, big.mark=',') %>% fontsize(size=9)
+   
+```
+
+\pagebreak
+
+```{r timeseries}
+sumbio <- repfile[['Expected_summary_(age_3+)_biomass']]*1e3
+ssb <- repfile[['Expected_spawning_biomass']]*1e3
+pct.ssb <- paste0(round(100*ssb/(Finv(b100)/1000),0),"%")
+rec <- repfile$Recruits*1e3
+catch <- repfile$Total_catch
+hr <- paste0(round(100*catch/(1000*sumbio),0), '%')
+sumbio2 <-
+ c( repfile.last[['Expected_summary_(age_3+)_biomass']]*1e3, NA)
+ssb2 <- c(repfile.last[['Expected_spawning_biomass']]*1e3, NA)
+rec2 <- c(repfile.last$Recruits*1e3,NA)
+hr2 <- paste0(round(100*catch/(1000*sumbio2),0), '%') 
+hr2[length(hr2)] <- NA
+tab <- data.frame(Year=repfile$years, sumbio=sumbio, ssb=ssb,pct.ssb=pct.ssb,
+           rec=rec,catch=catch,hr, sumbio2, ssb2,rec2,hr2) %>% 
+  subset(Year>=1977) 
+cap <- "Estimates of population biomass, recruitment, and harvest of GOA pollock from the age-structured assessment model.  The harvest rate is the catch in biomass divided by the total biomass of age 3+ fish at the start of the year."
+cols <- list(sumbio="3+ total\nbiomass (kt)", 
+             ssb="SSB (kt)", 
+			 pct.ssb="% of SB100",
+             rec="Age 1 recruits\n(millions)",
+             catch="Catch (t)",
+			 hr="Harvest\nrate", 
+			 sumbio2="3+ total\nbiomass (kt)", 
+             ssb2="SSB (kt)", 
+             rec2="Age 1 recruits\n(millions)",
+			 hr2="Harvest\n rate")
+flextable(tab) %>% set_caption(cap) %>% 
+ set_header_labels(values=cols) %>%
+ add_header_row(values=c("","2022 assessment", "2021 assessment"),
+ colwidths=c(1,6,4)) %>%
+ colformat_double(digits=0, big.mark=',') %>%
+ colformat_num(digits=0, big.mark='', j=1) %>%
+ vline(j=7) %>%
+ align(part='header', align='center') %>% fontsize(size=9)
+
+```
+
+\pagebreak
+
+```{r rec-ssb}
+ ## uncertainty of recruits and SSB
+rec <- subset(stdfile, name %in% c('recruit')) %>%
+  dplyr::mutate(CV=se/est, est=est*1000, lwr=est/exp(1.96*sqrt(log(1+CV^2))), upr=est*exp(1.96*sqrt(log(1+CV^2)))) %>% 
+  dplyr::select(year,est, CV, lwr, upr)
+ssb <- subset(stdfile, name %in% c('Espawnbio')) %>%
+  dplyr::mutate(CV=se/est, est=est*1000, lwr=est/exp(1.96*sqrt(log(1+CV^2))), upr=est*exp(1.96*sqrt(log(1+CV^2)))) %>% 
+  dplyr::select(est, CV, lwr, upr)
+tab <- cbind(rec,ssb) %>% setNames(letters[1:9])
+cols <- list(a="Year", b="Estimate",c="CV",d="Lower 95% CI",e="Upper 95% CI",
+          f="Estimate",g="CV",h="Lower 95% CI",i="Upper 95% CI")
+cap <- "Uncertainty of estimates of recruitment and spawning biomass of GOA pollock from the age-structured assessment model." 
+
+ flextable(tab) %>% set_caption(cap) %>% 
+  set_header_labels(values=cols) %>% 
+   add_header_row(values=c("","Age-1 Recruits (millions)", "Spawning biomass (kt)"),
+   colwidths=c(1,4,4)) %>%
+  colformat_double(digits=0, big.mark=',') %>%
+ colformat_double(digits=2, j=c(3,7)) %>%
+ colformat_num(digits=0, big.mark='', j=1) %>%
+ vline(j=5) %>%
+ align(part='header', align='center') %>% fontsize(size=9)
+```
+\pagebreak
+
+```{r spr-inputs}
+
+cols <- c("Age", "Natural\nmortality",
+  paste0("Fishery selectivity\n(Avg. ",year-4, "-",year,")"),
+  paste0("Spawning WAA\n(Avg. ",year-4, "-",year,")"),
+  paste0("Population WAA\n(Avg. ", paste(tail(datfile$srv_acyrs2,3), collapse=', '),")"),
+  paste0("Fishery WAA\n(Est. ",year, " from RE model)"),
+  paste0("Proportion mature females\n(Avg. 1983-",year,")"))
+
+cap <- "GOA pollock life history and fishery characteristics used to estimate spawning biomass per recruit (FSPR) harvest rates. Spawning weight at age (WAA, kg) is based on an average from the Shelikof Strait acoustic survey conducted in March.  Population weight at age is based on a average for the last three bottom trawl survey conducted in June to August.  Proportion mature females is the average from winter acoustic survey specimen data."
+tab <- data.frame(age=c(1:9, "10+"), a=repfile$Natural_mortality, 
+      b=repfile$Projection_fishery_selectivity,
+      c=repfile$Projection_spawning_weight_at_age,
+      d=repfile$Projection_population_weight_at_age,
+      e=t(tail(datfile$wt_fsh,1)),
+      f=datfile$mat) %>% setNames(cols)
+flextable(tab) %>% set_caption(cap) %>% 
+ colformat_double(digits=3) %>%
+ colformat_double(digits=0, j=1) %>%
+ colformat_double(digits=2, j=2)
+```
+\pagebreak
+
+```{r model-history}
+x <- gettab(sheet = 'model_history')
+names(x$tab) <- c("Year", "Assessment Method", "Catch recommendation basis", "B40% (t)")
+flextable(x$tab) %>%   
+      set_caption(x$cap) %>% 
+	  colformat_double(digits=0, big.mark='',j=1) %>%
+	  colformat_double(digits=0, big.mark=',',j=4) %>% fontsize(size=8)
+``` 
+\pagebreak
+
+```{r proj-scens}
+cap <- paste("Projections of GOA pollock spawning biomass, full recruitment fishing mortality, and catch for",year,"-",year+13,"under different harvest policies (columns). For these projections, fishery weight at age was assumed to be equal to the estimated weight at age in",year,"for the RE model. All projections begin with initial age composition in",year, " using the base run model with a projected", year, "catch of", F(tail(datfile$cattot,1)),"t. The values for B100%, B40%, and B35% are", b100, "t,", b40,"t,", b35,"t, respectively" )
+cols <- c("Year", "Max FABC","Author's\nrecommended F", "Average F",	"F75%",
+          "F=0", "FOFL", "Max FABC for two\nyears, then FOFL")
+tmp <- proj_scens
+tmp <- dplyr::select(proj_scens, Yr, Alternative, SSB, F, Catch) %>%
+  dplyr::rename(Year=Yr, alt=Alternative)
+ssb <- dplyr::select(tmp, Year, alt, SSB) %>%
+  tidyr::pivot_wider(names_from=alt, values_from=SSB) %>%
+  setNames(cols)
+ff <- dplyr::select(tmp, Year, alt, F) %>%
+  tidyr::pivot_wider(names_from=alt, values_from=F) %>%
+  setNames(cols)
+cc <- dplyr::select(tmp, Year, alt, Catch) %>%
+  tidyr::pivot_wider(names_from=alt, values_from=Catch) %>%
+  setNames(cols)
+
+ftmp <- function(x,y){
+  flextable(x) %>% 
+	add_header_lines(values=y) %>%
+  colformat_double(digits=0, big.mark=',') %>%
+  colformat_num(digits=0, big.mark='', j=1) %>%
+  align(part='header', align='center') %>% fontsize(size=9)
+  }
+
+ftmp(ssb, 'Spawning biomass (t)') %>% set_caption(cap)
+ftmp(ff,  'Fishing mortality') %>% colformat_double(digits=2)
+ftmp(cc,  'Catch (t)')
+
+```
+\pagebreak
+  
+<!-- Ingrid's way of doing this, only works for PDF -->
+<!--```{r proj, echo=FALSE} -->
+<!-- library(kableExtra) -->
+<!-- tmp <- proj_scens[, c('Alternative','Yr','SSB', 'Catch','F')] %>% -->
+<!--   dplyr::rename(alt=Alternative, Year=Yr) -->
+<!-- alt12 <- subset(tmp, alt==1)[,-1] -->
+<!-- alt3 <- subset(tmp, alt==3)[,-1] -->
+<!-- alt4 <- subset(tmp, alt==4)[,-1] -->
+<!-- alt5 <- subset(tmp, alt==5)[,-1] -->
+<!-- alt6 <- subset(tmp, alt==6)[,-1] -->
+<!-- alt7 <- subset(tmp, alt==7)[,-1] -->
+<!-- t1 <- kable(alt12, format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("Maximum ABC harvest permissible"=4),align="l")%>%add_header_above(c("Scenarios 1 and 2"=4),line=FALSE,align="l") -->
+<!-- t2 <- kable(alt3, format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("Harvest at average F over past 5 years"=4),align="l")%>%add_header_above(c("Scenario 3"=4),line=FALSE,align="l") -->
+<!-- cat(c("\\begin{table}[h] \\centering ",  -->
+<!--       t1, -->
+<!--     "\\hspace{1cm} \\centering ", -->
+<!--       t2, -->
+<!--     "\\end{table}"))   -->
+<!-- t3 <- kable(alt4, format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c(" harvest permissible set at F60"=4),align="l")%>%add_header_above(c("Scenario 4, Maximum Tier 3 ABC"=4),line=FALSE,align="l") -->
+<!-- t4 <- kable(alt5, format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("No fishing"=4),align="l")%>%add_header_above(c("Scenario 5"=4),line=FALSE,align="l") -->
+<!-- cat(c("\\begin{table}[h] \\centering ",  -->
+<!--       t3, -->
+<!--     "\\hspace{1cm} \\centering ", -->
+<!--       t4, -->
+<!--     " \\end{table}"))  -->
+<!-- t6 <- kable(alt6, format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c(" Yellowfin Sole are currently overfished"=4),align="l")%>%add_header_above(c("Alternative 6, Determination of whether"=4),line=FALSE,align="l") -->
+<!-- t7 <- kable(alt7, format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("stock is approaching an overfished condition"=4),align="l")%>%add_header_above(c("Scenario 7, Determination of whether"=4),align="l",line=FALSE) -->
+<!-- cat(c("\\begin{table}[h] \\centering ",  -->
+<!--       t6, -->
+<!--     "\\hspace{1cm} \\centering ", -->
+<!--       t7, -->
+<!--     " \\end{table}"))  -->
+<!--``` -->
