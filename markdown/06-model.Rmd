@@ -1,0 +1,445 @@
+# Analytical approach
+
+## General Model Structure
+
+
+An age-structured model covering the period from 1970 to `r year`
+(`r length(repfile$years)` years) was used to assess Gulf of Alaska
+pollock. The modeled population includes individuals from age 1
+to age 10, with age 10 defined as a "plus" group, i.e., all
+individuals age 10 and older. Population dynamics were modeled
+using standard formulations for mortality and fishery catch
+[e.g., @fournier1982a; @deriso1985a; @hilborn1992a]. Year- and
+age-specific fishing mortality was modeled as a product of a year
+effect, representing the full-selection fishing mortality, and an
+age effect, representing the selectivity of that age group to the
+fishery. The age effect was modeled using a double-logistic
+function with time-varying parameters [@dorn1990a;
+@sullivan1997a]. The model was fit to time series of catch
+biomass, survey indices of abundance, and estimates of age and
+length composition from the fishery and surveys. Details of the
+population dynamics and estimation equations are presented in
+Appendix 1C.
+
+Model parameters were estimated by maximizing the joint log
+likelihood of the data and penalities, viewed as a function of
+the parameters. Mean-unbiased log-normal likelihoods were used
+for survey biomass and total catch estimates, and multinomial
+likelihoods were used for age and length composition data. Model
+tuning for composition data was done by iterative re-weighting of
+input sample sizes using the @francis2011a method. Variance
+estimates/assumptions for survey indices were not reweighted. The
+following table lists the likelihood components used in fitting
+the model.
+
+```{r}
+x <- read_xlsx(table.path, sheet='likelihoods')
+flextable(x)
+```
+
+### Recruitment
+Age composition in the first year is estimated with a single log
+deviation for recruitment abundance, which was then decremented
+by natural mortality to fill out the initial age vector. In
+previous versions of the model, a recruitment penalty of
+($\sigma_R =1.0$) was added only to recruitments for 1970-77, and
+in the last two years of the model and the rest were were
+estimated as free parameters. Starting in 2022 with model 19.1a
+the penalty was applied to all deviations, with a value of
+$\sigma_R =1.3$ coming from an estimate of the state-space
+version of the model. This change had relatively small impact on
+the estimated recruits and management references.
+
+### Modeling fishery data
+To accommodate changes in selectivity, we estimated year-specific
+parameters for the slope and the intercept parameter for the
+ascending logistic portion of selectivity curve (i.e., younger
+fish). Variation in these parameters was constrained using a
+random walk penalty.
+
+### Modeling survey data
+Survey abundance was assumed to be proportional to total
+abundance as modified by the estimated survey selectivity
+pattern. Expected population numbers at age for the survey were
+based on the mid-date of the survey, assuming constant fishing
+and natural mortality throughout the year. Standard deviations in
+the log-normal likelihood were set equal to the sampling error CV
+(coefficient of variation) associated with each survey estimate
+of abundance [@kimura1991a].
+
+Survey catchability coefficients can be fixed or freely
+estimated. The base model estimated the NMFS bottom trawl survey
+catchability, but used a log normal prior with a median of 0.85
+and log standard deviation 0.1 based on expert judgement as a
+constraint on potential values
+(Fig. 1.\@ref(fig:BT-prior)). Catchability coefficients for other
+surveys were estimated as free parameters. The age-1 and age-2
+winter acoustic survey indices are numerical abundance estimates,
+and were modeled using independently estimated catchability
+coefficients (i.e., no selectivity is estimated).
+
+A vessel comparison (VC) experiment was conducted in March 2007
+during the Shelikof Strait acoustic survey. The VC experiment
+involved the R/V Miller Freeman (MF, the survey vessel used to
+conduct Shelikof Strait surveys since the mid-1980s), and the R/V
+Oscar Dyson (OD), a noise-reduced survey vessel designed to
+conduct surveys that have traditionally been done with the R/V
+Miller Freeman. The vessel comparison experiment was designed to
+collect data either with the two vessels running beside one
+another at a distance of 0.7 nmi, or with one vessel following
+nearly directly behind the other at a distance of about 1
+nmi. The methods were similar to those used during the 2006
+Bering Sea VC experiment [@robertis2008a]. Results indicate that
+the ratio of 38 kHz pollock backscatter from the R/V Oscar Dyson
+relative to the R/V Miller Freeman was significantly greater than
+one (1.13), as would be expected if the quieter OD reduced the
+avoidance response of the fish. Previously we included a
+likelihood component to incorporate this information in the
+assessment model, but dropped it because this survey is now
+modeled with a random walk in catchability, and a relatively
+small systematic change in catchability is inconsequential
+compared to other factors affecting catchability.
+
+### Ageing error
+An ageing error conversion matrix is used in the assessment model
+to translate model population numbers at age to expected fishery
+and survey catch at age (Table
+1.\@ref(tab:age-error)). @dorn2003a estimated this matrix using
+an ageing error model fit to the observed percent reader
+agreement at ages 2 and 9. Mean percent agreement is close to
+100% at age 1 and declines to 40% at age 10. Annual estimates of
+percent agreement are variable, but show no obvious trend; hence
+a single conversion matrix for all years in the assessment model
+was adopted. The model is based on a linear increase in the
+standard deviation of ageing error and the assumption that ageing
+error is normally distributed. The model predicts percent
+agreement by taking into account the probability that both
+readers are correct, both readers are off by one year in the same
+direction, and both readers are off by two years in the same
+direction [@methot2000a]. The probability that both agree and
+were off by more than two years was considered negligible. A
+study evaluated pollock ageing criteria using radiometric methods
+and found them to be unbiased [@kastelle2006a].
+
+### Length frequency data
+The assessment model was fit to length frequency data from
+various sources by converting predicted age distributions (as
+modified by age-specific selectivity) to predicted length
+distributions using an age-length conversion matrix. This
+approach was used only when age composition estimates were
+unavailable, as occurs when the survey is the same as the
+assessment. Because seasonal differences in pollock length at age
+are large, particularly for the younger fish, several conversion
+matrices were used. For each matrix, unbiased length
+distributions at age were estimated for several years using
+age-length keys, and then averaged across years. A conversion
+matrix was estimated using 1992-1998 Shelikof Strait acoustic
+survey data and used for winter survey length frequency data. The
+following length bins were used: 5-16, 17-27, 28-35, 36-42,
+43-50, 51-55, 56-70 (cm). Age data for the most recent
+survey is now routinely available so this option does not need to
+be invoked. A conversion matrix was estimated using second and
+third trimester fishery age and length data during the years
+(1989-1998), and was used when age composition data are
+unavailable for the summer bottom trawl survey, which is only for
+the most recent survey in the year that the survey is
+conducted. The following length bins were used: 5-24, 25-34,
+35-41, 42-45, 46-50, 51-55, 56-70 (cm), so that the
+first four bins would capture most of the summer length
+distribution of the age-1, age-2, age-3 and age-4 fish,
+respectively. Bin definitions were different for the summer and
+the winter conversion matrices to account for the seasonal growth
+of the younger fish (ages 1-4).
+
+### Initial data weighting
+The input sample sizes were initially standardized by data set
+before model tuning. Fishery age composition was given an initial
+sample size of 200 except when the age sample in a given year
+came from fewer than 200 hauls/deliveries, in which case the
+number of hauls/deliveries was used. Both the Shelikof acoustic
+survey and the bottom trawl age compositions were given an
+initial sample size of 60, and the ADF&G crab/groundfish survey
+was given a weight of 30.
+
+
+## Parameters Estimated Outside the Assessment Model
+Pollock life history characteristics, including natural
+mortality, weight at age, and maturity at age, were estimated
+independently outside the assessment model. These parameters are
+used in the model to estimate spawning and population biomass and
+obtain predictions of fishery catch and survey biomass. Pollock
+life history parameters include:
+
+- Natural mortality ($M$)
+- Proportion mature at age
+- Weight at age and year by fishery and by survey
+
+### Natural mortality
+@hollowed1990a estimated natural mortality ($M$) using a variety
+of methods including estimates based on: a) growth parameters
+[@alverson1975a; @pauly1980a], b) GSI [@gunderson1988a], c)
+monitoring cohort abundance, and d) estimation in the assessment
+model. These methods produced estimates of natural mortality that
+ranged from 0.22 to 0.45. The maximum age observed was 22
+years. Up until the 2014 assessment, natural mortality had been
+assumed to be 0.3 for all ages.
+
+@hollowed2000a developed a model for Gulf of Alaska pollock that
+accounted for predation mortality. The model suggested that
+natural mortality declines from 0.8 at age 2 to 0.4 at age 5, and
+then remains relatively stable with increasing age. In addition,
+stock size was higher when predation mortality was included. In a
+simulation study, @clark1999a evaluated the effect of an
+erroneous $M$ on both estimated abundance and target harvest
+rates for a simple age-structured model. He found that "errors in
+estimated abundance and target harvest rate were always in the
+same direction, with the result that, in the short term,
+extremely high exploitation rates can be recommended
+(unintentionally) in cases where the natural mortality rate is
+overestimated and historical exploitation rates in the
+catch-at-age data are low." @clark1999a proposed that the chance
+of this occurring could be reduced by using an estimate of
+natural mortality on the lower end of the credible range, which
+is the approach used in this assessment. In the 2014 assessment,
+several methods to estimate of the age-specific pattern of
+natural mortality were evaluated. Two general types of methods
+were used, both of which are external to the assessment
+model. The first type of method is based initially on theoretical
+life history or ecological relationships that are then evaluated
+using meta-analysis, resulting in an empirical equation that
+relates natural mortality to some more easily measured quantity
+such as length or weight. The second type of method is an
+age-structured statistical analysis using a multispecies model or
+single species model where predation is modeled. There are three
+examples of such models for pollock in Gulf of Alaska, a single
+species model with predation by @hollowed2000a, and two
+multispecies models that included pollock by Kirk
+[-@kirk2010a;-@kirk2012a]. These models were published in the
+peer-reviewed literature, but likely did not receive the same
+level of scrutiny as stock assessment models. Although these
+models also estimate time-varying mortality, we averaged the
+total mortality (residual natural mortality plus predation
+mortality) for the last decade in the model to obtain a mean
+age-specific pattern (in some cases omitting the final year when
+estimates were much different than previous years). Use of the
+last decade was an attempt to use estimates with the strongest
+support from the data. Approaches for inclusion of time-varying
+natural mortality will be considered in future pollock
+assessments. The three theoretical/empirical methods used were
+the following:
+
+
+*@brodziak2011a*: Age-specific $M$ is given by
+
+\begin{equation*}
+ M(a)=
+    \begin{cases}
+      M_c \frac{L_{mat}}{L(a)} & \text{for } a<a_{mat}\\
+      M_c & \text{for } a \geq a_{mat}
+    \end{cases}
+\end{equation*}
+
+where $L_{mat}$ is the length at maturity, $M_c=0.30$ is the
+natural mortality at $L_{mat}$, $L(a)$ is the mean length at age
+for the summer bottom trawl survey for 1984-2013.
+
+*@lorenzen1996a*: Age-specific $M$ for ocean ecosystems is given
+by
+
+$$ M(a)=\bar{W_a}^{-0.305}$$
+
+where $\bar{W_a}$ is the mean weight at age from the summer
+bottom trawl survey for 1984-2013.
+
+*@gislason2010a*: Age-specific $M$ is given by
+
+$$\ln(M)=0.55-1.61\ln(L)+1.44\ln(L_{\infty})+\ln{K}$$ where
+$L_\infty = 65.2$ cm and $K = 0.30$ were estimated by fitting von
+Bertalanffy growth curves using the NLS routine in R using summer
+bottom trawl age data for 2005-2009 for sexes combined in the
+central and western Gulf of Alaska.  Results were reasonably
+consistent and suggest use of a higher mortality rate for age
+classes younger than the age at maturity (Table 1.\@ref(tab:natM)
+and Fig. 1.\@ref(fig:fig-natM)). Somewhat surprisingly, the
+theoretical/empirical estimates were similar, on average, to
+predation model estimates. To obtain an age-specific natural
+mortality schedule for use in the stock assessment, we used an
+ensemble approach and averaged the results for all methods. Then
+we used the method recommended by Clay Porch in @brodziak2011a to
+rescale the age-specific values so that the average for range of
+ages equals a specified value. Age-specific values were rescaled
+so that a natural mortality for fish greater than or equal to age
+5, the age at 50% maturity, was equal to 0.3, the value of
+natural mortality used in previous pollock assessments.
+
+### Maturity at age
+Maturity stages for female pollock describe a continuous process
+of ovarian development between immature and post-spawning. For
+the purposes of estimating a maturity vector (the proportion of
+an age group that has been or will be reproductively active
+during the year) for stock assessment, all fish greater than or
+equal to a particular maturity stage are assumed to be mature,
+while those less than that stage are assumed to be
+immature. Maturity stages in which ovarian development had
+progressed to the point where ova were distinctly visible were
+assumed to be mature (i.e., stage 3 in the 5-stage pollock
+maturity scale). Maturity stages are qualitative rather than
+quantitative, so there is subjectivity in assigning stages, and a
+potential for different technicians to apply criteria differently
+(Neidetcher et al. 2014). Because the link between pre-spawning
+maturity stages and eventual reproductive activity later in the
+season is not well established, the division between mature and
+immature stages is problematic. Changes in the timing of spawning
+could also affect maturity at age estimates. @merati1993a
+compared visual maturity stages with ovary histology and a blood
+assay for vitellogenin and found general consistency between the
+different approaches. @merati1993a noted that ovaries classified
+as late developing stage (i.e., immature) may contain yolked
+eggs, but it was unclear whether these fish would have spawned
+later in the year. The average sample size of female pollock
+maturity stage data per year since 2000 from winter acoustic
+surveys in the Gulf of Alaska is 372 (Table 1.\@ref(tab:mat)).
+In 2019, a new approach was introduced to estimate maturity at
+age using specimen data from the Shelikof Strait acoustic
+survey. Maturity estimates from 2003 onwards were revised using
+this method. The approach uses local abundance to weight the
+maturity data collected in a haul. To estimate abundance, each
+acoustic survey distance unit (0.5 nmi of trackline) was assigned
+to a stratum representing nearest survey haul. Each haul’s
+biological data was then used to scale the corresponding acoustic
+backscatter within that stratum into abundance. To generate
+abundance weights for specimen data taken for each haul location,
+the abundance estimates of adult pollock ($\geq 30$ cm fork
+length) were summed for each haul-stratum. The 30 cm length
+threshold represents the length at which pollock are 5% mature in
+the entire Shelikof Strait historic survey data. Total adult
+pollock abundances in each stratum was scaled by dividing by the mean
+abundance per stratum (total abundance /number of
+haul-strata). Weights range from 0.05 to 6, as some hauls were
+placed in low-density regions while others sampled very dense
+aggregations. For each haul, the number of female pollock
+considered mature (prespawning, spawning, or spent) and immature
+(immature or developing) were computed for each age. The maturity
+ogive for maturity-at-age was estimated as a logistic regression
+using a weighted generalized linear model where the dependent
+variable was the binomial spawning state, the independent
+variable was the age, and data from each haul were weighted by the
+appropriate values as computed above. The length and age at 50%
+maturity was derived (L50%, A50%) from the ratio of the
+regression coefficients. The new maturity estimates had a
+relatively minor impact on assessment results, and usually
+reduced estimates of spawning biomass by about 2 percent.
+Estimates of maturity at age in 2022 from winter acoustic surveys
+using the new method are higher for younger fish, but lower for
+older fish, compared to 2021 and the long-term mean for all ages
+(Fig. 1.\@ref(fig:mat-all) and
+1.\@ref(fig:mat-recent)). Inter-annual changes in maturity at age
+may reflect environmental conditions, pollock population biology,
+effect of strong year classes moving through the population, or
+simply ageing error. Because there did not appear to be an
+objective basis for excluding data, the 1983-2021 average
+maturity at age was used in the assessment.
+
+Logistic regression [@mccullagh1983a] was also used to
+estimate the age and length at 50% maturity at age for each year
+to evaluate long-term changes in maturation. Annual estimates of
+age at 50% maturity are highly variable and range from 2.6 years
+in 2017 to 6.1 years in 1991, with an average of 4.8 years
+(Fig. 1.\@ref(fig:a50)). The last few years has shown a decrease in the age
+at 50% mature, which is largely being driven by the maturation of
+the 2012 year class at younger ages than is typical, however the
+2019 to 2022 estimates of age at 50% mature are near the
+long-term average. Length at 50% mature is less variable than the
+age at 50% mature, suggesting that at least some of the
+variability in the age at maturity can be attributed to changes
+in length at age. Changes in year-class dominance also likely
+affect estimates of maturity at length, as a similar pattern is
+seen as with maturity at age with the 2012 cohort. The average
+length at 50% mature for all years is approximately 43 cm.
+
+### Weight at age
+Year-specific fishery weight-at-age estimates are used in the
+model to obtain expected catches in biomass. Where possible, year
+and survey-specific weight-at-age estimates are used to obtain
+expected survey biomass. For each data source, unbiased estimates
+of length at age were obtained using year-specific age-length
+keys. Bias-corrected parameters for the length-weight
+relationship, $W=aL^b$ , were also estimated. Weights at age were
+estimated by multiplying length at age by the predicted weight
+based on the length-weight regressions. Weight at age for the
+fishery, the Shelikof Strait acoustic survey, and the NMFS bottom
+trawl survey and the summer acoustic survey are given in Tables
+1.\@ref(tab:waa-fsh), 1.\@ref(tab:waa-srv1), and
+1.\@ref(tab:waa-srv26). Data from the Shelikof Strait acoustic
+survey indicates that there has been a substantial change in
+weight at age for older pollock
+(Fig. 1.\@ref(fig:fig-waa-srv1)). For pollock greater than age 6,
+weight-at-age nearly doubled by 2012 compared to
+1983-1990. However, weight at age since 2012 has trended strongly
+downward, with some rebound in the last couple of years,
+including a notable increase in 2021 for all ages, and the
+heaviest age 2 fish to date (0.191 kg) and fourth heaviest age 3
+fish (0.321 kg) as well. Further analyses are needed to evaluate
+whether these changes are a density-dependent response to
+declining pollock abundance, or whether they are environmentally
+forced. Changes in weight-at-age have potential implications for
+status determination and harvest control rules.
+
+A random effects (RE) model for weight at age [@ianelli2016a] was
+used to estimate of fishery weight at age in `r year` since age
+data were not available. The structural part of the model is an
+underlying von Bertalanffy growth curve. Year and cohort effects
+are estimated as random effects using the ADMB RE module. Further
+details are provided in @ianelli2016a. Input data included fishery
+weight age for 1975-`r year-1`. The model also incorporates survey
+data by modeling an offset between fishery and survey weight at
+age. Weight at age for the Shelikof Strait acoustic survey
+(1981-`r tail(datfile$srv_acyrs1,1)`) and the NMFS bottom trawl
+survey (1984-`r tail(datfile$srv_acyrs2,1)`) were used. The model
+also requires input standard deviations for the weight at age
+data, which are not available for GOA pollock. In the 2016
+assessment, a generalized variance function was developed using a
+quadratic curve to match the mean standard deviations at ages
+3-10 for the eastern Bering Sea pollock data. The standard
+deviation at age one was assumed to be equal to the standard
+deviation at age 10. Survey weights at age were assumed to have
+standard deviations that were 1.5 times the fishery weights at
+age. A comparison of RE model estimates from last year of the 
+`r year-1` fishery weight at age with the data now available
+indicate that the model overestimated weights slightly
+(Fig. 1.\@ref(fig:fig-waa-fsh)). In this assessment, RE model estimates of
+weight at age are used for the fishery in `r year` and for yield
+projections and harvest recommendations.
+
+Appendix 1F details an exploratory and promising approach using a
+state-space model to estimate the WAA within the assessment
+model.
+
+## Parameters Estimated Inside the Assessment Model
+A large number of parameters are estimated when using this
+modeling approach, though many are year-specific deviations in
+fishery selectivity coefficients. Parameters were estimated using
+AD Model Builder (Version 13.0), a C++ software language
+extension and automatic differentiation library
+[@fournier2012a]. Parameters in nonlinear models are estimated in
+AD Model Builder using automatic differentiation software
+extended from @greiwank1991a and developed into C++
+class libraries. The optimizer in AD Model Builder is a
+quasi-Newton routine [@press1992a]. The model is determined
+to have converged when the maximum parameter gradient is less
+than a small constant (set to 1 x 10-6) and the Hessian matrix is
+invertible. AD Model Builder includes post-convergence routines
+to calculate standard errors (or likelihood profiles) for any
+quantity of interest.
+
+A list of model parameters for the base model is shown below:
+
+```{r}
+read_xlsx(table.path, sheet='pars') %>%
+ flextable()
+```
+
+
+
+
+

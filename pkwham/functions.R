@@ -131,9 +131,9 @@ match_input <- function(aa, asap3, NAA_re=list(sigma="rec", cor="iid")){
                          invq(aa$Survey_5_q),
                          invq(aa$Survey_6_q))
   ### tried this to get prior on BT to match but didn't work
-  ## input$data$use_q_prior[2] <- 1
-  ## input$data$logit_q_prior_sigma[2] <- .1
-  ## input$par$q_prior_re[2] <- invq(.85)
+  input$data$use_q_prior[2] <- 1
+  input$data$logit_q_prior_sigma[2] <- .1
+  input$par$q_prior_re[2] <- invq(.85)
 
   input$par$q_re[,1] <- invq(aa$Survey_1_q[-1])-mean(invq(aa$Survey_1_q[-1]))
   input$par$q_re[,3] <- invq(aa$Survey_3_q)-mean(invq(aa$Survey_3_q))
@@ -282,7 +282,7 @@ match_input_nll <- function(aa, asap3, NAA_re=list(sigma="rec", cor="iid")){
   input$par$q_repars[3,2] <- 10
   ## currently assumes first year is constatn but is not for some
   ## surveys, this is hacked in the TPL for bridging
-  input$data$fracyr_indices <- matrix(c(0.209, .543, 0.60989, 0,0,.519), nrow=52, ncol=6, byrow=TRUE)
+  input$data$fracyr_indices <- matrix(c(0.209, .543, 0.60989, 0.209,0.209,.519), nrow=52, ncol=6, byrow=TRUE)
   ## WAA matrices are rounded in ADMB but not WHAM, so recreate
   ## that here.
   input$data$waa[1,,] <- round(input$data$waa[1,,],3)

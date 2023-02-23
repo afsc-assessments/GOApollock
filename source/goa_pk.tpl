@@ -19,6 +19,13 @@
 // Added log biomass sdreport vectors. Will use those for
 // uncertainties moving forward.
 
+// Cleaned out old inputs  9/22.
+
+// Model 19.1a: add sigmaR=1.3 for all devs, turn on descending
+// logistic selectivity for survey 6, including some broad priors
+// to stabilize estimation. Also add more sdreport variables to
+// output.
+
 DATA_SECTION
   // Command line argument to do a retrospective peel
   // To use this flag, run the model using: "-retro n" to peel n years.
@@ -65,13 +72,7 @@ DATA_SECTION
   init_matrix lenp(1,nyrslen_fsh,1,nbins1)       // Catch proportions at age
   init_matrix wt_fsh(styr,endyr,rcrage,trmage)   // Weight at age by year
                                                  // For matrices indices for rows, then col
-  // Survey 1 (Acoustic)
-  // Biosonics
-  init_int nyrs_srv1_bs                             // Number of survey biomass estimates
-  init_ivector srvyrs1_bs(1,nyrs_srv1_bs)           // Years in which surveys occured
-  init_vector indxsurv1_bs(1,nyrs_srv1_bs)          // Survey index
-  init_vector indxsurv_log_sd1_bs(1,nyrs_srv1_bs)   // Survey index (cv) = sdev of log(indxsurv)
-  //EK500
+  // Survey 1 (Acoustic) EK500 (biosonic deleted in 2022)
   init_int nyrs_srv1                             // Number of survey biomass estimates
   init_ivector srvyrs1(1,nyrs_srv1)           // Years in which surveys occured
   init_vector indxsurv1(1,nyrs_srv1)           // Survey index
@@ -164,22 +165,40 @@ DATA_SECTION
   init_matrix len_trans3(rcrage,trmage,1,nbins3)
 
   // Population vectors
-  init_matrix wt_pop(styr,endyr,rcrage,trmage)   // Population weight at age
-  init_matrix wt_spawn(styr,endyr,rcrage,trmage) // Population weight at age at spawning (April 15)
-  // Anne's maturity vector
-  init_vector mat_old(rcrage,trmage)             // Proportion mature
+  matrix wt_pop(styr,endyr,rcrage,trmage)   // Population weight at age
+  matrix wt_spawn(styr,endyr,rcrage,trmage) // Population weight at age at spawning (April 15)
+  !! wt_pop=wt_srv2;
+  !! wt_spawn=wt_srv1;
   init_vector mat(rcrage,trmage)                 // Proportion mature
 
   // Projection parameters
-  init_vector wt_pop_proj(rcrage,trmage)         // Projection population weight at age at start of year
-  init_vector wt_spawn_proj(rcrage,trmage)       // Projection population weight at age at spawning (April 15)
-  init_vector wt_fsh_proj(rcrage,trmage)         // Projection fishery weight at age 
-  init_vector wt_srv_proj(rcrage,trmage)         // Projection arbitrary survey weight at age 
+  vector wt_pop_proj(rcrage,trmage);
+  vector wt_spawn_proj(rcrage,trmage);
+  vector wt_fsh_proj(rcrage,trmage);
+  vector wt_srv_proj(rcrage,trmage);
+  LOCAL_CALCS
+   // for projections take averages of WAA only from recent survey years with data
+    wt_pop_proj.initialize();
+    wt_spawn_proj.initialize();
+    for(int a=rcrage;a<=trmage;a++){
+      for(int i=1;i<=3;i++)
+          wt_pop_proj(a)+=wt_srv2(srv_acyrs2(nyrsac_srv2-i+1),a)/3;
+      for(int i=1;i<=5;i++){
+          wt_spawn_proj(a)+=wt_srv1(srv_acyrs1(nyrsac_srv1-i+1),a)/5;
+      // for predicting what the survey will see next year, Shelikof for now
+          wt_srv_proj(a)+=wt_srv1(srv_acyrs1(nyrsac_srv1-i+1),a)/5;
+      }	  
+     }
+     wt_fsh_proj=wt_fsh(endyr);
+  END_CALCS
+  
   init_vector Ftarget(endyr+1,endyr+5)
   init_number B40		                 // mean log recruitment
   init_number log_mean_recr_proj 
   init_number sigmasq_recr                       // Variance for log recr, recruitment indices
 
+  init_number check
+  !! if(check != -999){ cerr << "Failed to parse .dat file, final value=" << check <<endl; ad_exit(1);}
   int styr_avg_slct
   int endyr_avg_slct
   int i                                          // Index for year
@@ -206,7 +225,6 @@ INITIALIZATION_SECTION
   mean_log_F        -1.6   // Mean log fishing mortality
 
   M                  0.30  // Natural mortality
-  log_q1_bs          0.0   // Survey 1 catchability
   log_q1_mean        0.0   // Survey 1 catchability
   log_q1_dev         0.0   // Survey 1 catchability
   log_q2_mean        0.0   // Survey 2 catchability
@@ -251,6 +269,7 @@ INITIALIZATION_SECTION
 //  inf2_srv6          7
   log_slp2_srv6     1
   inf2_srv6          20
+  sigmaR 1.3 
   natMscalar   1
   
 PARAMETER_SECTION
@@ -263,7 +282,9 @@ PARAMETER_SECTION
   vector initN(rcrage+1,trmage)
   init_bounded_number mean_log_recruit(-15,15,1)
   init_bounded_dev_vector dev_log_recruit(styr,endyr,-15,15,3)
+  init_bounded_number sigmaR(0,5,-1);
   sdreport_vector recruit(styr,endyr)
+  sdreport_vector log_recruit(styr,endyr);
 
  // Forward projections 
   init_bounded_vector log_recr_proj(endyr+1,endyr+5,-5,5,10)
@@ -323,24 +344,20 @@ PARAMETER_SECTION
   init_bounded_number inf1_srv6(0,50,-1)
   //    init_bounded_number inf1_srv6(1,50,-1)
   //    init_bounded_number inf1_srv6(1,50,-1)
-  init_bounded_number log_slp2_srv6(-5,5,-7)
-  init_bounded_number inf2_srv6(5,25,-7)
+  init_bounded_number log_slp2_srv6(-5,5,7)
+  init_bounded_number inf2_srv6(5,25,7)
 
  // Fishing mortality and survey catchablility
   init_bounded_number mean_log_F(-10,10,1)
   init_bounded_dev_vector dev_log_F(styr,endyr,-10,10,2)
   vector F(styr,endyr)
-  init_bounded_number log_q1_bs(-10,10,-1)
   init_bounded_number log_q1_mean(-10,10,5)
   init_bounded_dev_vector log_q1_dev(styr,endyr,-5,5,5) 
-  vector log_q1(styr,endyr)
    //  init_bounded_number log_q2(-10,10,-1)
   init_bounded_number log_q2_mean(-10,10,5)
   init_bounded_dev_vector log_q2_dev(styr,endyr,-5,5,-1)  
-  vector log_q2(styr,endyr)   
   init_bounded_number log_q3_mean(-10,10,6)
   init_bounded_dev_vector log_q3_dev(styr,endyr,-5,5,5) 
-  vector log_q3(styr,endyr) 	
   init_bounded_number log_q4(-10,10,6)
   //  init_bounded_number q4_pow(-10,10,6)
   init_bounded_number q4_pow(-10,10,-6)
@@ -352,10 +369,12 @@ PARAMETER_SECTION
   init_bounded_number natMscalar(0,5,-5)
 
  // Dependent parameters
-  number q1_bs
   vector q1(styr,endyr)
   vector q2(styr,endyr)
   vector q3(styr,endyr)
+  sdreport_vector log_q1(styr,endyr)
+  sdreport_vector log_q2(styr,endyr)
+  sdreport_vector log_q3(styr,endyr)
   number q4
   number q5
   number q6
@@ -372,13 +391,19 @@ PARAMETER_SECTION
   matrix Nsrv6(styr,endyr,rcrage,trmage)
   vector slctsrv6(rcrage,trmage)
   matrix slctfsh(styr,endyr,rcrage,trmage)
-  // Expected values
+  sdreport_vector slctsrv1_logit(rcrage,trmage)
+  sdreport_vector slctsrv2_logit(rcrage,trmage)
+  sdreport_vector slctsrv3_logit(rcrage,trmage)
+  sdreport_vector slctsrv6_logit(rcrage,trmage)
+  sdreport_vector slctfsh_logit(rcrage,trmage);
+
+
+// Expected values
   vector Eecocon(styr,endyr)
   matrix Eec(styr,endyr,rcrage,trmage)
   vector Ecattot(styr,endyr)
   matrix Ecatp(styr,endyr,rcrage,trmage)
   matrix Elenp(styr,endyr,1,nbins1)
-  vector Eindxsurv1_bs(styr,endyr)
   vector Eindxsurv1(styr,endyr)
   matrix Esrvp1(styr,endyr,rcrage,trmage)
   matrix Esrvlenp1(styr,endyr,1,nbins3)
@@ -434,7 +459,6 @@ PARAMETER_SECTION
   vector effN_srv3(1,nyrsac_srv3)
   vector effN_srv6(1,nyrsac_srv6)
 
-  number RMSE_srv1_bs
   number RMSE_srv1
   number RMSE_srv2
   number RMSE_srv3
@@ -537,16 +561,19 @@ FUNCTION Convert_log_parameters
  for (j=rcrage+1;j<=trmage;j++) {
    initN(j) = initN(j)*mfexp(dev_log_initN(j));
  }
- recruit = mfexp(mean_log_recruit +  dev_log_recruit);
+ log_recruit=mean_log_recruit +  dev_log_recruit;
+ recruit = mfexp(log_recruit);
 
  // Acoustic survey random walk setup
  for (i=styr;i<=endyr;i++) {
-   q1(i)=mfexp(log_q1_mean+log_q1_dev(i));
-   q2(i)=mfexp(log_q2_mean+log_q2_dev(i));
-   q3(i)=mfexp(log_q3_mean+log_q3_dev(i)); 
+   log_q1(i)=log_q1_mean+log_q1_dev(i);
+   log_q2(i)=log_q2_mean+log_q2_dev(i);
+   log_q3(i)=log_q3_mean+log_q3_dev(i); 
+   q1(i)=mfexp(log_q1(i));
+   q2(i)=mfexp(log_q2(i));
+   q3(i)=mfexp(log_q3(i));
  }
  F = mfexp(mean_log_F + dev_log_F);
- q1_bs = mfexp(log_q1_bs);
  q4 = mfexp(log_q4);
  q5 = mfexp(log_q5);
  q6 = mfexp(log_q6);
@@ -598,7 +625,17 @@ FUNCTION Selectivity
       *(1-1/(1+mfexp(-mfexp(log_slp2_srv6)*(double(j)-inf2_srv6))));
   }
   slctsrv6=slctsrv6/slctsrv6(1);
-		
+
+  // Calculate uncertainty in logit space where it makes more
+  // sense. But it does break when selex=0 or 1 identically so
+  // need to be careful there.
+  slctsrv1_logit=-log(1/(slctsrv1-1e-10)-1);
+  slctsrv2_logit=-log(1/(slctsrv2-1e-10)-1);
+  slctsrv3_logit=-log(1/(slctsrv3-1e-10)-1);
+  slctsrv6_logit=-log(1/(slctsrv6-1e-10)-1);
+  slctfsh_logit=-log(1/(slctfsh(endyr-1)-1e-10)-1);
+
+
 FUNCTION Mortality
   for (i=styr;i<=endyr;i++) {
     for (j=rcrage;j<=trmage;j++) {
@@ -640,7 +677,6 @@ FUNCTION Expected_values
    Eecocon(i) = 1000000*sum(elem_prod(Eec(i),wt_pop(i)));
    Ecatp(i) = (C(i)/sum(C(i)))*age_trans;
    Elenp(i) = Ecatp(i) * len_trans1;
-   Eindxsurv1_bs(i)= q1_bs*sum(elem_prod(elem_prod(elem_prod(N(i),mfexp(-yrfrct_srv1(i)*Z(i))),slctsrv1),wt_srv1(i)));
    Eindxsurv1(i)= q1(i)*sum(elem_prod(elem_prod(elem_prod(N(i),mfexp(-yrfrct_srv1(i)*Z(i))),slctsrv1),wt_srv1(i)));
    Esrvp1(i) = (Nsrv1(i)/sum(Nsrv1(i)))*age_trans;
    Esrvlenp1(i) = Esrvp1(i) * len_trans3;
@@ -776,6 +812,7 @@ FUNCTION Projections
  slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
  
 
+
  //Forward projections
   for (i=endyr+1;i<=endyr+5;i++) {
     // have to get Z twice
@@ -872,9 +909,6 @@ FUNCTION Objective_function
     loglik(4)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(srvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
   }
 
-  RMSE_srv1_bs=0;
-  if(!isretro) // to do: take this out
-    RMSE_srv1_bs= sqrt(norm2(log(indxsurv1_bs)-log(Eindxsurv1_bs(srvyrs1_bs))+square(indxsurv_log_sd1_bs)/2.)/nyrs_srv1_bs);
   RMSE_srv1=0;
   if(!isretro)
     RMSE_srv1= sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(srvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
@@ -1048,18 +1082,9 @@ FUNCTION Objective_function
   loglik(17) += llsrvlenp6(i);
   }
 
- // Constraints on recruitment
+  // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
   loglik(18)= 0;
- //  loglik(18)+= -0.5*square((mean_log_initN-mean_log_recruit)/0.3);
-  loglik(18) += -0.5*square(dev_log_recruit(styr)/1.0);
-  loglik(18) += -0.5*norm2(dev_log_recruit(styr+1,styr+7)/1.0);
- //  loglik(18) += -0.5*norm2(dev_log_initN/1.0);
- // The one below is what I have been using
-  loglik(18) += -0.5*norm2(dev_log_recruit(endyr-1,endyr)/1.0);
- //  loglik(18) += -0.5*norm2(dev_log_recruit(endyr-2,endyr)/1.0);  
- //  loglik(18) += -0.5*square(dev_log_recruit(endyr)/1.0);
- //  Stronger constraint on endyear recruitment dev
- //  loglik(18) += -0.5*square(dev_log_recruit(endyr)/0.25);
+  loglik(18) += -0.5*norm2(dev_log_recruit/sigmaR);
 
  // Normal process error on selectivity deviations. Note
  // rwlk_sd(styr,endyr-1) b/c if using retro they will be too
@@ -1087,6 +1112,10 @@ FUNCTION Objective_function
  // Prior on trawl catchability       
  loglik(23) = -.5*square((log_q2_mean-log(0.85))/0.1);
  loglik(24) = 0;
+ // these broad priors stabilize estimation, particularly for
+ // retros, and imply uniform 1 selex for this survey
+ loglik(24) -= dnorm(log_slp2_srv6, 0,2, true);
+ loglik(24) -= dnorm(inf2_srv6, 10,3, true);
  objfun = -sum(loglik);
 
  // Variable to do a likelihood profile over
@@ -1184,285 +1213,142 @@ TOP_OF_MAIN_SECTION
 
 
 REPORT_SECTION
-  report << "Objective function" << endl;
-  report << objfun << endl;
-  report << "Likelihood components" << endl;
-  report << loglik << endl;
-  report << " " << endl;
+  report << "Objective function" << endl << objfun << endl;
+  report << "Likelihood components" << endl << loglik << endl;
+  report << "Recruits" << endl <<  recruit << endl; 
+  report << "Expected spawning biomass" << endl << Espawnbio << endl;
+  report << "Expected total biomass" << endl << Etotalbio << endl;
+  report << "Expected summary (age 3+) biomass" << endl << Esumbio << endl;
+  report << "Expected spawning biomass age 2+" << endl << Espawnbio_2plus << endl;
+  report << "Fishing mortalities" << endl <<  F << endl ; 
+  report << "Ecosystem comsumption" << endl <<  Eecocon << endl; 
+  report << "Initial age comp" << endl <<  initN << endl; 
+  report << "Total catch" << endl <<  cattot << endl;  
+  report << "Expected total catch" << endl <<  Ecattot << endl;  
+  report << "Natural mortality" << endl <<  M << endl; 
+  report << "Numbers at age" << endl << N << endl << endl;
 
-  report << "Natural mortality" << endl;  
-  report << M << endl; 
-  report << "Ecosystem comsumption" << endl;  
-  report << Eecocon << endl; 
 
-  report << "Initial age comp" << endl;  
-  report << initN << endl; 
-  report << "Recruits" << endl;  
-  report << recruit << endl; 
-  report << " " << endl;
-
-  report << "Total catch" << endl;  
-  report << cattot << endl;  
-  report << "Expected total catch" << endl;  
-  report << Ecattot << endl;  
-
-  report << "Fishing mortalities" << endl;  
-  report << F << endl; 
-  report << "Selectivity means" << endl;  
-  report << log_slp1_fsh_mean << endl; 
-  report << inf1_fsh_mean << endl; 
-  report << log_slp2_fsh_mean << endl; 
-  report << inf2_fsh_mean << endl; 
-  report << "Selectivity deviances" << endl;  
+  report << "Fishery selectivity means" << endl;  
+  report << log_slp1_fsh_mean << " " <<  inf1_fsh_mean << " " << log_slp2_fsh_mean  << " " << inf2_fsh_mean << endl; 
+  report << "Fishery selectivity deviances" << endl;  
   report << slp1_fsh_dev << endl; 
   report << inf1_fsh_dev << endl; 
   report << slp2_fsh_dev << endl; 
   report << inf2_fsh_dev << endl; 
-  report << "Selectivity vectors" << endl;  
+  report << "Fishery selectivity vectors" << endl;  
   report <<  slp1_fsh << endl; 
   report <<  inf1_fsh << endl; 
   report <<  slp2_fsh << endl; 
   report <<  inf2_fsh << endl; 
-  report << "Fishery selectivity" << endl;
-  report << slctfsh << endl;
-  report << "Fishery age composition likelihoods" << endl;
-  report << llcatp << endl;
-  report << "Fishery  age composition" << endl;
-  report << catp << endl;
-  report << "Expected fishery age composition" << endl;
-  report << Ecatp << endl;
-  report << "Observed and expected age comp" << endl;
-  report << res_fish << endl;
-  report << "Pearson residuals age comp" << endl;
-  report << pearson_fish << endl; 
-  report << "Input N" << endl;
-  report << multN_fsh << endl;  
-  report << "Effective N age comp" << endl;
-  report << effN_fsh << endl;   
-  report << "Fishery length composition likelihoods" << endl;
-  report << lllenp << endl;
-  report << "Fishery length composition" << endl;
-  report << lenp << endl;
-  report << "Expected length composition" << endl;
-  report << Elenp << endl;
+  report << "Fishery selectivity" << endl << slctfsh << endl;
+  report << "Fishery age composition likelihoods" << endl << llcatp << endl;
+  report << "Fishery age composition" << endl << catp << endl;
+  report << "Fishery expected age composition" << endl << Ecatp << endl;
+  report << "Fishery observed and expected age comp" << endl << res_fish << endl;
+  report << "Fishery Pearson residuals age comp" << endl << pearson_fish << endl; 
+  report << "Fishery input N" << endl << multN_fsh << endl;  
+  report << "Fishery effective N age comp" << endl << effN_fsh << endl;   
+  report << "Fishery length composition likelihoods" << endl << lllenp << endl;
+  report << "Fishery length composition" << endl << lenp << endl;
+  report << "Fishery expected length composition" << endl << Elenp << endl << endl;
 
+  report << "Survey 1 q" << endl << q1 << endl;
+  report << "Survey 1 selectivity parameters" << endl;  
+  report << log_slp2_srv1 << " " << inf2_srv1 << endl; 
+  report << "Survey 1 selectivity" << endl << slctsrv1 << endl;
+  report << "Survey 1 expected index" << endl << Eindxsurv1 << endl;
+  report << "Survey 1 RMSE" << endl << RMSE_srv1 << endl;
+  report << "Survey 1 age composition likelihoods" << endl << llsrvp1 << endl;
+  report << "Survey 1 age composition" << endl << srvp1 << endl;
+  report << "Survey 1 expected age composition" << endl << Esrvp1 << endl;
+  report << "Survey 1 observed and expected age comp" << endl << res_srv1 << endl;
+  report << "Survey 1 Pearson residuals age comp" << endl << pearson_srv1 << endl; 
+  report << "Survey 1 input N" << endl << multN_srv1 << endl;  
+  report << "Survey 1 effective N age comp" << endl << effN_srv1 << endl;   
+  report << "Survey 1 length composition likelihoods" << endl << llsrvlenp1 << endl;
+  report << "Survey 1 length composition" << endl << srvlenp1 << endl;
+  report << "Survey 1 expected length composition" << endl << Esrvlenp1 << endl << endl;
 
-  report << " " << endl;
-  report << "Survey 1 q" << endl;
-  report << q1_bs << endl;
-  report << q1 << endl;
-  report << "Selectivity parameters" << endl;  
-//  report << log_slp1_srv1 << endl; 
-//  report << inf1_srv1 << endl; 
-  report << log_slp2_srv1 << endl; 
-  report << inf2_srv1 << endl; 
-  report << "Survey 1 selectivity" << endl;
-  report << slctsrv1 << endl;
-  report << "Expected survey 1 index" << endl;
-  report << Eindxsurv1_bs << endl;
-  report << Eindxsurv1 << endl;
-  report << "RMSE" << endl;
-//  report << RMSE_srv1_bs << endl;
-  report << RMSE_srv1 << endl;
-  report << "Survey 1 age composition likelihoods" << endl;
-  report << llsrvp1 << endl;
-  report << "Survey 1 age composition" << endl;
-  report << srvp1 << endl;
-  report << "Expected survey 1 age composition" << endl;
-  report << Esrvp1 << endl;
-  report << "Observed and expected age comp" << endl;
-  report << res_srv1 << endl;
-  report << "Pearson residuals age comp" << endl;
-  report << pearson_srv1 << endl; 
-  report << "Input N" << endl;
-  report << multN_srv1 << endl;  
-  report << "Effective N age comp" << endl;
-  report << effN_srv1 << endl;   
-  report << "Survey 1 length composition likelihoods" << endl;
-  report << llsrvlenp1 << endl;
-  report << "Survey 1 length composition" << endl;
-  report << srvlenp1 << endl;
-  report << "Expected survey 1 length composition" << endl;
-  report << Esrvlenp1 << endl;
-  report << " " << endl;
+  report << "Survey 2 q" << endl << q2 << endl;
+  report << "Survey 2 selectivity parameters" << endl;  
+  report << log_slp1_srv2 << " " << inf1_srv2 << " " << log_slp2_srv2 << " " << inf2_srv2 << endl; 
+  report << "Survey 2 selectivity" << endl << slctsrv2 << endl;
+  report << "Survey 2 expected index" << endl << Eindxsurv2 << endl;
+  report << "Survey 2 RMSE" << endl << RMSE_srv2 << endl;
+  report << "Survey 2 age composition likelihoods" << endl << llsrvp2 << endl;
+  report << "Survey 2 age composition" << endl << srvp2 << endl;
+  report << "Survey 2 expected age composition" << endl << Esrvp2 << endl;
+  report << "Survey 2 observed and expected age comp" << endl << res_srv2 << endl;
+  report << "Survey 2 Pearson residuals age comp" << endl << pearson_srv2 << endl;  
+  report << "Survey 2 input N" << endl << multN_srv2 << endl;  
+  report << "Survey 2 effective N age comp" << endl << effN_srv2 << endl;   
+  report << "Survey 2 length composition likelihoods" << endl << llsrvlenp2 << endl;
+  report << "Survey 2 length composition" << endl << srvlenp2 << endl;
+  report << "Survey 2 expected length composition" << endl << Esrvlenp2 << endl << endl;
 
-  report << "Survey 2 q" << endl;
-  report << q2 << endl;
-  report << "Selectivity parameters" << endl;  
-  report << log_slp1_srv2 << endl; 
-  report << inf1_srv2 << endl; 
-  report << log_slp2_srv2 << endl; 
-  report << inf2_srv2 << endl; 
-  report << "Survey 2 selectivity" << endl;
-  report << slctsrv2 << endl;
-  report << "Expected survey 2 index" << endl;
-  report << Eindxsurv2 << endl;
-  report << "RMSE" << endl;
-  report << RMSE_srv2 << endl;
-  report << "Survey 2 age composition likelihoods" << endl;
-  report << llsrvp2 << endl;
-  report << "Survey 2 age composition" << endl;
-  report << srvp2 << endl;
-  report << "Expected survey 2 age composition" << endl;
-  report << Esrvp2 << endl;
-  report << "Observed and expected age comp" << endl;
-  report << res_srv2 << endl;
-  report << "Pearson residuals age comp" << endl;
-  report << pearson_srv2 << endl;  
-  report << "Input N" << endl;
-  report << multN_srv2 << endl;  
-  report << "Effective N age comp" << endl;
-  report << effN_srv2 << endl;   
-  report << "Survey 2 length composition likelihoods" << endl;
-  report << llsrvlenp2 << endl;
-  report << "Survey 2 length composition" << endl;
-  report << srvlenp2 << endl;
-  report << "Expected survey 2 length composition" << endl;
-  report << Esrvlenp2 << endl;
-  report << " " << endl;
-
-   report << "Survey 3 q" << endl;
-  report << q3 << endl;
-  report << "Selectivity parameters" << endl;  
-  report << log_slp1_srv3 << endl; 
-  report << inf1_srv3 << endl; 
-  report << "Survey 3 selectivity" << endl;
-  report << slctsrv3 << endl;
-  report << "Expected survey 3 index" << endl;
-  report << Eindxsurv3 << endl;
-  report << "RMSE" << endl;
-  report << RMSE_srv3 << endl;
-  report << "Survey 3 age composition likelihoods" << endl;
-  report << llsrvp3 << endl;
-  report << "Survey 3 age composition" << endl;
-  report << srvp3 << endl;
-  report << "Expected survey 3 age composition" << endl;
-  report << Esrvp3 << endl;
-  report << "Observed and expected age comp" << endl;
-  report << res_srv3 << endl;
-  report << "Pearson residuals age comp" << endl;
-  report << pearson_srv3 << endl; 
-  report << "Input N" << endl;
-  report << multN_srv3 << endl;
-  report << "Effective N age comp" << endl;
-  report << effN_srv3 << endl;   
-  report << "Survey 3 length composition likelihoods" << endl;
-  report << llsrvlenp3 << endl;
-  report << "Survey 3 length composition" << endl;
-  report << srvlenp3 << endl;
-  report << "Expected survey 3 length composition" << endl;
-  report << Esrvlenp3 << endl;
-  report << "Observed and expected length comp" << endl;
-  report << res_srv3len << endl;
-  report << "Pearson residuals length comp" << endl;
-  report << pearson_srv3len << endl;   
+  report << "Survey 3 q" << endl << q3 << endl;
+  report << "Survey 3 selectivity parameters" << endl;  
+  report << log_slp1_srv3 << " " <<  inf1_srv3 << endl; 
+  report << "Survey 3 selectivity" << endl << slctsrv3 << endl;
+  report << "Survey 3 expected index" << endl << Eindxsurv3 << endl;
+  report << "Survey 3 RMSE" << endl << RMSE_srv3 << endl;
+  report << "Survey 3 age composition likelihoods" << endl << llsrvp3 << endl;
+  report << "Survey 3 age composition" << endl << srvp3 << endl;
+  report << "Survey 3 expected age composition" << endl << Esrvp3 << endl;
+  report << "Survey 3 observed and expected age comp" << endl << res_srv3 << endl;
+  report << "Survey 3 Pearson residuals age comp" << endl << pearson_srv3 << endl; 
+  report << "Survey 3 input N" << endl << multN_srv3 << endl;
+  report << "Survey 3 effective N age comp" << endl << effN_srv3 << endl;   
+  report << "Survey 3 length composition likelihoods" << endl << llsrvlenp3 << endl;
+  report << "Survey 3 length composition" << endl << srvlenp3 << endl;
+  report << "Survey 3 expected length composition" << endl << Esrvlenp3 << endl;
+  report << "Survey 3 observed and expected length comp" << endl << res_srv3len << endl;
+  report << "Survey 3 Pearson residuals length comp" << endl << pearson_srv3len << endl << endl;
   
-  report << " " << endl;
-  report << "Survey 4 q" << endl;
-  report << q4 << endl;
-  report << "Survey 4 power" << endl;
-  report << q4_pow << endl; 
-  report << "Expected survey 4 index" << endl;
-  report << Eindxsurv4 << endl;
-  report << " " << endl;
-  report << "RMSE" << endl;
-  report << RMSE_srv4 << endl;
-  report << " " << endl;
-  
-  report << " " << endl;
-  report << "Survey 5 q" << endl;
-  report << q5 << endl;
-  report << "Survey 5 power" << endl;
-  report << q5_pow << endl;
-  report << "Expected survey 5 index" << endl;
-  report << Eindxsurv5 << endl;
-  report << " " << endl;
-  report << "RMSE" << endl;
-  report << RMSE_srv5 << endl;
-  report << " " << endl;
- 
-  report << "Survey 6 q" << endl;
-  report << q6 << endl;
-  report << "Selectivity parameters" << endl;  
-  report << log_slp1_srv6 << endl; 
-  report << inf1_srv6 << endl; 
-  report << log_slp2_srv6 << endl; 
-  report << inf2_srv6 << endl; 
-  report << "Survey 6 selectivity" << endl;
-  report << slctsrv6 << endl;
-  report << "Expected survey 6 index" << endl;
-  report << Eindxsurv6 << endl;
-  report << "RMSE" << endl;
-  report << RMSE_srv6 << endl;
-  report << "Survey 6 age composition likelihoods" << endl;
-  report << llsrvp6 << endl;
-  report << "Survey 6 age composition" << endl;
-  report << srvp6 << endl;
-  report << "Expected survey 6 age composition" << endl;
-  report << Esrvp6 << endl;
-  report << "Observed and expected age comp" << endl;
-  report << res_srv6 << endl;
-  report << "Pearson residuals age comp" << endl;
-  report << pearson_srv6 << endl;  
-  report << "Input N" << endl;
-  report << multN_srv6 << endl;  
-  report << "Effective N age comp" << endl;
-  report << effN_srv6 << endl;   
-  report << "Survey 6 length composition likelihoods" << endl;
-  report << llsrvlenp6 << endl;
-  report << "Survey 6 length composition" << endl;
-  report << srvlenp6 << endl;
-  report << "Expected survey 6 length composition" << endl;
-  report << Esrvlenp6 << endl;
-  report << " " << endl;
-  report << "Expected total biomass" << endl;
-  report << Etotalbio << endl;
-  report << "Expected summary (age 3+) biomass" << endl;
-  report << Esumbio << endl;
-  report << "Expected spawning biomass" << endl;
-  report << Espawnbio << endl;
-  report << "Expected spawning biomass age 2+" << endl;
-  report << Espawnbio_2plus << endl;
-  report << "Numbers at age" << endl;
-  report << N << endl;
+  report << "Survey 4 q" << endl << q4 << endl;
+  report << "Survey 4 power" << endl << q4_pow << endl; 
+  report << "Survey 4 expected index" << endl << Eindxsurv4 << endl;
+  report << "Survey 4 RMSE" << endl << RMSE_srv4 << endl << endl;
+  report << "Survey 5 q" << endl << q5 << endl;
+  report << "Survey 5 power" << endl << q5_pow << endl; 
+  report << "Survey 5 expected index" << endl << Eindxsurv5 << endl;
+  report << "Survey 5 RMSE" << endl << RMSE_srv5 << endl << endl;
+   
+  report << "Survey 6 q" << endl << q6 << endl;
+  report << "Survey 6 selectivity parameters" << endl;  
+  report << log_slp1_srv6 << " " << inf1_srv6 << " " << log_slp2_srv6 << " " << inf2_srv6 << endl; 
+  report << "Survey 6 selectivity" << endl << slctsrv6 << endl;
+  report << "Survey 6 expected index" << endl << Eindxsurv6 << endl;
+  report << "Survey 6 RMSE" << endl << RMSE_srv6 << endl;
+  report << "Survey 6 age composition likelihoods" << endl << llsrvp6 << endl;
+  report << "Survey 6 age composition" << endl << srvp6 << endl;
+  report << "Survey 6 expected age composition" << endl << Esrvp6 << endl;
+  report << "Survey 6 observed and expected age comp" << endl << res_srv6 << endl;
+  report << "Survey 6 Pearson residuals age comp" << endl << pearson_srv6 << endl;  
+  report << "Survey 6 input N" << endl << multN_srv6 << endl;  
+  report << "Survey 6 effective N age comp" << endl << effN_srv6 << endl;   
+  report << "Survey 6 length composition likelihoods" << endl << llsrvlenp6 << endl;
+  report << "Survey 6 length composition" << endl << srvlenp6 << endl;
+  report << "Survey 6 expected length composition" << endl << Esrvlenp6 << endl << endl;
 
-  report << "Projection output" << endl;
-  report << "Selectivity" << endl;
-  report << slctfsh_proj << endl;
-  report << "Recruits" << endl;
-  report << recruit_proj << endl;
-  report << "Log recruitment" << endl;
-  report << log_recr_proj << endl;
-  report << "Variances" << endl;
-  report <<  sigmasq_recr<< endl;
-  report << "Numbers at age" << endl;
-  report << N_proj << endl;
-  report << "Catch at age" << endl;
-  report << C_proj << endl; 
-  report << "Survey numbers at age" << endl;
-  report << Nsrv_proj << endl;
-  report << "Weight at age" << endl;
-  report << "Population" << endl;
-  report <<     wt_pop_proj << endl;  
-  report << "Spawning" << endl;
-  report <<     wt_spawn_proj << endl;  
-  report << "Fishery" << endl;
-  report <<     wt_fsh_proj << endl; 
-  report << "Fishery selectivity" << endl;
-  report <<    slctfsh_proj << endl; 
-  report << "Total catches & summary biomass" << endl;
-  report << "Total catches" << endl;
-  report <<     Ecattot_proj << endl;  
-  report << "Summary biomass" << endl;
-  report <<     Esumbio_proj << endl;  
-  report << "Spawning biomass" << endl;
-  report <<     Espawnbio_proj << endl;  
-  report << "Survey biomass" << endl;
-  report <<     Esrv_proj << endl;  
-  report << "Ftarget B40" << endl;
-  report <<     Ftarget << endl;  
-  report <<     B40 << endl;  
-  report << "Fishing mortality" << endl;
-  report <<     F_proj << endl;  
+  report << "Projection selectivity" << endl << slctfsh_proj << endl;
+  report << "Projection recruits" << endl << recruit_proj << endl;
+  report << "Projection log mean recruitment" << endl << log_recr_proj << endl;
+  report << "Projection recruitment variability" << endl <<  sigmasq_recr<< endl;
+  report << "Projection numbers at age" << endl << N_proj << endl;
+  report << "Projection catch at age" << endl << C_proj << endl; 
+  report << "Projection survey numbers at age" << endl << Nsrv_proj << endl;
+  report << "Projection population weight at age" << endl <<  wt_pop_proj << endl;  
+  report << "Projection spawning weight at age" << endl << wt_spawn_proj << endl;  
+  report << "Projection fishery weight at age" << endl << wt_fsh_proj << endl; 
+  report << "Projection fishery selectivity" << endl << slctfsh_proj << endl; 
+  report << "Projection total catches" << endl << Ecattot_proj << endl;  
+  report << "Projection summary biomass" << endl << Esumbio_proj << endl;  
+  report << "Projection spawning biomass" << endl << Espawnbio_proj << endl;  
+  report << "Projection survey biomass" << endl << Esrv_proj << endl;  
+  report << "Projection Ftarget" << endl << Ftarget << endl;
+  report << "Projection B40" << endl <<  B40 << endl;  
+  report << "Projection fishing mortality" << endl <<  F_proj << endl;  
 
 

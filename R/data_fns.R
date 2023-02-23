@@ -46,7 +46,7 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
 
   N <- d$multN_fsh
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_fishery_age_composition[ind,]
+  true <- r$Fishery_expected_age_composition[ind,]
   d$catp <- myrmultinom(N, true)
 
 
@@ -55,19 +55,19 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs1
   se <- cv2se(d$indxsurv_log_sd1)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_1_index[2,ind] ## BS survey
+  true <- r$Survey_1_expected_index[ind] ## BS survey
   d$indxsurv1 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs1
   N <- d$multN_srv1
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_1_age_composition[ind,]
+  true <- r$Survey_1_expected_age_composition[ind,]
   d$srvp1 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs1
   N <- d$multNlen_srv1
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_1_length_composition[ind,]
+  true <- r$Survey_1_expected_length_composition[ind,]
   d$srvlenp1 <- myrmultinom(N, true)
 
 ### Survey 2
@@ -75,19 +75,19 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs2
   se <- cv2se(d$indxsurv_log_sd2)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_2_index[ind]
+  true <- r$Survey_2_expected_index[ind]
   d$indxsurv2 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs2
   N <- d$multN_srv2
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_2_age_composition[ind,]
+  true <- r$Survey_2_expected_age_composition[ind,]
   d$srvp2 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs2
   N <- d$multNlen_srv2
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_2_length_composition[ind,]
+  true <- r$Survey_2_expected_length_composition[ind,]
   d$srvlenp2 <- myrmultinom(N, true)
 
 ### Survey 3
@@ -95,33 +95,33 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs3
   se <- cv2se(d$indxsurv_log_sd3)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_3_index[ind]
+  true <- r$Survey_3_expected_index[ind]
   d$indxsurv3 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs3
   N <- d$multN_srv3
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_3_age_composition[ind,]
+  true <- r$Survey_3_expected_age_composition[ind,]
   d$srvp3 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs3
   N <- d$multNlen_srv3
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_3_length_composition[ind,]
+  true <- r$Survey_3_expected_length_composition[ind,]
   d$srvlenp3 <- myrmultinom(N, true)
 ### Survey 4
   ## index
   ind <- r$years %in% d$srvyrs4
   se <- cv2se(d$indxsurv_log_sd4)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_4_index[ind]
+  true <- r$Survey_4_expected_index[ind]
   d$indxsurv4 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
 ### Survey 5
   ## index
   ind <- r$years %in% d$srvyrs5
   se <- cv2se(d$indxsurv_log_sd5)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_5_index[ind]
+  true <- r$Survey_5_expected_index[ind]
   d$indxsurv5 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
 
 ### Survey 6
@@ -129,19 +129,19 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ind <- r$years %in% d$srvyrs6
   se <- cv2se(d$indxsurv_log_sd6)
   stopifnot(sum(ind)==length(se))
-  true <- r$Expected_survey_6_index[ind]
+  true <- r$Survey_6_expected_index[ind]
   d$indxsurv6 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs6
   N <- d$multN_srv6
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_6_age_composition[ind,]
+  true <- r$Survey_6_expected_age_composition[ind,]
   d$srvp6 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs6
   N <- d$multNlen_srv6
   stopifnot(sum(ind)==length(N))
-  true <- r$Expected_survey_6_length_composition[ind,]
+  true <- r$Survey_6_expected_length_composition[ind,]
   d$srvlenp6 <- myrmultinom(N, true)
 
   ## plot(r$year[ind], true, cex=2, ylim=c(0,.5))
@@ -182,6 +182,17 @@ write_dat <- function(datlist, fileout, path=NULL){
   })
 }
 
+#' Read text file input for ADMB model
+#'
+#' @param filename The filename to be read in
+#' @param path Path to the file if not in working directory
+#' @export
+read_dat <- function(filename,path=NULL){
+  .Deprecated('read_pk_dat')
+  read_pk_dat(filename,path)
+}
+
+
 
 #' Read text file input for ADMB model
 #'
@@ -190,14 +201,14 @@ write_dat <- function(datlist, fileout, path=NULL){
 #' @export
 #' @return A named list of all elements with corresponding names
 #'   to the ADMB model
-read_dat <- function(filename, path=NULL){
+read_pk_dat <- function(filename, path=NULL){
   if(!is.null(path)){
     oldwd <- getwd()
     on.exit(setwd(oldwd))
     setwd(path)
   }
   if(!file.exists(filename)) stop("File ", filename, " does not exist")
-  char.lines <- suppressMessages(readLines(filename))
+  char.lines <- suppressMessages(readLines(filename, warn=FALSE))
   com.ind <- which(substring(char.lines, 1, 1) %in% c(" ", "#"))
   blank.ind <- which(substring(char.lines, 1, 1) == "\t")
   com.ind <- sort(c(com.ind,blank.ind))
@@ -242,12 +253,6 @@ read_dat <- function(filename, path=NULL){
   d$catp <- sn( ind=ind, n = d$nyrs_fsh*10, nrow=d$nyrs_fsh, ncol=10)
   d$lenp <- sn( ind=ind, n = d$nyrslen_fsh*d$nbins1, nrow=d$nyrslen_fsh, ncol=d$nbins1)
   d$wt_fsh <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
-  ## This BS survey is not longer used but the inputs are
-  ## here. Will be dropped at some point.
-  d$nyrs_srv1_bs <- si(ind=ind, n =1)
-  d$srvyrs1_bs <- si(ind=ind, n =d$nyrs_srv1_bs)
-  d$indxsurv1_bs <- sn( ind=ind, n =d$nyrs_srv1_bs)
-  d$indxsurv_log_sd1_bs <- sn( ind=ind, n =d$nyrs_srv1_bs)
   ## The used survey 1
   d$nyrs_srv1 <- si(ind=ind, n =1)
   d$srvyrs1 <- si(ind=ind, n =d$nyrs_srv1)
@@ -341,17 +346,12 @@ read_dat <- function(filename, path=NULL){
   d$len_trans2 <- sn( ind=ind, n = d$nbins2*10, nrow=10, ncol=d$nbins2)
   d$len_trans3 <- sn( ind=ind, n = d$nbins3*10, nrow=10, ncol=d$nbins3)
   ## the projection module inputs
-  d$wt_pop <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
-  d$wt_spawn <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
-  d$mat_old <- sn( ind=ind, n=10)
   d$mat <- sn( ind=ind, n =10)
-  d$wt_pop_proj <- sn( ind=ind, n =10)
-  d$wt_spawn_proj <- sn( ind=ind, n =10)
-  d$wt_fsh_proj <- sn( ind=ind, n =10)
-  d$wt_srv_proj <- sn( ind=ind, n =10)
   d$Ftarget <- sn( ind=ind, n =5)
   d$B40 <- sn( ind=ind, n =1)
   d$log_mean_recr_proj <- sn( ind=ind, n =1)
   d$sigmasq_recr <- sn( ind=ind, n =1)
+  d$check <- sn(ind=ind, n=1)
+  if(d$check != -999) stop("Failed to read in dat file, final value=",d$check)
   return(d)
 }

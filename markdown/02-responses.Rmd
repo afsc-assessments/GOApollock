@@ -1,0 +1,155 @@
+## Responses to SSC and Plan Team Comments on Assessments in General
+
+From the November 2021 GOA Plan Team minutes: *The Team
+recommends all GOA authors evaluate any bottom trawl survey
+information used in their assessment prior to 1990 including the
+1984 and 1987 surveys and conduct sensitivity analyses to
+evaluate their usefulness to the assessment. This may apply for
+Aleutian Islands surveys but this was only raised during GOA
+assessment considerations.*
+
+NMFS bottom trawl data before 1990 are not used in this
+assessment, as described in the data section below.
+
+From the December 2021 SSC minutes: *With respect to Risk Tables,
+the SSC would like to highlight that "risk" is the risk of the
+ABC exceeding the true (but unknown) OFL, as noted in the October
+2021 SSC Risk Table workshop report. Therefore, for all stocks
+with a risk table, assessment authors should evaluate the risk of
+the ABC exceeding the true (but unknown) OFL and whether a
+reduction from maximum ABC is warranted, even if past TACs or
+exploitation rates are low.*
+
+This will be done.
+
+*The SSC recommends that groundfish, crab and scallop assessment
+authors do not change recommendations in documents between the
+Plan Team and the SSC meetings, because it makes it more
+difficult to understand the context of the Plan Team's rationale
+and seems counter to the public process without seeing a revision
+history of the document.*
+
+This will not be done.
+
+## Responses to SSC and Plan Team Comments Specific to this Assessment
+Detailed analyses to SSC and Plan Team comments were presented at
+the September PT meeting, including a publically available
+document to which the interested reader is referred 
+([link to pdf](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf)).
+
+Brief summaries of responses are provided here. 
+
+In December 2021 the SSC noted "... *that recruitment deviations
+in the GOA pollock assessment are unconstrained except for the
+terminal two years, and suggests that exploring a moderate
+constraint on recruitment deviations in all years, as is commonly
+applied in other assessments, may be warranted. At a minimum,
+this would allow an assessment of the sensitivity of results to
+only constraining the last two years."*
+
+Previous model versions applied a penalty of $\sigma_R=1$ to the
+first eight and last two cohorts, with all other deviations being
+freely estimated. Historically this setup had no estimation
+issues, but there are some advantages to a consistent approach
+and so this approach was adopted. A value of $\sigma_R=1.3$ was
+adopted, based on an estimate from a state-space version of the
+assessment, and applied to all deviates.
+
+
+*The GOA Plan Team in its November 2019 minutes recommended the
+author examine fishery selectivity, as persistent patterns in the
+catch-at-age residuals may represent artifacts of the selectivity
+functional form used.*
+
+Analyses performed in 2021 were extended to include an offset for
+age-4 fish, which did improve the fits to the data but had
+minimal impact on the assessment outputs. This showed that the
+persistent residuals were not adversely affecting management
+estimates, and that it is unlikely any parametric form would
+alleviate this issue. Consequently, no changes were made to this
+years model, but future analyses using non-parametric selectivity
+would be warranted.
+
+Persistent patterns in Pearson residuals for older fish were also
+deemed not a concern at the moment. This is because a new way of
+calculating residuals using a "one step ahead" approach to
+account for correlations in the multinomial distribution
+[@trijoulet2023a] did not show the same pattern, implying it was
+a consequence of the inadequateness of Pearson residuals and not
+a real misspecification of selectivity. These new residuals will
+be explored in the coming year.
+
+
+In December 2021 the "*SSC suggests simplifying the computations
+in the Appendix to reflect the new season structure to the extent
+possible, without changing the underlying methodology. For
+example, it appears that seasons B1 & B2 (formerly C & D) could
+be combined as they use the same apportionment scheme."*
+
+The apportionment table was simplified by combining the A1 and A2
+tables (steps 5 and 6) together, and simplifying other
+steps. Note that this new structure was not supposed to change
+apportionment, and that motivates the current table which
+calculates by the previous four seasons and then sums them
+together into the new seasons.
+
+*...the SSC encourages the authors and GOA GPT to re-evaluate
+whether assessing Southeast Alaska walleye pollock as a separate
+stock is justified or whether the available data support a
+single, gulf-wide stock assessment. This evaluation may also
+benefit from considering recent studies on the genetic structure
+of walleye pollock across Alaska and the North Pacific*
+
+A genetic analysis using low-coverage whole genome sequencing was
+recently conducted, on which analysis is ongoing. This analysis
+included 617 walleye pollock from Japan, Bering Sea, Chukchi Sea,
+Aleutian Islands, Alaska Peninsula, and Gulf of Alaska. Results
+suggests there is temporally stable stock structure with a
+latitudinal gradient, i.e., Bering Sea pollock are
+distinguishable from those in the Gulf of Alaska and Aleutian
+Islands (I. Spies, personal communication, 2021). Samples from
+the eastern Gulf of Alaska are currently undergoing sequencing to
+determine whether eastern Gulf of Alaska pollock are genetically
+distinct from those in the western Gulf of Alaska. An evaluation
+of stock structure for Gulf of Alaska pollock following the
+template developed by NPFMC stock structure working group was
+provided as an appendix to the 2012 assessment
+[@dorn2012a]. Available information supported the current approach
+of assessing and managing pollock in the eastern portion of the
+Gulf of Alaska (Southeast Outside) separately from pollock in the
+central and western portions of the Gulf of Alaska
+(Central/Western/West Yakutat).
+ 
+
+In December 2021 the SSC highlighted the need to examine how
+catchability for the winter Shelikof acoustic survey.
+
+*The SSC supports future research to identify the optimal level
+of constraint on among-year variation in Shelikof Survey
+catchability (q), including the potential to estimate the
+process error variance internally within the assessment model.*
+
+*The SSC reiterates its recommendation from December 2020 to
+explore the use of covariates related to the timing of the survey
+to inform survey catchability in the Shelikof Strait survey. For
+example, the difference in timing between peak spawning and mean
+survey date or, alternatively, the proportion of mature fish in
+the survey, are likely to inform time-varying catchability in the
+survey.*
+
+Currently the winter Shelikof acoustic survey catchability is
+modeled as a random walk with assumed process error. The original
+logic was that some of the stock spawned outside of Shelikof
+Strait and thus were unavailable to the survey. Fish tended to
+spawn in other areas with some consistency, so a random walk on
+catchability was implemented to account for variation in spatial
+availability. Several overlapping efforts were done to explore
+alternative catchability structures. None of these are proposed
+for 2022, but were presented for Plan Team feedback in September
+2022 and remains ongoing collaborative research for this
+stock. In particular a WHAM version of the GOA pollock assessment
+was used to explore estimating the constrait (process error), and
+to quantify the amount by which timing covariates can reduce
+that, in effect parsing spatial and temporal
+availability. Preliminary results are very promising and we
+anticipate having something formal to present in 2023.

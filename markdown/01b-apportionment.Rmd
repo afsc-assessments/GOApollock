@@ -1,0 +1,20 @@
+## Area Allocation of Harvest
+
+The following table shows the recommended ABC apportionment for
+`r year+1` and `r year +2`. Please refer to Appendix 1D for
+information regarding how apportionment is calculated. Area 640
+is not portioned by season.
+
+
+```{r}
+
+tab <- read_xlsx(table.path, skip=1,sheet='apportionment') %>%
+  dplyr::select(1:4) %>% setNames(letters[1:4])
+flextable(tab[,]) %>%
+  set_header_labels(values=list(a="Year", b="Area", c="Season A\nABC (t)", d="Season B\nABC (t)")) %>%
+  colformat_double(digits=0, big.mark=',', j=2:4) %>%
+  colformat_double(digits=0, big.mark='',j=1) %>%
+  merge_h_range(i=c(4,8),j1=3, j2=4) %>% align(i=c(4,8), j=3, align = 'center') %>%
+  hline(i=4)
+```
+
