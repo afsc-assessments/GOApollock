@@ -171,27 +171,6 @@ DATA_SECTION
   !! wt_spawn=wt_srv1;
   init_vector mat(rcrage,trmage)                 // Proportion mature
 
-  // Projection parameters
-  vector wt_pop_proj(rcrage,trmage);
-  vector wt_spawn_proj(rcrage,trmage);
-  vector wt_fsh_proj(rcrage,trmage);
-  vector wt_srv_proj(rcrage,trmage);
-  LOCAL_CALCS
-   // for projections take averages of WAA only from recent survey years with data
-    wt_pop_proj.initialize();
-    wt_spawn_proj.initialize();
-    for(int a=rcrage;a<=trmage;a++){
-      for(int i=1;i<=3;i++)
-          wt_pop_proj(a)+=wt_srv2(srv_acyrs2(nyrsac_srv2-i+1),a)/3;
-      for(int i=1;i<=5;i++){
-          wt_spawn_proj(a)+=wt_srv1(srv_acyrs1(nyrsac_srv1-i+1),a)/5;
-      // for predicting what the survey will see next year, Shelikof for now
-          wt_srv_proj(a)+=wt_srv1(srv_acyrs1(nyrsac_srv1-i+1),a)/5;
-      }	  
-     }
-     wt_fsh_proj=wt_fsh(endyr);
-  END_CALCS
-  
   init_vector Ftarget(endyr+1,endyr+5)
   init_number B40		                 // mean log recruitment
   init_number log_mean_recr_proj 
@@ -211,11 +190,48 @@ DATA_SECTION
  // retroyr, then **carefully* redefine calculations throughout
  // to not overindex the data inputs
  int endyr0;			// original endyr
- LOC_CALCS
+ LOCAL_CALCS
   if(retro_yrs<0){cerr << "bad peels in -retro option" << endl; ad_exit(1);};
   endyr0=endyr;
   endyr=endyr-retro_yrs;
  END_CALCS
+
+  // Projection parameters
+ vector wt_pop_proj(rcrage,trmage);
+ vector wt_spawn_proj(rcrage,trmage);
+ vector wt_fsh_proj(rcrage,trmage);
+ vector wt_srv_proj(rcrage,trmage);
+ LOCAL_CALCS
+ // for projections take averages of WAA only from recent survey years with data
+ wt_pop_proj.initialize();
+ wt_spawn_proj.initialize();
+ wt_fsh_proj.initialize();
+ // have to be careful with retro option or it will grab data
+ // that shouldn't exist, walk backward through the survey
+ // data only counting years included in the likelihood and
+ // accumulate a mean
+ int counter=0;
+   for(int i=nyrsac_srv1; i>=1; i--){
+     if(srv_acyrs1(i) <= endyr){
+        counter++;
+        for(int a=rcrage;a<=trmage;a++) wt_spawn_proj(a)+=wt_srv1(srv_acyrs1(i),a)/5; 
+        if(counter==5) break;
+        }
+   }
+  counter=0;
+   for(int i=nyrsac_srv2; i>=1; i--){
+     if(srv_acyrs2(i) <= endyr){
+        counter++;
+        for(int a=rcrage;a<=trmage;a++) wt_pop_proj(a)+=wt_srv2(srv_acyrs2(i),a)/3; 
+        if(counter==3) break;
+        }
+   }
+  // for predicting what the survey will see next year, Shelikof for now
+   wt_srv_proj=wt_spawn_proj;
+   wt_fsh_proj=wt_fsh(endyr);
+   cout << 1000*wt_spawn_proj << endl << 1000*wt_pop_proj << endl << 1000*wt_fsh_proj << endl;
+   ad_exit(1);
+  END_CALCS
 
 
 INITIALIZATION_SECTION

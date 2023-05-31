@@ -234,9 +234,11 @@ write_proj_dynamics <- function(replist, datlist, ayr, path){
   x <- c(x, "# Maturity")
   x <- c(x, paste(datlist$mat, collapse=' '))
   x <- c(x, "# Spawning WAA")
-  x <- c(x, paste(datlist$wt_spawn_proj*1000, collapse=' '))
+  ## x <- c(x, paste(datlist$wt_spawn_proj*1000, collapse=' '))
+  x <- c(x, paste(replist$Projection_spawning_weight_at_age*1000, collapse=' '))
   x <- c(x, "# Fishery WAA")
-  x <- c(x, paste(datlist$wt_fsh_proj*1000, collapse=' '))
+  ##  x <- c(x, paste(datlist$wt_fsh_proj*1000, collapse=' '))
+  x <- c(x, paste(replist$Projection_fishery_weight_at_age*1000, collapse=' '))
   x <- c(x, "# Fishery selex, averaged over last 5 years")
   ## This is wrong b/c ignores most recent year
   ## x <- c(x, paste(colMeans(tail(replist$Fishery_selectivity,
