@@ -1,3 +1,5 @@
+replist <- readRDS('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results/repfile.RDS')
+datlist <- readRDS('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results/datfile.RDS')
 
 #' Simulate a data set from a given rep file and input data
 #'
@@ -6,22 +8,27 @@
 #'   data.
 #' @param replist A replist as returned by
 #'   \link{read_pk_rep}. Uses expected values as truth.
-#' @param fileout The new dat file name to be written
+#' @param fileout The new dat file name to be written. If NULL no
+#'   file is written.
 #' @param path Optional path for fileout
-#' @return Nothing, a data file is written.
+#' @param type Either "model" which uses the model expectation as
+#'   the means, or "data" which uses the observed data means.
+#' @return An invisible list is returned, and optionally a file written.
 #' @export
 #'
-#' @details The expected values from the report file are used as
-#'   the "truth." This routine is similar to the approach used in
-#'   SS.Data simulated either as lognormal (indices) or
-#'   multinomial (compositions) given the CV and sample sizes
-#'   given in the datlist.  This implicitly assumes they have
-#'   been weighted as desired. Sample sizes of 0 result in no
-#'   observations, and fractions will be rounded internally by
-#'   rmultinom. Currently the total fishery catch is not
-#'   resampled, but the age compositions are.
-sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
-
+#' @details The expected values from either the dat or report
+#'   file are used as the "truth" depending on \code{type}. The
+#'   "model" routine is similar to the approach used in SS.Data
+#'   simulated either as lognormal (indices) or multinomial
+#'   (compositions) given the CV and sample sizes given in the
+#'   datlist.  This implicitly assumes they have been weighted as
+#'   desired. The "data" approach is akin to a non-parametric
+#'   bootstrap. Sample sizes of 0 result in no observations, and
+#'   fractions will be rounded internally by rmultinom. Currently
+#'   the total fishery catch is not resampled, but the age
+#'   compositions are.
+sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
+                    type=c('model','data')){
   cv2se <- function(cv)  sqrt(log(cv^2+1))
   myrmultinom <- function(N, true){
     stopifnot(length(N)==nrow(true))
@@ -31,11 +38,14 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
       rmultinom(1, size=N[i], prob=true[i,])))
     sim
   }
-  d <- datlist; r <- replist
-
+  testind <- function(x,y,z)   stopifnot(all(sum(x)==length(y), sum(x)==length(z)))
+  testac <- function(x,y,z)   stopifnot(all(sum(x)==length(y), sum(x)==nrow(z)))
   ## If the retro option is used then the expected value
   ## vectors/matrices will be shorter than the data ones. So keep
   ## track of that and only resample those with
+  type <- match.arg(type)
+  if(type=='model') model <- TRUE else model <- FALSE
+  d <- datlist; r <- replist
   endyr <- tail(r$years,1)
 
 ### fishery -- not redoing catch b/c that seems right but revisit
@@ -43,10 +53,13 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ## age comps
   indr <- (r$years %in% d$fshyrs)
   ind <- indr & (r$years <=endyr)
-
   N <- d$multN_fsh
-  stopifnot(sum(ind)==length(N))
-  true <- r$Fishery_expected_age_composition[ind,]
+  if(model){
+    true <- r$Fishery_expected_age_composition[ind,]
+  } else {
+    true <- d$catp
+  }
+  testac(ind, N, true)
   d$catp <- myrmultinom(N, true)
 
 
@@ -54,88 +67,140 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ## index
   ind <- r$years %in% d$srvyrs1
   se <- cv2se(d$indxsurv_log_sd1)
-  stopifnot(sum(ind)==length(se))
-  true <- r$Survey_1_expected_index[ind] ## BS survey
+  if(model){
+    true <- r$Survey_1_expected_index[ind] ## BS survey
+  } else {
+    true <- d$indxsurv1
+  }
+  testind(ind, se, true)
   d$indxsurv1 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs1
   N <- d$multN_srv1
-  stopifnot(sum(ind)==length(N))
-  true <- r$Survey_1_expected_age_composition[ind,]
+  if(model){
+    true <- r$Survey_1_expected_age_composition[ind,]
+  } else {
+    true <- d$srvp1
+  }
+  testac(ind,N,true)
   d$srvp1 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs1
   N <- d$multNlen_srv1
-  stopifnot(sum(ind)==length(N))
-  true <- r$Survey_1_expected_length_composition[ind,]
+  if(model){
+    true <- r$Survey_1_expected_length_composition[ind,]
+  } else {
+    true <- d$srvlenp1
+  }
+  testac(ind,N,true)
   d$srvlenp1 <- myrmultinom(N, true)
 
 ### Survey 2
   ## index
   ind <- r$years %in% d$srvyrs2
   se <- cv2se(d$indxsurv_log_sd2)
-  stopifnot(sum(ind)==length(se))
-  true <- r$Survey_2_expected_index[ind]
+  if(model){
+    true <- r$Survey_2_expected_index[ind] ## BS survey
+  } else {
+    true <- d$indxsurv2
+  }
+  testind(ind, se, true)
   d$indxsurv2 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs2
   N <- d$multN_srv2
-  stopifnot(sum(ind)==length(N))
-  true <- r$Survey_2_expected_age_composition[ind,]
+  if(model){
+    true <- r$Survey_2_expected_age_composition[ind,]
+  } else {
+    true <- d$srvp2
+  }
+  testac(ind,N,true)
   d$srvp2 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs2
   N <- d$multNlen_srv2
-  stopifnot(sum(ind)==length(N))
-  true <- r$Survey_2_expected_length_composition[ind,]
+  if(model){
+    true <- r$Survey_2_expected_length_composition[ind,]
+  } else {
+    true <- d$srvlenp2
+  }
+  testac(ind,N,true)
   d$srvlenp2 <- myrmultinom(N, true)
 
 ### Survey 3
   ## index
   ind <- r$years %in% d$srvyrs3
   se <- cv2se(d$indxsurv_log_sd3)
-  stopifnot(sum(ind)==length(se))
-  true <- r$Survey_3_expected_index[ind]
+  if(model){
+    true <- r$Survey_3_expected_index[ind] ## BS survey
+  } else {
+    true <- d$indxsurv3
+  }
+  testind(ind, se, true)
   d$indxsurv3 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs3
   N <- d$multN_srv3
-  stopifnot(sum(ind)==length(N))
-  true <- r$Survey_3_expected_age_composition[ind,]
+  if(model){
+    true <- r$Survey_3_expected_age_composition[ind,]
+  } else {
+    true <- d$srvp3
+  }
+  testac(ind,N,true)
   d$srvp3 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs3
   N <- d$multNlen_srv3
-  stopifnot(sum(ind)==length(N))
-  true <- r$Survey_3_expected_length_composition[ind,]
+  if(model){
+    true <- r$Survey_3_expected_length_composition[ind,]
+  } else {
+    true <- d$srvlenp3
+  }
+  testac(ind,N,true)
   d$srvlenp3 <- myrmultinom(N, true)
 ### Survey 4
   ## index
   ind <- r$years %in% d$srvyrs4
   se <- cv2se(d$indxsurv_log_sd4)
-  stopifnot(sum(ind)==length(se))
-  true <- r$Survey_4_expected_index[ind]
+  if(model){
+    true <- r$Survey_4_expected_index[ind] ## BS survey
+  } else {
+    true <- d$indxsurv4
+  }
+  testind(ind, se, true)
   d$indxsurv4 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
 ### Survey 5
   ## index
   ind <- r$years %in% d$srvyrs5
   se <- cv2se(d$indxsurv_log_sd5)
-  stopifnot(sum(ind)==length(se))
-  true <- r$Survey_5_expected_index[ind]
+  if(model){
+    true <- r$Survey_5_expected_index[ind] ## BS survey
+  } else {
+    true <- d$indxsurv5
+  }
+  testind(ind, se, true)
   d$indxsurv5 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
 
 ### Survey 6
   ## index
   ind <- r$years %in% d$srvyrs6
   se <- cv2se(d$indxsurv_log_sd6)
-  stopifnot(sum(ind)==length(se))
-  true <- r$Survey_6_expected_index[ind]
+  if(model){
+    true <- r$Survey_6_expected_index[ind] ## BS survey
+  } else {
+    true <- d$indxsurv6
+  }
+  testind(ind, se, true)
   d$indxsurv6 <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
   ## age comps
   ind <- r$years %in% d$srv_acyrs6
   N <- d$multN_srv6
-  stopifnot(sum(ind)==length(N))
-  true <- r$Survey_6_expected_age_composition[ind,]
+  if(model){
+    true <- r$Survey_6_expected_age_composition[ind,]
+  } else {
+    true <- d$srvp6
+  }
+  testac(ind,N,true)
   d$srvp6 <- myrmultinom(N, true)
   ## len comps
   ind <- r$years %in% d$srv_lenyrs6
@@ -150,9 +215,74 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL){
   ##   points(r$year[ind], s, col=rgb(1,0,0,.5))})
   ## points(r$year[ind], true, cex=2, pch=16)
 
-  write_dat(d, fileout=fileout, path=path)
+  if(!is.null(fileout)) write_dat(d, fileout=fileout, path=path)
   return(invisible(d))
 }
+
+### some ugly code to test the simulator seems to work
+## Nreps <- 1000
+## x <- sim_dat(datlist, replist, type='model')
+## x <- sim_dat(datlist, replist, type='data')
+## out1 <- lapply(1:Nreps, function(x) sim_dat(datlist, replist, type='model'))
+## out2 <- lapply(1:Nreps, function(x) sim_dat(datlist, replist, type='data'))
+## getac <- function(x,i){
+##   d0 <- data.frame(rep=i, source='fishery', age=1:10, fish=as.numeric(tail(x$catp,1)))
+##   d1 <- data.frame(rep=i, source='survey1', age=1:10, fish=as.numeric(tail(x$srvp1,1)))
+##   d2 <- data.frame(rep=i, source='survey2', age=1:10, fish=as.numeric(tail(x$srvp2,1)))
+##   d3 <- data.frame(rep=i, source='survey3', age=1:10, fish=as.numeric(tail(x$srvp3,1)))
+##   d6 <- data.frame(rep=i, source='survey6', age=1:10, fish=as.numeric(tail(x$srvp6,1)))
+##   rbind(d0,d1,d2,d3,d6) %>%
+##     group_by(source) %>% mutate(proportion=fish/sum(fish)) %>% ungroup
+## }
+## ac2 <- lapply(1:Nreps, function(i) getac(out2[[i]], i)) %>%
+##   bind_rows %>% mutate(type='data')
+## acmean2 <- group_by(ac2, source, age) %>%
+##   summarize(proportion=mean(proportion), .groups='drop') %>%
+##  mutate(type='data')
+## ac1 <- lapply(1:Nreps, function(i) getac(out1[[i]], i)) %>%
+##   bind_rows %>% mutate(type='model')
+## acmean1 <- group_by(ac1, source, age) %>%
+##   summarize(proportion=mean(proportion), .groups='drop') %>%
+##  mutate(type='model')
+## acmean <- bind_rows(acmean1, acmean2)
+## ac <- bind_rows(ac1, ac2)
+## acobs2 <- getac(datlist, 0) %>% mutate(type='data')
+## library(ggplot2)
+## g1 <- ggplot(ac, aes(age, proportion)) +
+##   geom_jitter(width=.25, height=.01, alpha=.1, size=.1) +
+##   facet_grid(source~type) +
+##   geom_line(data=acobs, color=2, lwd=2)+
+##   geom_line(data=acmean, color=3, lwd=2)
+## getind <- function(x,i){
+##   d0 <- data.frame(rep=i, source='fishery', year=x$styr:x$endyr,index=x$cattot/1e6)
+##   d1 <- data.frame(rep=i, source='survey1', year=x$srvyrs1, index=x$indxsurv1)
+##   d2 <- data.frame(rep=i, source='survey2', year=x$srvyrs2, index=x$indxsurv2)
+##   d3 <- data.frame(rep=i, source='survey3', year=x$srvyrs3, index=x$indxsurv3)
+##   d4 <- data.frame(rep=i, source='survey4', year=x$srvyrs4, index=x$indxsurv4)
+##   d5 <- data.frame(rep=i, source='survey5', year=x$srvyrs5, index=x$indxsurv5)
+##   d6 <- data.frame(rep=i, source='survey6', year=x$srvyrs6, index=x$indxsurv6)
+##   rbind(d0,d1,d2,d3,d4,d5,d6)
+## }
+## ind2 <- lapply(1:Nreps, function(i) getind(out2[[i]], i)) %>%
+##   bind_rows %>% mutate(type='data')
+## indmean2 <- group_by(ind2, source, year) %>%
+##   summarize(index=mean(index), .groups='drop') %>%
+##  mutate(type='data')
+## ind1 <- lapply(1:Nreps, function(i) getind(out1[[i]], i)) %>%
+##   bind_rows %>% mutate(type='model')
+## indmean1 <- group_by(ind1, source, year) %>%
+##   summarize(index=mean(index), .groups='drop') %>%
+##  mutate(type='model')
+## indmean <- bind_rows(indmean1, indmean2)
+## ind <- bind_rows(ind1, ind2)
+## indobs <- getind(datlist, 0) %>% mutate(type='data')
+## g2 <- ggplot(ind, aes(year, index)) + geom_jitter(width=.25,
+##   height=.01, alpha=.1, size=.1) +
+##   facet_grid(source~type, scales='free_y') +
+##   geom_line(data=indobs, color=2, lwd=2)+
+##   geom_line(data=indmean, color=3, lwd=2) + scale_y_log10()
+## cowplot::plot_grid(g1,g2, ncol=2)
+
 
 #' Write an R data list to file for reading into ADMB
 #'
@@ -373,3 +503,4 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   if(d$check != -999) stop("Failed to read in dat file, final value=",d$check)
   return(d)
 }
+
