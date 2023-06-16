@@ -201,7 +201,7 @@ read_dat <- function(filename,path=NULL){
 #' @export
 #' @return A named list of all elements with corresponding names
 #'   to the ADMB model
-read_pk_dat <- function(filename, path=NULL){
+read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   if(!is.null(path)){
     oldwd <- getwd()
     on.exit(setwd(oldwd))
@@ -220,8 +220,10 @@ read_pk_dat <- function(filename, path=NULL){
   d <- list()
   ind <- 0
   si <- function(ind, n, nrow=NULL, ncol=NULL){
-    s <- scan(filename, quiet = T, what = integer(), comment.char="#",
-              skip=dat.start[ind <<- ind+1], n=n)
+    s <- tryCatch(scan(filename, quiet = T, what = integer(), comment.char="#",
+              skip=dat.start[ind <<- ind+1], n=n),
+              error=function(e) 'error')
+    if(is.character(s)) {print(d); stop("failed to read integer")}
     if(is.null(nrow)) return(s)
     return(matrix(s, nrow=nrow, ncol=ncol, byrow=TRUE))
   }
@@ -231,14 +233,30 @@ read_pk_dat <- function(filename, path=NULL){
     if(is.null(nrow)) return(s)
     return(matrix(s, nrow=nrow, ncol=ncol, byrow=TRUE))
   }
-  tmp <- si(ind , n = 2)
-  d$styr <- tmp[1]; d$endyr <- tmp[2]
-  nyrs <- tmp[2]-tmp[1]+1
+  if(writedat){
+    d$styr <- si(ind, n=1)
+    d$endyr <- si(ind,n=1)
+  } else {
+    tmp <- si(ind , n = 2)
+    d$styr <- tmp[1]; d$endyr <- tmp[2]
+  }
+  nyrs <- d$endyr-d$styr+1
   nyrs2 <- nyrs-1
-  tmp <- si(ind=ind, n = 2)
-  d$rcrage <- tmp[1]; d$trmage <- tmp[2]
-  tmp <- si(ind=ind, n = 3)
-  d$nbins1 <- tmp[1]; d$nbins2 <- tmp[2]; d$nbins3 <- tmp[3]
+  if(writedat){
+    d$rcrage <- si(ind,n=1)
+    d$trmage <- si(ind,n=1)
+  } else {
+    tmp <- si(ind=ind, n = 2)
+    d$rcrage <- tmp[1]; d$trmage <- tmp[2]
+  }
+  if(writedat){
+    d$nbins1 <- si(ind,n=1)
+    d$nbins2 <- si(ind,n=1)
+    d$nbins3 <- si(ind,n=1)
+  } else {
+    tmp <- si(ind=ind, n = 3)
+    d$nbins1 <- tmp[1]; d$nbins2 <- tmp[2]; d$nbins3 <- tmp[3]
+  }
   d$cattot <- sn( ind=ind, n = nyrs)
   d$cattot_log_sd <- sn( ind=ind, n = nyrs)
   d$nyrs_fsh <- si(ind=ind, n =1)
