@@ -1,5 +1,3 @@
-replist <- readRDS('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results/repfile.RDS')
-datlist <- readRDS('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results/datfile.RDS')
 
 #' Simulate a data set from a given rep file and input data
 #'
@@ -48,8 +46,17 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
   d <- datlist; r <- replist
   endyr <- tail(r$years,1)
 
-### fishery -- not redoing catch b/c that seems right but revisit
-### this
+### fishery
+  ## catch
+  se <- cv2se(d$cattot_log_sd)
+  if(model){
+    true <- r$Expected_total_catch
+  } else {
+    true <- d$cattot
+  }
+  testind(length(d$styr:d$endyr), se, true)
+  d$cattot <- rlnorm(n=length(se), meanlog=log(true), sdlog=se)
+
   ## age comps
   indr <- (r$years %in% d$fshyrs)
   ind <- indr & (r$years <=endyr)
@@ -219,7 +226,11 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
   return(invisible(d))
 }
 
-### some ugly code to test the simulator seems to work
+## ## some ugly code to test the simulator seems to work
+## replist <- readRDS('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results/repfile.RDS')
+## datlist <- readRDS('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results/datfile.RDS')
+## library(ggplot2)
+## library(dplyr)
 ## Nreps <- 1000
 ## x <- sim_dat(datlist, replist, type='model')
 ## x <- sim_dat(datlist, replist, type='data')
@@ -246,8 +257,8 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
 ##  mutate(type='model')
 ## acmean <- bind_rows(acmean1, acmean2)
 ## ac <- bind_rows(ac1, ac2)
-## acobs2 <- getac(datlist, 0) %>% mutate(type='data')
-## library(ggplot2)
+## acobs <- rbind(getac(datlist, 0) %>% mutate(type='data'),
+##                getac(datlist, 0) %>% mutate(type='model'))
 ## g1 <- ggplot(ac, aes(age, proportion)) +
 ##   geom_jitter(width=.25, height=.01, alpha=.1, size=.1) +
 ##   facet_grid(source~type) +
@@ -275,13 +286,16 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
 ##  mutate(type='model')
 ## indmean <- bind_rows(indmean1, indmean2)
 ## ind <- bind_rows(ind1, ind2)
-## indobs <- getind(datlist, 0) %>% mutate(type='data')
-## g2 <- ggplot(ind, aes(year, index)) + geom_jitter(width=.25,
-##   height=.01, alpha=.1, size=.1) +
+## indobs <- rbind(getind(datlist, 0) %>% mutate(type='data'),
+##                 getind(datlist, 0) %>% mutate(type='model'))
+## g2 <- ggplot(ind, aes(year, index)) +
+##   geom_jitter(width=.25, height=.01, alpha=.1, size=.1) +
 ##   facet_grid(source~type, scales='free_y') +
 ##   geom_line(data=indobs, color=2, lwd=2)+
 ##   geom_line(data=indmean, color=3, lwd=2) + scale_y_log10()
-## cowplot::plot_grid(g1,g2, ncol=2)
+## g1
+## g2
+## ## cowplot::plot_grid(g1,g2, ncol=2)
 
 
 #' Write an R data list to file for reading into ADMB
