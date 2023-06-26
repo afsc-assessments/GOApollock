@@ -11,7 +11,9 @@
 #' @param path Optional path for fileout
 #' @param type Either "model" which uses the model expectation as
 #'   the means, or "data" which uses the observed data means.
-#' @return An invisible list is returned, and optionally a file written.
+#' @return An invisible list is returned, and optionally a file
+#'   written. The age compositions are returned as proportions
+#'   because the model assumes this.
 #' @export
 #'
 #' @details The expected values from either the dat or report
@@ -32,8 +34,13 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
     stopifnot(length(N)==nrow(true))
     if(any(N<1 & N>0)) message("0<N<1 detected, using N=1")
     N[N<1 & N>0] <- 1
-    sim <- t(sapply(1:length(N), function(i)
-      rmultinom(1, size=N[i], prob=true[i,])))
+    sim <- t(sapply(1:length(N), function(i){
+      tmp <- rmultinom(1, size=N[i], prob=true[i,])
+      ## sum(tmp) not always N b/c rmultinom rounds it internally
+      ## when its a real number
+      if(sum(tmp)>0) tmp <- tmp/sum(tmp)
+      tmp
+    }))
     sim
   }
   testind <- function(x,y,z)   stopifnot(all(sum(x)==length(y), sum(x)==length(z)))
@@ -234,9 +241,13 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
 ## Nreps <- 1000
 ## x <- sim_dat(datlist, replist, type='model')
 ## x <- sim_dat(datlist, replist, type='data')
+## rowSums(x$catp)
+## rowSums(x$srvlenp6)
+## write_dat(x, fileout='test.dat', path=getwd())
 ## out1 <- lapply(1:Nreps, function(x) sim_dat(datlist, replist, type='model'))
-## out2 <- lapply(1:Nreps, function(x) sim_dat(datlist, replist, type='data'))
-## getac <- function(x,i){
+## out2 <- lapply(1:Nreps, function(x) sim_dat(datlist, replist,
+##                                            type='data'))
+## etac <- function(x,i){
 ##   d0 <- data.frame(rep=i, source='fishery', age=1:10, fish=as.numeric(tail(x$catp,1)))
 ##   d1 <- data.frame(rep=i, source='survey1', age=1:10, fish=as.numeric(tail(x$srvp1,1)))
 ##   d2 <- data.frame(rep=i, source='survey2', age=1:10, fish=as.numeric(tail(x$srvp2,1)))
