@@ -1026,7 +1026,7 @@ Type objective_function<Type>::operator() ()
   // // loglik(20)  += -0.5*norm2(elem_div(first_difference(log_q3_dev),q3_rwlk_sd(y0,y1-1))); 
   // loglik(21)= 0;
 
-  for(i=y0+1;i<y1;i++){
+  for(i=y0+1;i<=y1;i++){
     loglik(18) += -0.5*square( (slp1_fsh_dev(i)-slp1_fsh_dev(i-1))/rwlk_sd(i-1));
     loglik(18) += -0.5*square( (inf1_fsh_dev(i)-inf1_fsh_dev(i-1))/(4*rwlk_sd(i-1))); 
     loglik(18) += -0.5*square( (slp2_fsh_dev(i)-slp2_fsh_dev(i-1))/rwlk_sd(i-1));
