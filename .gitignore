@@ -2,6 +2,8 @@ source/*.cpp
 source/*.obj
 source/*.exe
 source/*.htp
+source/*.cll
+source/*.o
 .Rproj.user
 .Rhistory
 tests/model_20_8
