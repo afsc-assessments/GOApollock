@@ -234,12 +234,11 @@ Type objective_function<Type>::operator() ()
   //    PARAMETER(inf2_fsh_mean);
   PARAMETER_VECTOR(slp1_fsh_dev);
   PARAMETER_VECTOR(inf1_fsh_dev);
-  //    PARAMETER_VECTOR(slp2_fsh_dev);
-  //    PARAMETER_VECTOR(inf2_fsh_dev);
   PARAMETER_VECTOR(slp2_fsh_dev);
   PARAMETER_VECTOR(inf2_fsh_dev);
-  PARAMETER_VECTOR(rwlk_sd); // Random walk stdevs
+  PARAMETER_VECTOR(ln_rwlk_sd); // Random walk stdevs
 
+  vector<Type> rwlk_sd = exp(ln_rwlk_sd);
   vector<Type> slp1_fsh(nyrs);
   vector<Type> inf1_fsh(nyrs);
   vector<Type> slp2_fsh(nyrs);
@@ -898,11 +897,8 @@ Type objective_function<Type>::operator() ()
   REPORT(Ecattot);
   REPORT(M);
   REPORT(N);
+  REPORT(rwlk_sd);
   REPORT(inf2_fsh_mean);
-  REPORT(slp1_fsh_dev);
-  REPORT(inf1_fsh_dev);
-  REPORT(slp2_fsh_dev);
-  REPORT(inf2_fsh_dev);
   REPORT(slp1_fsh);
   REPORT(inf1_fsh);
   REPORT(slp2_fsh);
