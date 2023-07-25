@@ -18,8 +18,18 @@ pars <- readRDS('TMB/data/pars.RDS')
 map <- readRDS('TMB/data/map.RDS')
 
 # - Adjust fishery random walk standard deviation to parameter
-pars$ln_rwlk_sd <- log(dat$rwlk_sd)
-map$ln_rwlk_sd <- as.factor(rep(1, length(pars$ln_rwlk_sd)))
+pars$ln_sel_sd <- log(dat$rwlk_sd[1]) # All the same so reducing to length of 1
+map$ln_sel_sd <- as.factor(1)
+
+pars$sel_rho_y <- 0
+pars$sel_rho <- 0
+
+map$sel_rho <- as.factor(1)
+map$sel_rho_y <- as.factor(NA)
+
+
+# - Ad fishery selectivity switch
+dat$seltype <- 1
 
 
 ## SET UP 0 PARAMETERS
@@ -59,7 +69,7 @@ params <- obj$env$parList()
 
 ## PLOTS
 ssb <- rbind(cbind(model='TMB-RE',filter(stdtmb, par=='Espawnbio')),
-             cbind(model='ADBM',filter(stdadmb, name=='Espawnbio') %>% select(par=name, est,se, year)))
+             cbind(model='ADMB',filter(stdadmb, name=='Espawnbio') %>% select(par=name, est,se, year)))
 
 filter(ssb, year>2015) %>% arrange(year)
 

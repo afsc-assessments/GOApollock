@@ -38,6 +38,11 @@ template <class Type>
 Type norm2(vector<Type> x){return (x*x).sum();};
 #define see(object) std::cout << #object ":\n" << object << "\n";
 
+// transformation to ensure correlation parameters are between -1 and 1
+// 2/(1+exp(-2*x)) - 1
+template <class Type>
+Type rho_trans(Type x){return Type(2)/(Type(1) + exp(-Type(2) * x)) - Type(1);}
+
 
 template<class Type>
 Type objective_function<Type>::operator() ()
@@ -45,6 +50,7 @@ Type objective_function<Type>::operator() ()
 
   // -----------------------------------------------
   // DATA INPUTS ----
+  // -----------------------------------------------
   DATA_INTEGER(styr);	    // Starting year for population model
   DATA_INTEGER(endyr);	    // Ending year for population model
   DATA_INTEGER(rcrage);	    // Recruitment age
@@ -54,6 +60,7 @@ Type objective_function<Type>::operator() ()
   DATA_INTEGER(nbins3);	// Number of length bins in transitiom matrix 3
 
   // Fishery
+  DATA_INTEGER(seltype);    // Fishery selectivity form (1 = double logistic, 2 = age-specific AR1)
   DATA_VECTOR(cattot);			// Total catch in tons
   DATA_VECTOR(cattot_log_sd); // Total catch (cv) = sdev of log(cattot)
   DATA_INTEGER(nyrs_fsh);     // Number of fishery age comps
@@ -224,68 +231,68 @@ Type objective_function<Type>::operator() ()
   vector<Type> Esrv_proj(5);
   vector<Type> Exrate_proj(5);
 
-  // Selectivity parameters
-  // Fishery selectivity
+  // SELECTIVITY PARAMETERS
+  // - Fishery selectivity
+  PARAMETER_ARRAY(selpars_re); // AR selectivity parameters
+  PARAMETER(sel_rho); // AR1 correlation
+  PARAMETER(sel_rho_y); // AR1 correlation
   PARAMETER(log_slp1_fsh_mean);
   PARAMETER(inf1_fsh_mean);
   PARAMETER(log_slp2_fsh_mean);
   PARAMETER(inf2_fsh_mean);
-  //    PARAMETER(log_slp2_fsh_mean);
-  //    PARAMETER(inf2_fsh_mean);
   PARAMETER_VECTOR(slp1_fsh_dev);
   PARAMETER_VECTOR(inf1_fsh_dev);
   PARAMETER_VECTOR(slp2_fsh_dev);
   PARAMETER_VECTOR(inf2_fsh_dev);
-  PARAMETER_VECTOR(ln_rwlk_sd); // Random walk stdevs
+  PARAMETER(ln_sel_sd); // SD of sel parms
 
-  vector<Type> rwlk_sd = exp(ln_rwlk_sd);
+  Type Sigma_sig_sel = 0;
+  Type sel_sd = exp(ln_sel_sd);
+  Type rho = rho_trans(sel_rho); // Scale from -1 to 1
+  Type rho_y = rho_trans(sel_rho_y);
   vector<Type> slp1_fsh(nyrs);
   vector<Type> inf1_fsh(nyrs);
   vector<Type> slp2_fsh(nyrs);
   vector<Type> inf2_fsh(nyrs);
 
-  // Acoustic survey selectivity
-  //  PARAMETER(log_slp1_srv1);
-  //  PARAMETER(inf1_srv1);
+  // - Acoustic survey selectivity
   PARAMETER(log_slp2_srv1);
   PARAMETER(inf2_srv1);
-  // Trawl selectivity
+
+  // - Trawl selectivity
   PARAMETER(log_slp1_srv2);
   PARAMETER(inf1_srv2);
-  //    PARAMETER inf1_srv2(1,50,-1)
   PARAMETER(log_slp2_srv2);
   PARAMETER(inf2_srv2);
-  // ADFG selectivity
+
+  // - ADFG selectivity
   PARAMETER(log_slp1_srv3);
   PARAMETER(inf1_srv3);
-  //    PARAMETER(log_slp2_srv3);
-  //    PARAMETER(inf2_srv3);
-  // Summer acoustic selectivity
+
+  // - Summer acoustic selectivity
   PARAMETER(log_slp1_srv6);
   PARAMETER(inf1_srv6);
-  //    PARAMETER(inf1_srv6);
-  //    PARAMETER(inf1_srv6);
   PARAMETER(log_slp2_srv6);
   PARAMETER(inf2_srv6);
 
-  // Fishing mortality and survey catchablility
+  // - Fishing mortality
   PARAMETER(mean_log_F);
   PARAMETER_VECTOR(dev_log_F);
   vector<Type> F(nyrs);
+
+  // - Survey catchablility
   PARAMETER(log_q1_mean);
-  PARAMETER_VECTOR(log_q1_dev);;
-  //  PARAMETER(log_q2);
+  PARAMETER_VECTOR(log_q1_dev);
   PARAMETER(log_q2_mean);
-  PARAMETER_VECTOR(log_q2_dev);;
+  PARAMETER_VECTOR(log_q2_dev);
   PARAMETER(log_q3_mean);
-  PARAMETER_VECTOR(log_q3_dev);;
+  PARAMETER_VECTOR(log_q3_dev);
   PARAMETER(log_q4);
-  //  PARAMETER(q4_pow);
   PARAMETER(q4_pow);
   PARAMETER(log_q5);
-  //  PARAMETER(q5_pow);;
   PARAMETER(q5_pow);
   PARAMETER(log_q6);
+
   // This scales M vector below so that M={M}*natMscalar. If 1 does nothing.
   PARAMETER(natMscalar);
 
@@ -453,17 +460,33 @@ Type objective_function<Type>::operator() ()
 
 
   // Fishery selectivity
-  for (i=y0;i<=y1;i++) {
-    slp1_fsh(i)=exp(log_slp1_fsh_mean+slp1_fsh_dev(i));
-    inf1_fsh(i)=inf1_fsh_mean+inf1_fsh_dev(i);
-    slp2_fsh(i)=exp(log_slp2_fsh_mean+slp2_fsh_dev(i));
-    inf2_fsh(i)=inf2_fsh_mean+inf2_fsh_dev(i);
-    for (j=a0;j<=a1;j++) {
-      slctfsh(i,j) = (1/(1+exp(-(slp1_fsh(i))*(double(j+1)-(inf1_fsh(i))))))*
-        (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i))))));
+
+  switch(seltype){
+  // - Double logistic
+  case 1:
+
+    for (i=y0;i<=y1;i++) {
+      slp1_fsh(i)=exp(log_slp1_fsh_mean+slp1_fsh_dev(i));
+      inf1_fsh(i)=inf1_fsh_mean+inf1_fsh_dev(i);
+      slp2_fsh(i)=exp(log_slp2_fsh_mean+slp2_fsh_dev(i));
+      inf2_fsh(i)=inf2_fsh_mean+inf2_fsh_dev(i);
+      for (j=a0;j<=a1;j++) {
+        slctfsh(i,j) = (1/(1+exp(-(slp1_fsh(i))*(double(j+1)-(inf1_fsh(i))))))*
+          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i))))));
+      }
+      // The plan would be to check and adjust the max selected age as needed
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
-    // The plan would be to check and adjust the max selected age as needed
-    slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+    break;
+
+    // AR1 on age
+  case 2:
+
+    vector<Type> tmp0 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
+    Sigma_sig_sel = pow(pow(sigma,2) / (1-pow(rho,2)),0.5);
+    nll_sel += SCALE(AR1(rho), Sigma_sig_sel)(tmp0);
+
+    break;
   }
 
 
@@ -851,22 +874,42 @@ Type objective_function<Type>::operator() ()
         pearson_srv6(i,j)=(srvp6(i,j)-Esrvp6(isrv_acyrs6(i),j))/sqrt((Esrvp6(isrv_acyrs6(i),j)*(1.-Esrvp6(isrv_acyrs6(i),j)))/multN_srv6(i));
       }
     }
-    if(multN_srv6(i)>0) {
-      //effN_srv6(i) = sum(Esrvp6(isrv_acyrs6(i))*(1-Esrvp6(isrv_acyrs6(i))))/sum(square(srvp6(i)-Esrvp6(isrv_acyrs6(i))));
-    }
     loglik(16) +=llsrvp6(i);
   }
 
   // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
   loglik(17) += -0.5*norm2(dev_log_recruit)/square(sigmaR);
 
+  // Fishery selectivity
+  switch(seltype){
+
+  case 1: // Double logistic with deviates
+    for(i=y0+1;i<=y1;i++){
+      loglik(18) += -0.5*square( (slp1_fsh_dev(i)-slp1_fsh_dev(i-1))/sel_sd);
+      loglik(18) += -0.5*square( (inf1_fsh_dev(i)-inf1_fsh_dev(i-1))/(sel_sd));
+      loglik(18) += -0.5*square( (slp2_fsh_dev(i)-slp2_fsh_dev(i-1))/sel_sd);
+      loglik(18) += -0.5*square( (inf2_fsh_dev(i)-inf2_fsh_dev(i-1))/sel_sd);
+    }
+    break;
+
+    // AR1 on age
+  case 2:
+    vector<Type> tmp0 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
+    Sigma_sig_sel = pow(pow(sigma,2) / (1-pow(rho,2)),0.5);
+    loglik(18) += SCALE(AR1(rho), Sigma_sig_sel)(tmp0);
+    break;
+
+    // 2D AR1 on age/year
+  case 3:
+    matrix<Type> tmp0 = selpars_re.col(0); // Random effects are constant across years and cohorts
+    Sigma_sig_sel = pow(pow(sigma,2) / ((1-pow(rho_y,2))*(1-pow(rho,2))),0.5);
+    loglik(18) += SCALE(SEPARABLE(AR1(rho),AR1(rho_y)), Sigma_sig_sel)(tmp);
+    break;
+  }
+
+  // Random walk for q devs
   for(i=y0+1;i<=y1;i++){
-    loglik(18) += -0.5*square( (slp1_fsh_dev(i)-slp1_fsh_dev(i-1))/rwlk_sd(i-1));
-    loglik(18) += -0.5*square( (inf1_fsh_dev(i)-inf1_fsh_dev(i-1))/(rwlk_sd(i-1)));
-    loglik(18) += -0.5*square( (slp2_fsh_dev(i)-slp2_fsh_dev(i-1))/rwlk_sd(i-1));
-    loglik(18) += -0.5*square( (inf2_fsh_dev(i)-inf2_fsh_dev(i-1))/rwlk_sd(i-1));
     loglik(20) += -0.5*square( (log_q1_dev(i)-log_q1_dev(i-1))/q1_rwlk_sd(i-1));
-    //  loglik(20) += -0.5*square( (log_q2_dev(i)-log_q2_dev(i-1))/q2_rwlk_sd(i-1));
     loglik(20) += -0.5*square( (log_q3_dev(i)-log_q3_dev(i-1))/q3_rwlk_sd(i-1));
   }
 
@@ -897,7 +940,7 @@ Type objective_function<Type>::operator() ()
   REPORT(Ecattot);
   REPORT(M);
   REPORT(N);
-  REPORT(rwlk_sd);
+  REPORT(sel_sd);
   REPORT(inf2_fsh_mean);
   REPORT(slp1_fsh);
   REPORT(inf1_fsh);
