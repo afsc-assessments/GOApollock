@@ -4,6 +4,7 @@ source/*.exe
 source/*.htp
 source/*.cll
 source/*.o
+source/*.dll
 .Rproj.user
 .Rhistory
 tests/model_20_8
