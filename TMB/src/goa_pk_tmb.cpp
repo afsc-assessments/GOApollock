@@ -47,7 +47,7 @@ Type rho_trans(Type x){return Type(2)/(Type(1) + exp(-Type(2) * x)) - Type(1);}
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
-
+  using namespace density;
   // -----------------------------------------------
   // DATA INPUTS ----
   // -----------------------------------------------
@@ -233,6 +233,7 @@ Type objective_function<Type>::operator() ()
 
   // SELECTIVITY PARAMETERS
   // - Fishery selectivity
+  PARAMETER(mean_sel); // Mean selectivity
   PARAMETER_ARRAY(selpars_re); // AR selectivity parameters
   PARAMETER(sel_rho); // AR1 correlation
   PARAMETER(sel_rho_y); // AR1 correlation
@@ -464,7 +465,6 @@ Type objective_function<Type>::operator() ()
   switch(seltype){
   // - Double logistic
   case 1:
-
     for (i=y0;i<=y1;i++) {
       slp1_fsh(i)=exp(log_slp1_fsh_mean+slp1_fsh_dev(i));
       inf1_fsh(i)=inf1_fsh_mean+inf1_fsh_dev(i);
@@ -481,11 +481,20 @@ Type objective_function<Type>::operator() ()
 
     // AR1 on age
   case 2:
+    for (i=y0;i<=y1;i++) {
+      for (j=a0;j<=a1;j++) {
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,0,0)))); // Random effects are constant across years and cohorts
+      }
+    }
+    break;
 
-    vector<Type> tmp0 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
-    Sigma_sig_sel = pow(pow(sigma,2) / (1-pow(rho,2)),0.5);
-    nll_sel += SCALE(AR1(rho), Sigma_sig_sel)(tmp0);
-
+    // AR1 on age and year
+  case 3:
+    for (i=y0;i<=y1;i++) {
+      for (j=a0;j<=a1;j++) {
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i,0)))); // Random effects are constant across years and cohorts
+      }
+    }
     break;
   }
 
@@ -881,31 +890,34 @@ Type objective_function<Type>::operator() ()
   loglik(17) += -0.5*norm2(dev_log_recruit)/square(sigmaR);
 
   // Fishery selectivity
-  switch(seltype){
-
-  case 1: // Double logistic with deviates
+  // - Double logistic with deviates
+  if(seltype == 1){
     for(i=y0+1;i<=y1;i++){
       loglik(18) += -0.5*square( (slp1_fsh_dev(i)-slp1_fsh_dev(i-1))/sel_sd);
       loglik(18) += -0.5*square( (inf1_fsh_dev(i)-inf1_fsh_dev(i-1))/(sel_sd));
       loglik(18) += -0.5*square( (slp2_fsh_dev(i)-slp2_fsh_dev(i-1))/sel_sd);
       loglik(18) += -0.5*square( (inf2_fsh_dev(i)-inf2_fsh_dev(i-1))/sel_sd);
     }
-    break;
-
-    // AR1 on age
-  case 2:
-    vector<Type> tmp0 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
-    Sigma_sig_sel = pow(pow(sigma,2) / (1-pow(rho,2)),0.5);
-    loglik(18) += SCALE(AR1(rho), Sigma_sig_sel)(tmp0);
-    break;
-
-    // 2D AR1 on age/year
-  case 3:
-    matrix<Type> tmp0 = selpars_re.col(0); // Random effects are constant across years and cohorts
-    Sigma_sig_sel = pow(pow(sigma,2) / ((1-pow(rho_y,2))*(1-pow(rho,2))),0.5);
-    loglik(18) += SCALE(SEPARABLE(AR1(rho),AR1(rho_y)), Sigma_sig_sel)(tmp);
-    break;
   }
+
+  // - AR1 on age
+
+  if(seltype == 2){
+    vector<Type> tmp2 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
+    Sigma_sig_sel = pow(pow(sel_sd,2) / (1-pow(rho,2)),0.5);
+    loglik(18) += SCALE(AR1(rho), Sigma_sig_sel)(tmp2);
+  }
+
+  //- 2D AR1 on age/year
+
+  if(seltype == 3){
+    for(i=y0+1;i<=y1;i++){
+      //vector<Type> tmp3 = selpars_re.col(i).col(0); // Random effects are constant across years and cohorts
+      //Sigma_sig_sel = pow(pow(sel_sd,2) / ((1-pow(rho_y,2))*(1-pow(rho,2))),0.5);
+      //loglik(18) += SCALE(SEPARABLE(AR1(rho),AR1(rho_y)), Sigma_sig_sel)(tmp3);
+    }
+  }
+
 
   // Random walk for q devs
   for(i=y0+1;i<=y1;i++){
