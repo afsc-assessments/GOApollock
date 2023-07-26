@@ -903,9 +903,9 @@ Type objective_function<Type>::operator() ()
   // - AR1 on age
 
   if(seltype == 2){
-    vector<Type> tmp2 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
-    Sigma_sig_sel = pow(pow(sel_sd,2) / (1-pow(rho,2)),0.5);
-    loglik(18) += SCALE(AR1(rho), Sigma_sig_sel)(tmp2);
+    //vector<Type> tmp2 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
+    //Sigma_sig_sel = pow(pow(sel_sd,2) / (1-pow(rho,2)),0.5);
+    //loglik(18) += SCALE(AR1(rho), Sigma_sig_sel)(tmp2);
   }
 
   //- 2D AR1 on age/year

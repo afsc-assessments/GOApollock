@@ -16,6 +16,14 @@ stdadmb <- readRDS("TMB/data/stdfile.RDS")
 pars <- readRDS('TMB/data/pars.RDS')
 map <- readRDS('TMB/data/map.RDS')
 
+map0 <- lapply(map, function(x) as.numeric(x))
+map0 <- lapply(map0, function(x) replace(x, values = 1:length(x)))
+map0$natMscalar <- NA
+map0$sigmaR <- NA
+map0 <- lapply(map0, function(x) as.factor(x))
+
+map <- map0
+
 
 # MODEL 1 ----
 # - Double logistic with random effects on ascending portion
@@ -51,7 +59,7 @@ obj <- MakeADFun(data=dat, parameters=pars, map=map, random=random, silent=FALSE
 
 ## OPTIMIZE
 opt <- with(obj, nlminb(par,fn,gr))
-# opt <- TMBhelper::fit_tmb(obj, control=list(trace=50))
+opt <- TMBhelper::fit_tmb(obj, control=list(trace=50))
 sdrep <- sdreport(obj)
 quantities <- obj$report(obj$env$last.par.best)
 
@@ -96,14 +104,16 @@ dat$seltype <- 2
 compile("TMB/src/goa_pk_tmb.cpp", flag='-w')
 dyn.load('TMB/src/goa_pk_tmb.dll')
 random <- c("selpars_re")
-obj2 <- MakeADFun(data=dat, parameters=pars, map=map2, random=random, silent=FALSE)
+obj2 <- MakeADFun(data=dat, parameters=pars, map=map2, silent=FALSE)
+
+obj2$gr()
 
 
 ## OPTIMIZE
 opt2 <- with(obj2, nlminb(par,fn,gr))
-# opt <- TMBhelper::fit_tmb(obj, control=list(trace=50))
-sdrep2 <- sdreport(obj)
-quantities2 <- obj$report(obj2$env$last.par.best)
+# opt2 <- TMBhelper::fit_tmb(obj2, control=list(trace=50))
+sdrep2 <- sdreport(obj2)
+quantities2 <- obj2$report(obj2$env$last.par.best)
 
 
 ## GET OBJECTS
