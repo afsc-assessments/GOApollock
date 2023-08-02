@@ -636,7 +636,7 @@ Type objective_function<Type>::operator() ()
       inf2_fsh(i)=inf2_fsh_mean;
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = (1/(1+exp(-(slp1_fsh(i))*(double(j+1)-(inf1_fsh(i))))))*
-          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) +  selpars_re(j,0);
+          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) *  exp(selpars_re(j,0));
       }
       // The plan would be to check and adjust the max selected age as needed
       slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
@@ -652,7 +652,7 @@ Type objective_function<Type>::operator() ()
       inf2_fsh(i)=inf2_fsh_mean;
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = (1/(1+exp(-(slp1_fsh(i))*(double(j+1)-(inf1_fsh(i))))))*
-          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) + selpars_re(j,i);
+          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) * exp(selpars_re(j,i));
       }
       // The plan would be to check and adjust the max selected age as needed
       slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
@@ -675,7 +675,7 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
-      //slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -685,6 +685,7 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
   }
