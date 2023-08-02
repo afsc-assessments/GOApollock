@@ -34,7 +34,7 @@ dat$seltype <- 1
 random <- c("slp1_fsh_dev", "inf1_fsh_dev", "slp2_fsh_dev", "inf2_fsh_dev")
 
 # -- Phase
-# phased_pars1 <- TMBphase(
+# phased_pars_mod1 <- TMBphase(
 #   data = dat,
 #   parameters = pars,
 #   map = map_mod1,
@@ -83,7 +83,7 @@ dat$seltype <- 2
 random <- c("selpars_re")
 
 # -- Phase
-# phased_pars2 <- TMBphase(
+# phased_pars_mod2 <- TMBphase(
 #   data = dat,
 #   parameters = pars,
 #   map = map_mod2,
@@ -135,7 +135,7 @@ dat$seltype <- 3
 random <- c("selpars_re")
 
 # -- Phase
-# phased_pars3 <- TMBphase(
+# phased_pars_mod3 <- TMBphase(
 #   data = dat,
 #   parameters = pars_mod3,
 #   map = map_mod3,
@@ -180,7 +180,7 @@ dat$seltype <- 4
 random <- c("selpars_re")
 
 # -- Phase
-# phased_pars4 <- TMBphase(
+# phased_pars_mod4 <- TMBphase(
 #   data = dat,
 #   parameters = pars,
 #   map = map_mod4,
@@ -228,7 +228,7 @@ dat$seltype <- 5
 random <- c("selpars_re")
 
 # -- Phase
-# phased_pars5 <- TMBphase(
+# phased_pars_mod5 <- TMBphase(
 #   data = dat,
 #   parameters = pars_mod5,
 #   map = map_mod5,
@@ -278,7 +278,7 @@ dat$sel_vartype <- 0
 random <- c("selpars_re")
 
 # -- Phase
-# phased_pars6 <- TMBphase(
+# phased_pars_mod6 <- TMBphase(
 #   data = dat,
 #   parameters = pars_mod6,
 #   map = map_mod6,
@@ -328,7 +328,7 @@ dat$sel_vartype <- 1
 random <- c("selpars_re")
 
 # -- Phase
-# phased_pars7 <- TMBphase(
+# phased_pars_mod7 <- TMBphase(
 #   data = dat,
 #   parameters = pars_mod7,
 #   map = map_mod7,
