@@ -32,6 +32,10 @@
 #include <iostream>
 //#include "helper_functions.hpp"
 
+
+// -----------------------------------------------
+// FUNCTIONS ----
+// -----------------------------------------------
 template <class Type>
 Type square(Type x){return x*x;};
 template <class Type>
@@ -44,6 +48,137 @@ template <class Type>
 Type rho_trans(Type x){return Type(2)/(Type(1) + exp(-Type(2) * x)) - Type(1);}
 
 
+// Function for detecting NAs
+template<class Type>
+bool isNA(Type x){
+  return R_IsNA(asDouble(x));
+}
+
+// Function to assemble sparse precision matrix
+template<class Type>
+// @description: Function that constructs a precision matrix, separable along the
+// year, age, and cohort axis. Var_Param allows users to switch between conditional
+// variance, and marginal variance.
+Eigen::SparseMatrix<Type> construct_Q(int n_years, // Integer of years
+                                      int n_ages, // Integer of ages
+                                      matrix<Type> ay_Index, // Index matrix to construct
+                                      Type rho_y, // Partial correlation by years
+                                      Type rho_a, // Partial correlation by ages
+                                      Type rho_c, // Partial correlation by cohort
+                                      Type log_sigma2, // Variance parameter governing GMRF
+                                      int Var_Param // Parameterization of Variance ==0 (Conditional), == 1(Marginal)
+) {
+
+  // Dimension to construct matrices
+  int total_n = n_years * n_ages;
+
+  // Construct matrices for precision matrix
+  Eigen::SparseMatrix<Type> B(total_n,total_n); // B matrix
+  Eigen::SparseMatrix<Type> I(total_n,total_n); // Identity matrix
+  I.setIdentity(); // Set I to identity matrix
+  Eigen::SparseMatrix<Type> Omega(total_n,total_n); // Omega matrix (variances)
+  Eigen::SparseMatrix<Type> Q_sparse(total_n, total_n); // Precision matrix
+
+  for(int n = 0; n < total_n; n++) {
+
+    // Define year and age objects
+    Type age = ay_Index(n,0);
+    Type year = ay_Index(n,1);
+
+    // Constructing B matrix to determine where the correlation pars should go
+    if(age > 1) {
+
+      // Get column index for years
+      for(int n1 = 0; n1 < total_n; n1++) {
+        if(ay_Index(n1, 0) == age - 1 && ay_Index(n1, 1) == year)
+          B.coeffRef(n, n1) = rho_y;
+      } // n1 loop
+
+    } // end age > 1
+
+    if(year > 1) {
+
+      // Get column index for years
+      for(int n1 = 0; n1 < total_n; n1++) {
+        if(ay_Index(n1, 0) == age && ay_Index(n1, 1) == year - 1)
+          B.coeffRef(n, n1) = rho_a;
+      } // n1 loop
+
+    } // if year > 1
+
+    if(year > 1 && age > 1) {
+
+      // Get column index for years
+      for(int n1 = 0; n1 < total_n; n1++) {
+        if(ay_Index(n1, 0) == age - 1 && ay_Index(n1, 1) == year - 1)
+          B.coeffRef(n,n1) = rho_c; // correlation by cohort
+      } // n1 loop
+
+    } // if both year and age > 1
+
+  } // end n loop
+
+  // Fill in Omega matrix here (variances)
+  if(Var_Param == 0) { // Conditional variance
+
+    for(int i = 0; i < total_n; i++) {
+      for(int j = 0; j < total_n; j++) {
+        if(i == j) Omega.coeffRef(i,j) = 1/exp(log_sigma2);
+        else Omega.coeffRef(i,j) = Type(0.0);
+      } // j loop
+    } // i loop
+
+  } // end if conditional variance
+
+  if(Var_Param == 1) { // Marginal Variance
+
+    // Construct container objects
+    matrix<Type> L(total_n, total_n); // L Matrix
+    matrix<Type> tmp_I_B = I-B; // Temporary Matrix to store I-B
+    L =  tmp_I_B.inverse(); // Invert to get L
+    vector<Type> d(total_n); // Store variance calculations
+
+    for(int n = 0; n < total_n; n++) {
+      if(n == 0) {
+        d(n) = exp(log_sigma2); // marginal variance parameter
+      } else{
+
+        Type cumvar = 0; // Cumulative Variance Container
+
+        for(int n1 = 0; n1 < n; n1++) {
+          cumvar += L(n, n1) * d(n1) * L(n, n1);
+        } // n1 loop
+
+        // Calculate diagonal values for omega
+        d(n) = (exp(log_sigma2) - cumvar) / pow(L(n, n), 2);
+
+      } // else loop
+    } // n loop
+
+    // Now fill in our diagonals for Omega
+    for(int i = 0; i < total_n; i++) {
+      for(int j = 0; j < total_n; j++) {
+        if(i == j) Omega.coeffRef(i,j) = 1/d(i);
+        else Omega.coeffRef(i,j) = Type(0.0);
+      } // j loop
+    } // i loop
+
+  } // end if marginal variance
+
+  // Now, do calculations to construct (Q = (I - t(B)) %*% Omega %*% (I-B))
+  Eigen::SparseMatrix<Type> B_transpose = B.transpose(); // transpose B matrix
+
+  // Calculate Precision Matrix
+  Q_sparse = (I - B_transpose) * Omega * (I-B);
+
+  return(Q_sparse);
+
+} // end construct_Q function
+
+
+// -----------------------------------------------
+// POLLOCK MODEL ----
+// -----------------------------------------------
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
@@ -60,6 +195,8 @@ Type objective_function<Type>::operator() ()
   DATA_INTEGER(nbins3);	// Number of length bins in transitiom matrix 3
 
   // Fishery
+  DATA_MATRIX(ay_Index); // (n_years * n_ages), 2
+  DATA_INTEGER(sel_vartype);  // Parameterization of 3D AR Precision Matrix: == 0 (Conditional), == 1(Marginal)
   DATA_INTEGER(seltype);    // Fishery selectivity form (1 = double logistic, 2 = age-specific AR1)
   DATA_VECTOR(cattot);			// Total catch in tons
   DATA_VECTOR(cattot_log_sd); // Total catch (cv) = sdev of log(cattot)
@@ -208,6 +345,7 @@ Type objective_function<Type>::operator() ()
   // -----------------------------------------------
   // POPULATION PARAMETERS
   // -----------------------------------------------
+  // RECRUITMENT PARAMETERS
   PARAMETER_VECTOR(dev_log_initN);
   vector<Type> initN(nages-1); // goes from 2 to 10
   PARAMETER(mean_log_recruit);
@@ -235,8 +373,9 @@ Type objective_function<Type>::operator() ()
   // - Fishery selectivity
   PARAMETER(mean_sel); // Mean selectivity
   PARAMETER_ARRAY(selpars_re); // AR selectivity parameters
-  PARAMETER(sel_rho); // AR1 correlation
-  PARAMETER(sel_rho_y); // AR1 correlation
+  PARAMETER(sel_rho_a); // AR1 age correlation
+  PARAMETER(sel_rho_y); // AR1 year correlation
+  PARAMETER(sel_rho_c); // AR1 cohort correlation
   PARAMETER(log_slp1_fsh_mean);
   PARAMETER(inf1_fsh_mean);
   PARAMETER(log_slp2_fsh_mean);
@@ -249,12 +388,21 @@ Type objective_function<Type>::operator() ()
 
   Type Sigma_sig_sel = 0;
   Type sel_sd = exp(ln_sel_sd);
-  Type rho = rho_trans(sel_rho); // Scale from -1 to 1
+  Type rho_a = rho_trans(sel_rho_a); // Scale from -1 to 1
   Type rho_y = rho_trans(sel_rho_y);
+  Type rho_c = rho_trans(sel_rho_c);
   vector<Type> slp1_fsh(nyrs);
   vector<Type> inf1_fsh(nyrs);
   vector<Type> slp2_fsh(nyrs);
   vector<Type> inf2_fsh(nyrs);
+
+  // -- Define precision matrix for GMRF
+  Eigen::SparseMatrix<Type> Q_sparse(nages * nyrs, nages * nyrs); // Precision matrix
+
+  // -- Construct precision matrix here
+  Q_sparse = construct_Q(nyrs, nages, ay_Index,
+                         rho_y, rho_a, rho_c,
+                         log(square(sel_sd)), sel_vartype);
 
   // - Acoustic survey selectivity
   PARAMETER(log_slp2_srv1);
@@ -488,7 +636,7 @@ Type objective_function<Type>::operator() ()
       inf2_fsh(i)=inf2_fsh_mean;
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = (1/(1+exp(-(slp1_fsh(i))*(double(j+1)-(inf1_fsh(i))))))*
-          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) +  selpars_re(j,0,0);
+          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) +  selpars_re(j,0);
       }
       // The plan would be to check and adjust the max selected age as needed
       slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
@@ -504,7 +652,7 @@ Type objective_function<Type>::operator() ()
       inf2_fsh(i)=inf2_fsh_mean;
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = (1/(1+exp(-(slp1_fsh(i))*(double(j+1)-(inf1_fsh(i))))))*
-          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) + selpars_re(j,i,0);
+          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) + selpars_re(j,i);
       }
       // The plan would be to check and adjust the max selected age as needed
       slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
@@ -515,7 +663,7 @@ Type objective_function<Type>::operator() ()
   case 4:
     for (i=y0;i<=y1;i++) {
       for (j=a0;j<=a1;j++) {
-        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,0,0)))); // Random effects are constant across years and cohorts
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,0)))); // Random effects are constant across years and cohorts
       }
       slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
@@ -525,9 +673,9 @@ Type objective_function<Type>::operator() ()
   case 5:
     for (i=y0;i<=y1;i++) {
       for (j=a0;j<=a1;j++) {
-        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i,0)))); // Random effects are constant across years and cohorts
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      //slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -535,7 +683,7 @@ Type objective_function<Type>::operator() ()
   case 6:
     for (i=y0;i<=y1;i++) {
       for (j=a0;j<=a1;j++) {
-        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i,0)))); // Random effects are constant across years and cohorts
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
     }
     break;
@@ -651,120 +799,11 @@ Type objective_function<Type>::operator() ()
   Esumbio_log=log(Esumbio);
 
 
-
-  // -----------------------------------------------
-  // Projections
-  // -----------------------------------------------
-  //  //Recruitments
-  //  for (i=y1+1;i<=y1+5;i++) {
-  //    //  recruitment with bias correction
-  //    //    recruit_proj(i)=exp(log_recr_proj(i)+(sigmasq_recr/2));
-  //    // for MCMC projections to get the prob < B20
-  //    //   recruit_proj(i)=exp(log_recr_proj(i));
-  //    // or just use average recruitment after 1977
-  //    // note that y1-1 is the last year for mean
-  //    // standard method
-  //    recruit_proj(i)=mean(recruit(1978,y1-1));
-  //  }
-  //  for (i=y1+1;i<=y1+5;i++) {
-  //    N_proj(i,a0)=recruit_proj(i);
-  //  }
-  // //Initialize the age composition
-
-  // //  Standard projection
-  //  for (j=a0;j<a1;j++) {
-  //    N_proj(y1+1,j+1)=N(y1,j)*exp(-Z(y1,j));
-  //  }
-  //  N_proj(y1+1,a1)+=N(y1,a1)*exp(-Z(y1,a1));
-
-  //  // Set 2007 year class to mean
-  //  // note that y1-1 is the last year for mean
-  //  //   for (j=a0;j<a1;j++)
-  //  //   {
-  //  //   N_proj(y1+1,j+1)=N(y1,j)*exp(-Z(y1,j));
-  //  //   }
-  //  //   N_proj(y1+1,a0+1)=mean(recruit(1979,y1-1))*exp(-Z(y1,a0));
-  //  //   N_proj(y1+1,a1)+=N(y1,a1)*exp(-Z(y1,a1));
-
-  //  // Averaging window for selectivity
-  //  endyr_avg_slct=y1-1;
-  //  y0_avg_slct=endyr_avg_slct-4;
-
-  //  for (j=a0;j<=a1;j++) {
-  //    slctfsh_proj(j) = 0;
-  //    for (i=y0_avg_slct;i<=endyr_avg_slct;i++) {
-  //      slctfsh_proj(j) += slctfsh(i,j);
-  //    }
-  //  }
-  //  slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
-
-
-
-  //  //Forward projections
-  //   for (i=y1+1;i<=y1+5;i++) {
-  //     // have to get Z twice
-  //     //  Tuning loop to get the spawning biomass adjustment right
-  //     F_proj(i)=Ftarget(i+retro_yrs);
-  //     for (loop=1;loop<=20;loop++) {
-  //       for (j=a0;j<=a1;j++) {
-  // 	Z_proj(i,j)=(F_proj(i)*slctfsh_proj(j))+M(j);
-  //       }
-  //       sbio = sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-0.21*Z_proj(i))),wt_spawn_proj),0.5*mat));
-  //       //  Set the fishing mortality rate
-  //       F_proj(i)=Ftarget(i+retro_yrs);
-  //       if (sbio < B40) {
-  // 	F_proj(i)=Ftarget(i+retro_yrs)*(((sbio/B40)-0.05)/(1-0.05));
-  // 	// SSL control rule
-  // 	//   F_proj(i)=Ftarget(i+retro_yrs)*(((sbio/B40)-0.2)/(1-0.2));
-  //       }
-  //     }
-  //   // Total mortality
-  //     for (j=a0;j<=a1;j++) {
-  //       Z_proj(i,j)=(F_proj(i)*slctfsh_proj(j))+M(j);
-  //     }
-  //   //  Numbers at age
-  //    if(i<y1+5) {
-  //      for (j=a0;j<a1;j++) {
-  //        N_proj(i+1,j+1)=N_proj(i,j)*exp(-Z_proj(i,j));
-  //      }
-  //      N_proj(i+1,a1)+=N_proj(i,a1)*exp(-Z_proj(i,a1));
-  //    }
-  //   // Catches
-  //   for (j=a0;j<=a1;j++) {
-  //     C_proj(i,j)=N_proj(i,j)*((F_proj(i)*slctfsh_proj(j))/Z_proj(i,j))*(1-exp(-Z_proj(i,j)));
-  //     //    Nsrv_proj(i,j)=q2*slctsrv1(j)*N_proj(i,j)*exp(-yrfrct_srv1(y1)*Z_proj(i,j));
-  //     Nsrv_proj(i,j)=N_proj(i,j)*exp(-yrfrct_srv6(y1)*Z_proj(i,j));
-  //   }
-  //   //  Total catches and biomass
-  //   Ecattot_proj(i) = 1000000*sum(elem_prod(C_proj(i),wt_fsh_proj));
-  //   // 3+ biomass
-  //   Esumbio_proj(i)= N_proj(i)(a0+2,a1)*wt_pop_proj(a0+2,a1);
-  //   // Alternative: 2+ biomass
-  //   //    Esumbio_proj(i)= N_proj(i)(a0+1,a1)*wt_pop_proj(a0+1,a1);
-  //   Exrate_proj(i)=Ecattot_proj(i)/(1000000*Esumbio_proj(i));
-  //   Espawnbio_proj(i)= sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-0.21*Z_proj(i))),wt_spawn_proj),0.5*mat));
-  //   //Summer acoustic
-  //   //    Esrv_proj(i)= q6*sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-yrfrct_srv6(y1)*Z_proj(i))),slctsrv6),wt_srv_proj));
-  //   //Winter acoutic
-  //   Esrv_proj(i)= q1(y1)*sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-yrfrct_srv1(y1)*Z_proj(i))),slctsrv1),wt_srv_proj));
-  //   }
-
-  N_proj.setZero();
-  recruit_proj.setZero();
-  slctfsh_proj.setZero();
-  Z_proj.setZero();
-  C_proj.setZero();
-  Ecattot_proj.setZero();
-  Esumbio_proj.setZero();
-  Exrate_proj.setZero();
-  Espawnbio_proj.setZero();
-  Esrv_proj.setZero();
-  loglik.setZero();
-
-
   // -----------------------------------------------
   // LIKELIHOODS
   // -----------------------------------------------
+  loglik.setZero();
+
   // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
   for (i=0;i<nyrs_fsh;i++) {
     if(ifshyrs(i)>endyr) break;
@@ -945,17 +984,20 @@ Type objective_function<Type>::operator() ()
 
   // - AR1 on age
   if((seltype == 2) | (seltype == 4)){
-    vector<Type> tmp_AR1 = selpars_re.col(0).col(0); // Random effects are constant across years and cohorts
-    Sigma_sig_sel = pow(pow(sel_sd,2) / (1-pow(rho,2)),0.5);
-    loglik(18) -= SCALE(AR1(rho), Sigma_sig_sel)(tmp_AR1);
+    vector<Type> tmp_AR1 = selpars_re.col(0); // Random effects are constant across years and cohorts
+    Sigma_sig_sel = pow(pow(sel_sd,2) / (1-pow(rho_a,2)),0.5);
+    loglik(18) -= SCALE(AR1(rho_a), Sigma_sig_sel)(tmp_AR1);
   }
 
   //- 2D AR1 on age/year
   if((seltype == 3 )| (seltype == 5)){
-    for(i=y0+1;i<=y1;i++){
-      Sigma_sig_sel = pow(pow(sel_sd,2) / ((1-pow(rho_y,2))*(1-pow(rho,2))),0.5);
-      loglik(18) -= SCALE(SEPARABLE(AR1(rho),AR1(rho_y)), Sigma_sig_sel)(selpars_re.col(0));
-    }
+    Sigma_sig_sel = pow(pow(sel_sd,2) / ((1-pow(rho_y,2))*(1-pow(rho_a,2))),0.5);
+    loglik(18) -= SCALE(SEPARABLE(AR1(rho_a),AR1(rho_y)), Sigma_sig_sel)(selpars_re);
+  }
+
+  //- 3D AR1 on age/year
+  if((seltype == 6 )){
+      loglik(18) -= GMRF(Q_sparse)(selpars_re);
   }
 
 
@@ -992,6 +1034,9 @@ Type objective_function<Type>::operator() ()
   REPORT(Ecattot);
   REPORT(M);
   REPORT(N);
+
+  // Fish sel
+  REPORT(Q_sparse);
   REPORT(sel_sd);
   REPORT(inf2_fsh_mean);
   REPORT(slp1_fsh);
@@ -999,6 +1044,7 @@ Type objective_function<Type>::operator() ()
   REPORT(slp2_fsh);
   REPORT(inf2_fsh);
   REPORT(slctfsh);
+
   REPORT(llcatp);
   REPORT(catp);
   REPORT(Ecatp);
