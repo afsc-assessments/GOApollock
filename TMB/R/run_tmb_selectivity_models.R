@@ -355,18 +355,20 @@ params_mod7 <- obj_mod7$env$parList()
 
 ## PLOTS ----
 # - Combine
-ssb <- rbind(cbind(model='TMB-RE',filter(stdtmb_mod1, par=='Espawnbio')),
-             cbind(model='TMB-Log-AR1',filter(stdtmb_mod2, par=='Espawnbio')),
-             cbind(model='TMB-Log-2D-AR1',filter(stdtmb_mod3, par=='Espawnbio')),
-             cbind(model='TMB-AR1',filter(stdtmb_mod4, par=='Espawnbio')),
-             cbind(model='TMB-2D-AR1',filter(stdtmb_mod5, par=='Espawnbio')),
-             cbind(model='TMB-3D-AR1cond',filter(stdtmb_mod6, par=='Espawnbio')),
-             cbind(model='TMB-3D-AR1mar',filter(stdtmb_mod7, par=='Espawnbio')),
+ssb <- rbind(cbind(model='TMB-Mod1-RE',filter(stdtmb_mod1, par=='Espawnbio')),
+             cbind(model='TMB-Mod2-Log-AR1',filter(stdtmb_mod2, par=='Espawnbio')),
+             cbind(model='TMB-Mod3-Log-2D-AR1',filter(stdtmb_mod3, par=='Espawnbio')),
+             cbind(model='TMB-Mod4-AR1',filter(stdtmb_mod4, par=='Espawnbio')),
+             cbind(model='TMB-Mod5-2D-AR1',filter(stdtmb_mod5, par=='Espawnbio')),
+             cbind(model='TMB-Mod6-3D-AR1cond',filter(stdtmb_mod6, par=='Espawnbio')),
+             cbind(model='TMB-Mod7-3D-AR1mar',filter(stdtmb_mod7, par=='Espawnbio')),
              cbind(model='ADMB',filter(stdadmb, name=='Espawnbio') %>% select(par=name, est,se, year)))
 
 # - Plot
 ggplot(ssb, aes(year, est, color=model, fill=model, ymin=est-1.96*se, ymax=est+1.96*se)) +
   geom_ribbon(alpha=.5) + geom_line(lwd=2)
+
+write.csv(ssb, file = "TMB/Output/Initial_runs.csv")
 
 # - Show recent ssb
 ssb %>%
