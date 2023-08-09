@@ -1,6 +1,7 @@
 ## LIBRARIES AND DATA ----
 source("TMB/R/prepare_tmb_objects.R")
 source("TMB/R/phaser.R")
+source("TMB/R/plot_selectivity.R")
 
 map <- lapply(map, function(x) as.factor(as.numeric(x)*NA))
 
@@ -79,7 +80,7 @@ map_mod2$log_slp2_fsh_mean <- as.factor(1)
 # -- Data switch
 dat$seltype <- 2
 
-# - Build model 2
+# - Build model
 random <- c("selpars_re")
 
 # -- Phase
@@ -109,18 +110,17 @@ params_mod2 <- obj_mod2$env$parList()
 
 
 ## MODEL 3 ----
-# - Double logistic with 2D-AR1 age, year random effects on function
-# - Turn on sel sd and slp and inf parameters and ranef vector and rho
+# - Double logistic with AR1 year random effects on function
+# - Turn on sel sd and slp and inf parameters and ranef vector and rho y
 map_mod3 <- map
-pars_mod3 <- pars
 
 # -- Random effect pars
-pars_mod3$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+pars_mod3 <- pars
+pars_mod3$selpars_re <- matrix(0, nrow = 1, ncol = dat$nyrs)
 map_mod3$selpars_re <- as.factor(1:length(pars_mod3$selpars_re))
 
 # -- Fixed effect pars
 map_mod3$ln_sel_sd <- as.factor(1)
-map_mod3$sel_rho_a <- as.factor(1)
 map_mod3$sel_rho_y <- as.factor(1)
 
 map_mod3$inf1_fsh_mean <- as.factor(1)
@@ -131,7 +131,7 @@ map_mod3$log_slp2_fsh_mean <- as.factor(1)
 # -- Data switch
 dat$seltype <- 3
 
-# - Build model 3
+# - Build model
 random <- c("selpars_re")
 
 # -- Phase
@@ -161,28 +161,35 @@ params_mod3 <- obj_mod3$env$parList()
 
 
 ## MODEL 4 ----
-# - Non-parametric 1D-AR1 age random effects
-# - Turn on mean_sel, rho, sd, and ranef vector
+# - Double logistic with 2D-AR1 age, year random effects on function
+# - Turn on sel sd and slp and inf parameters and ranef vector and rho
 map_mod4 <- map
+pars_mod4 <- pars
 
 # -- Random effect pars
-map_mod4$selpars_re <- as.factor(1:length(pars$selpars_re))
+pars_mod4$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+map_mod4$selpars_re <- as.factor(1:length(pars_mod4$selpars_re))
 
 # -- Fixed effect pars
 map_mod4$ln_sel_sd <- as.factor(1)
 map_mod4$sel_rho_a <- as.factor(1)
-map_mod4$mean_sel <- as.factor(1)
+map_mod4$sel_rho_y <- as.factor(1)
+
+map_mod4$inf1_fsh_mean <- as.factor(1)
+map_mod4$inf2_fsh_mean <- as.factor(1)
+map_mod4$log_slp1_fsh_mean <- as.factor(1)
+map_mod4$log_slp2_fsh_mean <- as.factor(1)
 
 # -- Data switch
 dat$seltype <- 4
 
-# - Build model 4
+# - Build model
 random <- c("selpars_re")
 
 # -- Phase
 # phased_pars_mod4 <- TMBphase(
 #   data = dat,
-#   parameters = pars,
+#   parameters = pars_mod4,
 #   map = map_mod4,
 #   random = random,
 #   phases = phases,
@@ -191,7 +198,7 @@ random <- c("selpars_re")
 #   use_gradient = TRUE)
 
 # -- Build model obj
-obj_mod4 <- MakeADFun(data=dat, parameters=pars, map=map_mod4, random=random, silent=TRUE)
+obj_mod4 <- MakeADFun(data=dat, parameters=pars_mod4, map=map_mod4, random=random, silent=TRUE)
 
 # - Optimize
 opt_mod4 <- with(obj_mod4, nlminb(par,fn,gr))
@@ -206,31 +213,28 @@ params_mod4 <- obj_mod4$env$parList()
 
 
 ## MODEL 5 ----
-# - Non-parametric 2D-AR1 age, year random effects
+# - Non-parametric 1D-AR1 age random effects
 # - Turn on mean_sel, rho, sd, and ranef vector
 map_mod5 <- map
-pars_mod5 <- pars
 
 # -- Random effect pars
-pars_mod5$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
-map_mod5$selpars_re <- as.factor(1:length(pars_mod5$selpars_re))
+map_mod5$selpars_re <- as.factor(1:length(pars$selpars_re))
 
 # -- Fixed effect pars
 map_mod5$ln_sel_sd <- as.factor(1)
 map_mod5$sel_rho_a <- as.factor(1)
-map_mod5$sel_rho_y <- as.factor(1)
 map_mod5$mean_sel <- as.factor(1)
 
 # -- Data switch
 dat$seltype <- 5
 
-# - Build model 5
+# - Build model
 random <- c("selpars_re")
 
 # -- Phase
 # phased_pars_mod5 <- TMBphase(
 #   data = dat,
-#   parameters = pars_mod5,
+#   parameters = pars,
 #   map = map_mod5,
 #   random = random,
 #   phases = phases,
@@ -239,11 +243,11 @@ random <- c("selpars_re")
 #   use_gradient = TRUE)
 
 # -- Build model obj
-obj_mod5 <- MakeADFun(data=dat, parameters=pars_mod5, map=map_mod5, random=random, silent=TRUE)
+obj_mod5 <- MakeADFun(data=dat, parameters=pars, map=map_mod5, random=random, silent=TRUE)
 
 # - Optimize
 opt_mod5 <- with(obj_mod5, nlminb(par,fn,gr))
-# opt <- TMBhelper::fit_tmb(obj_mod5)
+# opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod5 <- sdreport(obj_mod5)
 quantities_mod5 <- obj_mod5$report(obj_mod5$env$last.par.best)
 
@@ -254,27 +258,24 @@ params_mod5 <- obj_mod5$env$parList()
 
 
 ## MODEL 6 ----
-# - Non-parametric 3D-AR1 age, year, cohort random effects using conditional var
-# - Turn on mean_sel, rho (a,y,c), sd, and ranef vector
+# - Non-parametric 1D-AR1 year random effects
+# - Turn on mean_sel, rho_y, sd, and ranef vector
 map_mod6 <- map
-pars_mod6 <- pars
 
 # -- Random effect pars
-pars_mod6$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+pars_mod6 <- pars
+pars_mod6$selpars_re <- matrix(0, nrow = 1, ncol = dat$nyrs)
 map_mod6$selpars_re <- as.factor(1:length(pars_mod6$selpars_re))
 
 # -- Fixed effect pars
 map_mod6$ln_sel_sd <- as.factor(1)
-map_mod6$sel_rho_a <- as.factor(1)
 map_mod6$sel_rho_y <- as.factor(1)
-map_mod6$sel_rho_c <- as.factor(1)
 map_mod6$mean_sel <- as.factor(1)
 
 # -- Data switch
 dat$seltype <- 6
-dat$sel_vartype <- 0
 
-# - Build model 6
+# - Build model
 random <- c("selpars_re")
 
 # -- Phase
@@ -293,7 +294,7 @@ obj_mod6 <- MakeADFun(data=dat, parameters=pars_mod6, map=map_mod6, random=rando
 
 # - Optimize
 opt_mod6 <- with(obj_mod6, nlminb(par,fn,gr))
-# opt <- TMBhelper::fit_tmb(obj_mod6)
+# opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod6 <- sdreport(obj_mod6)
 quantities_mod6 <- obj_mod6$report(obj_mod6$env$last.par.best)
 
@@ -304,8 +305,8 @@ params_mod6 <- obj_mod6$env$parList()
 
 
 ## MODEL 7 ----
-# - Non-parametric 3D-AR1 age, year, cohort random effects using marginal var
-# - Turn on mean_sel, rho (a,y,c), sd, and ranef vector
+# - Non-parametric 2D-AR1 age, year random effects
+# - Turn on mean_sel, rho, sd, and ranef vector
 map_mod7 <- map
 pars_mod7 <- pars
 
@@ -317,12 +318,10 @@ map_mod7$selpars_re <- as.factor(1:length(pars_mod7$selpars_re))
 map_mod7$ln_sel_sd <- as.factor(1)
 map_mod7$sel_rho_a <- as.factor(1)
 map_mod7$sel_rho_y <- as.factor(1)
-map_mod7$sel_rho_c <- as.factor(1)
 map_mod7$mean_sel <- as.factor(1)
 
 # -- Data switch
-dat$seltype <- 6
-dat$sel_vartype <- 1
+dat$seltype <- 7
 
 # - Build model 7
 random <- c("selpars_re")
@@ -353,15 +352,131 @@ stdtmb_mod7 <- with(sdrep_mod7, data.frame(par=names(value), est=value, se=sqrt(
 params_mod7 <- obj_mod7$env$parList()
 
 
+## MODEL 8 ----
+# - Non-parametric 3D-AR1 age, year, cohort random effects using conditional var
+# - Turn on mean_sel, rho (a,y,c), sd, and ranef vector
+map_mod8 <- map
+pars_mod8 <- pars
+
+# -- Random effect pars
+pars_mod8$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+map_mod8$selpars_re <- as.factor(1:length(pars_mod8$selpars_re))
+
+# -- Fixed effect pars
+map_mod8$ln_sel_sd <- as.factor(1)
+map_mod8$sel_rho_a <- as.factor(1)
+map_mod8$sel_rho_y <- as.factor(1)
+map_mod8$sel_rho_c <- as.factor(1)
+map_mod8$mean_sel <- as.factor(1)
+
+# -- Data switch
+dat$seltype <- 8
+dat$sel_vartype <- 0
+
+# - Build model
+random <- c("selpars_re")
+
+# -- Phase
+# phased_pars_mod8 <- TMBphase(
+#   data = dat,
+#   parameters = pars_mod8,
+#   map = map_mod8,
+#   random = random,
+#   phases = phases,
+#   model_name = "goa_pk_tmb",
+#   silent = TRUE,
+#   use_gradient = TRUE)
+
+# -- Build model obj
+obj_mod8 <- MakeADFun(data=dat, parameters=pars_mod8, map=map_mod8, random=random, silent=TRUE)
+
+# - Optimize
+opt_mod8 <- with(obj_mod8, nlminb(par,fn,gr))
+# opt <- TMBhelper::fit_tmb(obj_mod8)
+sdrep_mod8 <- sdreport(obj_mod8)
+quantities_mod8 <- obj_mod8$report(obj_mod8$env$last.par.best)
+
+# - Get objects
+stdtmb_mod8 <- with(sdrep_mod8, data.frame(par=names(value), est=value, se=sqrt(diag(cov)))) %>%
+  group_by(par) %>% mutate(year=1969+1:n()) %>% ungroup
+params_mod8 <- obj_mod8$env$parList()
+
+
+## MODEL 9 ----
+# - Non-parametric 3D-AR1 age, year, cohort random effects using marginal var
+# - Turn on mean_sel, rho (a,y,c), sd, and ranef vector
+map_mod9 <- map
+pars_mod9 <- pars
+
+# -- Random effect pars
+pars_mod9$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+map_mod9$selpars_re <- as.factor(1:length(pars_mod9$selpars_re))
+
+# -- Fixed effect pars
+map_mod9$ln_sel_sd <- as.factor(1)
+map_mod9$sel_rho_a <- as.factor(1)
+map_mod9$sel_rho_y <- as.factor(1)
+map_mod9$sel_rho_c <- as.factor(1)
+map_mod9$mean_sel <- as.factor(1)
+
+# -- Data switch
+dat$seltype <- 8
+dat$sel_vartype <- 1
+
+# - Build model
+random <- c("selpars_re")
+
+# -- Phase
+# phased_pars_mod9 <- TMBphase(
+#   data = dat,
+#   parameters = pars_mod9,
+#   map = map_mod9,
+#   random = random,
+#   phases = phases,
+#   model_name = "goa_pk_tmb",
+#   silent = TRUE,
+#   use_gradient = TRUE)
+
+# -- Build model obj
+obj_mod9 <- MakeADFun(data=dat, parameters=pars_mod9, map=map_mod9, random=random, silent=TRUE)
+
+# - Optimize
+opt_mod9 <- with(obj_mod9, nlminb(par,fn,gr))
+# opt <- TMBhelper::fit_tmb(obj_mod9)
+sdrep_mod9 <- sdreport(obj_mod9)
+quantities_mod9 <- obj_mod9$report(obj_mod9$env$last.par.best)
+
+# - Get objects
+stdtmb_mod9 <- with(sdrep_mod9, data.frame(par=names(value), est=value, se=sqrt(diag(cov)))) %>%
+  group_by(par) %>% mutate(year=1969+1:n()) %>% ungroup
+params_mod9 <- obj_mod9$env$parList()
+
+
 ## PLOTS ----
+model_names <- c(
+  'TMB-Mod1: RE',
+  'TMB-Mod2: Log-AR1-Age',
+  'TMB-Mod3: Log-AR1-Yr',
+  'TMB-Mod4: Log-2D-AR1',
+  'TMB-Mod5: AR1-Age',
+  'TMB-Mod6: AR1-Yr',
+  'TMB-Mod7: 2D-AR1',
+  "TMB-Mod8: 3D-AR1cond",
+  'TMB-Mod9: 3D-AR1mar'
+)
+
+mod_list <- list(sdrep_mod1, sdrep_mod2, sdrep_mod3, sdrep_mod4, sdrep_mod5, sdrep_mod6, sdrep_mod7, sdrep_mod8, sdrep_mod9)
+
 # - Combine
-ssb <- rbind(cbind(model='TMB-Mod1-RE',filter(stdtmb_mod1, par=='Espawnbio')),
-             cbind(model='TMB-Mod2-Log-AR1',filter(stdtmb_mod2, par=='Espawnbio')),
-             cbind(model='TMB-Mod3-Log-2D-AR1',filter(stdtmb_mod3, par=='Espawnbio')),
-             cbind(model='TMB-Mod4-AR1',filter(stdtmb_mod4, par=='Espawnbio')),
-             cbind(model='TMB-Mod5-2D-AR1',filter(stdtmb_mod5, par=='Espawnbio')),
-             cbind(model='TMB-Mod6-3D-AR1cond',filter(stdtmb_mod6, par=='Espawnbio')),
-             cbind(model='TMB-Mod7-3D-AR1mar',filter(stdtmb_mod7, par=='Espawnbio')),
+ssb <- rbind(cbind(model=model_names[1],filter(stdtmb_mod1, par=='Espawnbio')),
+             cbind(model=model_names[2],filter(stdtmb_mod2, par=='Espawnbio')),
+             cbind(model=model_names[3],filter(stdtmb_mod3, par=='Espawnbio')),
+             cbind(model=model_names[4],filter(stdtmb_mod4, par=='Espawnbio')),
+             cbind(model=model_names[5],filter(stdtmb_mod5, par=='Espawnbio')),
+             cbind(model=model_names[6],filter(stdtmb_mod6, par=='Espawnbio')),
+             cbind(model=model_names[7],filter(stdtmb_mod7, par=='Espawnbio')),
+             cbind(model=model_names[8],filter(stdtmb_mod8, par=='Espawnbio')),
+             cbind(model=model_names[9],filter(stdtmb_mod9, par=='Espawnbio')),
              cbind(model='ADMB',filter(stdadmb, name=='Espawnbio') %>% select(par=name, est,se, year)))
 
 # - Plot
@@ -377,6 +492,10 @@ ssb %>%
   pivot_wider(names_from = model, values_from = c(est, se)) %>%
   select(year, paste0(c("est_","se_"),rep(unique(ssb$model), each = 2))) %>%
   as.data.frame()
+
+# Plot selectivities
+plot_selectivity(sdrep = mod_list[-6],
+                 model_names = model_names[-6])
 
 
 
