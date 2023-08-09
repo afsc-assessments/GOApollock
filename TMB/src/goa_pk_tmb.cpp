@@ -638,8 +638,9 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i))))));
       }
       // The plan would be to check and adjust the max selected age as needed
-      vector<Type> slctfsh_tmp = slctfsh.row(i);
-      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -655,8 +656,9 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) *  exp(selpars_re(j,0));
       }
       // The plan would be to check and adjust the max selected age as needed
-      vector<Type> slctfsh_tmp = slctfsh.row(i);
-      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -672,8 +674,9 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) *  exp(selpars_re(0,i));
       }
       // The plan would be to check and adjust the max selected age as needed
-      vector<Type> slctfsh_tmp = slctfsh.row(i);
-      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -689,8 +692,9 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) * exp(selpars_re(j,i));
       }
       // The plan would be to check and adjust the max selected age as needed
-      vector<Type> slctfsh_tmp = slctfsh.row(i);
-      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -700,8 +704,9 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,0)))); // Random effects are constant across years and cohorts
       }
-      vector<Type> slctfsh_tmp = slctfsh.row(i);
-      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -720,8 +725,9 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
-      vector<Type> slctfsh_tmp = slctfsh.row(i);
-      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -731,8 +737,9 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
-      vector<Type> slctfsh_tmp = slctfsh.row(i);
-      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
   }
