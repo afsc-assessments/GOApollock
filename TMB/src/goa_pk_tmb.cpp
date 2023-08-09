@@ -48,6 +48,20 @@ template <class Type>
 Type rho_trans(Type x){return Type(2)/(Type(1) + exp(-Type(2) * x)) - Type(1);}
 
 
+// transformation to ensure correlation parameters are between -1 and 1
+// 2/(1+exp(-2*x)) - 1
+template <class Type>
+Type maxvec(vector<Type> x){
+  Type a = -999;
+  Type b = 0;
+  for(int i = 0; i < x.size(); i++){
+    b = a-x[i];
+    a = (a + x[i] + sqrt(b*b))/2; // Theres gotta be a better way using abs or something
+  }
+  return a;
+}
+
+
 // Function for detecting NAs
 template<class Type>
 bool isNA(Type x){
@@ -624,7 +638,8 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i))))));
       }
       // The plan would be to check and adjust the max selected age as needed
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      vector<Type> slctfsh_tmp = slctfsh.row(i);
+      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
     }
     break;
 
@@ -640,7 +655,8 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) *  exp(selpars_re(j,0));
       }
       // The plan would be to check and adjust the max selected age as needed
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      vector<Type> slctfsh_tmp = slctfsh.row(i);
+      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
     }
     break;
 
@@ -656,7 +672,8 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) *  exp(selpars_re(0,i));
       }
       // The plan would be to check and adjust the max selected age as needed
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      vector<Type> slctfsh_tmp = slctfsh.row(i);
+      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
     }
     break;
 
@@ -672,7 +689,8 @@ Type objective_function<Type>::operator() ()
           (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i)))))) * exp(selpars_re(j,i));
       }
       // The plan would be to check and adjust the max selected age as needed
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      vector<Type> slctfsh_tmp = slctfsh.row(i);
+      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
     }
     break;
 
@@ -682,7 +700,8 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,0)))); // Random effects are constant across years and cohorts
       }
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      vector<Type> slctfsh_tmp = slctfsh.row(i);
+      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
     }
     break;
 
@@ -701,7 +720,8 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      vector<Type> slctfsh_tmp = slctfsh.row(i);
+      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
     }
     break;
 
@@ -711,7 +731,8 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      vector<Type> slctfsh_tmp = slctfsh.row(i);
+      slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
     }
     break;
   }
