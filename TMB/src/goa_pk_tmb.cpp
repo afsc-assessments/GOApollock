@@ -208,6 +208,7 @@ Type objective_function<Type>::operator() ()
   DATA_INTEGER(nbins1);	// Number of length bins in transitiom matrix 1
   DATA_INTEGER(nbins2);	// Number of length bins in transitiom matrix 2
   DATA_INTEGER(nbins3);	// Number of length bins in transitiom matrix 3
+  DATA_INTEGER(projfsh_nyrs); // Number of extra years to project fisheries selectivity
 
   // Fishery
   DATA_MATRIX(ay_Index); // (n_years * n_ages), 2
@@ -406,17 +407,17 @@ Type objective_function<Type>::operator() ()
   Type rho_a = rho_trans(sel_rho_a); // Scale from -1 to 1
   Type rho_y = rho_trans(sel_rho_y);
   Type rho_c = rho_trans(sel_rho_c);
-  vector<Type> slp1_fsh(nyrs);
-  vector<Type> inf1_fsh(nyrs);
-  vector<Type> slp2_fsh(nyrs);
-  vector<Type> inf2_fsh(nyrs);
+  vector<Type> slp1_fsh(nyrs+projfsh_nyrs);
+  vector<Type> inf1_fsh(nyrs+projfsh_nyrs);
+  vector<Type> slp2_fsh(nyrs+projfsh_nyrs);
+  vector<Type> inf2_fsh(nyrs+projfsh_nyrs);
 
   // -- Define precision matrix for GMRF
-  Eigen::SparseMatrix<Type> Q_sparse(nages * nyrs, nages * nyrs); // Precision matrix
+  Eigen::SparseMatrix<Type> Q_sparse(nages * (nyrs+projfsh_nyrs), nages * (nyrs+projfsh_nyrs)); // Precision matrix
 
   // -- Construct precision matrix here
-  Q_sparse = construct_Q(nyrs, nages, ay_Index,
-                         rho_y, rho_a, rho_c,
+  Q_sparse = construct_Q((nyrs+projfsh_nyrs), nages, ay_Index,
+                         sel_rho_y, sel_rho_a, sel_rho_c,
                          log(square(sel_sd)), sel_vartype);
 
   // - Acoustic survey selectivity
@@ -482,12 +483,12 @@ Type objective_function<Type>::operator() ()
   vector<Type> slctsrv3(nages);
   matrix<Type> Nsrv6(nyrs,nages);
   vector<Type> slctsrv6(nages);
-  matrix<Type> slctfsh(nyrs,nages);
+  matrix<Type> slctfsh(nyrs+projfsh_nyrs,nages);
   vector<Type> slctsrv1_logit(nages);
   vector<Type> slctsrv2_logit(nages);
   vector<Type> slctsrv3_logit(nages);
   vector<Type> slctsrv6_logit(nages);
-  matrix<Type> slctfsh_logit(nyrs,nages);
+  matrix<Type> slctfsh_logit(nyrs+projfsh_nyrs,nages);
 
 
   // -----------------------------------------------
@@ -628,7 +629,7 @@ Type objective_function<Type>::operator() ()
   switch(seltype){
   // - Double logistic with random effects on parameters
   case 1:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       slp1_fsh(i)=exp(log_slp1_fsh_mean+slp1_fsh_dev(i));
       inf1_fsh(i)=inf1_fsh_mean+inf1_fsh_dev(i);
       slp2_fsh(i)=exp(log_slp2_fsh_mean+slp2_fsh_dev(i));
@@ -646,7 +647,7 @@ Type objective_function<Type>::operator() ()
 
     // - Double logistic with age AR1 random effects on selectivity function
   case 2:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       slp1_fsh(i)=exp(log_slp1_fsh_mean);
       inf1_fsh(i)=inf1_fsh_mean;
       slp2_fsh(i)=exp(log_slp2_fsh_mean);
@@ -664,7 +665,7 @@ Type objective_function<Type>::operator() ()
 
     // - Double logistic with year AR1 random effects on selectivity function
   case 3:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       slp1_fsh(i)=exp(log_slp1_fsh_mean);
       inf1_fsh(i)=inf1_fsh_mean;
       slp2_fsh(i)=exp(log_slp2_fsh_mean);
@@ -682,7 +683,7 @@ Type objective_function<Type>::operator() ()
 
     // - Double logistic with age,year 2D AR1 random effects on selectivity function
   case 4:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       slp1_fsh(i)=exp(log_slp1_fsh_mean);
       inf1_fsh(i)=inf1_fsh_mean;
       slp2_fsh(i)=exp(log_slp2_fsh_mean);
@@ -700,7 +701,7 @@ Type objective_function<Type>::operator() ()
 
     // Non-parametric AR1 on age
   case 5:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,0)))); // Random effects are constant across years and cohorts
       }
@@ -712,16 +713,17 @@ Type objective_function<Type>::operator() ()
 
     // Non-parametric AR1 on year
   case 6:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(0,i)))); // Random effects are constant across years and cohorts
+        //slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
       }
     }
     break;
 
     // Non-parametric 2D-AR1 on age and year
   case 7:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
@@ -733,7 +735,7 @@ Type objective_function<Type>::operator() ()
 
     // Non-parametric 3D-AR1 on age, year, and cohort
   case 8:
-    for (i=y0;i<=y1;i++) {
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
         slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
@@ -784,6 +786,11 @@ Type objective_function<Type>::operator() ()
   for (i=y0;i<=y1;i++) {
     for (j=a0;j<=a1;j++) {
       Z(i,j)=(F(i)*slctfsh(i,j))+M(j);
+    }
+  }
+
+  for (i=y0;i<=y1+projfsh_nyrs;i++) {
+    for (j=a0;j<=a1;j++) {
       slctfsh_logit(i,j)=-log(2/(slctfsh(i,j)-1e-10)-1);
     }
   }
@@ -1029,7 +1036,7 @@ Type objective_function<Type>::operator() ()
   // Fishery selectivity
   // - Double logistic with deviates
   if(seltype == 1){
-    for(i=y0+1;i<=y1;i++){
+    for(i=y0+1;i<=y1+projfsh_nyrs;i++){ // FIXME: maybe we don't include projection in likelihood?
       loglik(18) += -0.5*square( (slp1_fsh_dev(i)-slp1_fsh_dev(i-1))/sel_sd);
       loglik(18) += -0.5*square( (inf1_fsh_dev(i)-inf1_fsh_dev(i-1))/(4*sel_sd));
       loglik(18) += -0.5*square( (slp2_fsh_dev(i)-slp2_fsh_dev(i-1))/sel_sd);

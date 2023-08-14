@@ -14,6 +14,14 @@ pars <- readRDS('TMB/data/pars.RDS')
 map <- readRDS('TMB/data/map.RDS')
 
 
+## Selectivity projection years
+dat$projfsh_nyrs <- 5
+pars$slp1_fsh_dev <- c(pars$slp1_fsh_dev, rep(0, dat$projfsh_nyrs))
+pars$slp2_fsh_dev <- c(pars$slp2_fsh_dev, rep(0, dat$projfsh_nyrs))
+pars$inf1_fsh_dev <- c(pars$inf1_fsh_dev, rep(0, dat$projfsh_nyrs))
+pars$inf2_fsh_dev <- c(pars$inf2_fsh_dev, rep(0, dat$projfsh_nyrs))
+
+
 ## BUILD FULL MAP
 map_full <- lapply(pars, function(x) factor(1:length(x)))
 for(i in 1:length(map)){
@@ -40,7 +48,7 @@ pars$sel_rho_c <- 0
 
 ## ADD NEW DATA OBJECTS
 # - Number of years
-dat$nyrs <- dat$endyr - dat$styr + 1
+dat$nyrs <- (dat$endyr - dat$styr + 1)
 dat$nages <- dat$trmage - dat$rcrage + 1;
 
 
@@ -50,11 +58,11 @@ dat$sel_vartype <- 0
 
 # Create an index for ages and years to feed into TMB, which helps construct the precision matrix
 dat$ay_Index <- as.matrix(expand.grid("age" = seq_len(dat$nages),
-                                  "year" = seq_len(dat$nyrs) ))
+                                  "year" = seq_len(dat$nyrs + dat$projfsh_nyrs) ))
 
 
 ## BUILD NEW MAP
-# - SET TO NA FOR ALL PARAMS
+# - SET TO NA FOR ALL FISHERIES SELECTIVTY PARAMS
 map$slp1_fsh_dev <- as.factor(rep(NA,length(pars$slp1_fsh_dev)))
 map$slp2_fsh_dev <- as.factor(rep(NA,length(pars$slp2_fsh_dev)))
 map$inf1_fsh_dev <- as.factor(rep(NA,length(pars$inf1_fsh_dev)))

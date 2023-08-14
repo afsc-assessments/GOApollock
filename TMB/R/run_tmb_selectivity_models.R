@@ -2,6 +2,7 @@
 source("TMB/R/prepare_tmb_objects.R")
 source("TMB/R/phaser.R")
 source("TMB/R/plot_selectivity.R")
+source("TMB/R/osa_comp_plots.R")
 
 map <- lapply(map, function(x) as.factor(as.numeric(x)*NA))
 
@@ -116,7 +117,7 @@ map_mod3 <- map
 
 # -- Random effect pars
 pars_mod3 <- pars
-pars_mod3$selpars_re <- matrix(0, nrow = 1, ncol = dat$nyrs)
+pars_mod3$selpars_re <- matrix(0, nrow = 1, ncol = dat$nyrs + dat$projfsh_nyrs)
 map_mod3$selpars_re <- as.factor(1:length(pars_mod3$selpars_re))
 
 # -- Fixed effect pars
@@ -167,7 +168,7 @@ map_mod4 <- map
 pars_mod4 <- pars
 
 # -- Random effect pars
-pars_mod4$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+pars_mod4$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs + dat$projfsh_nyrs))
 map_mod4$selpars_re <- as.factor(1:length(pars_mod4$selpars_re))
 
 # -- Fixed effect pars
@@ -264,7 +265,7 @@ map_mod6 <- map
 
 # -- Random effect pars
 pars_mod6 <- pars
-pars_mod6$selpars_re <- matrix(0, nrow = 1, ncol = dat$nyrs)
+pars_mod6$selpars_re <- matrix(0, nrow = 1, ncol = dat$nyrs + dat$projfsh_nyrs)
 map_mod6$selpars_re <- as.factor(1:length(pars_mod6$selpars_re))
 
 # -- Fixed effect pars
@@ -311,7 +312,7 @@ map_mod7 <- map
 pars_mod7 <- pars
 
 # -- Random effect pars
-pars_mod7$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+pars_mod7$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs + dat$projfsh_nyrs))
 map_mod7$selpars_re <- as.factor(1:length(pars_mod7$selpars_re))
 
 # -- Fixed effect pars
@@ -359,7 +360,7 @@ map_mod8 <- map
 pars_mod8 <- pars
 
 # -- Random effect pars
-pars_mod8$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+pars_mod8$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs + dat$projfsh_nyrs))
 map_mod8$selpars_re <- as.factor(1:length(pars_mod8$selpars_re))
 
 # -- Fixed effect pars
@@ -409,7 +410,7 @@ map_mod9 <- map
 pars_mod9 <- pars
 
 # -- Random effect pars
-pars_mod9$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs))
+pars_mod9$selpars_re <- array(0, dim = c(dat$trmage, dat$nyrs + dat$projfsh_nyrs))
 map_mod9$selpars_re <- as.factor(1:length(pars_mod9$selpars_re))
 
 # -- Fixed effect pars
@@ -479,7 +480,7 @@ ssb <- rbind(cbind(model=model_names[1],filter(stdtmb_mod1, par=='Espawnbio')),
              cbind(model=model_names[9],filter(stdtmb_mod9, par=='Espawnbio')),
              cbind(model='ADMB',filter(stdadmb, name=='Espawnbio') %>% select(par=name, est,se, year)))
 
-# - Plot
+# * Plot SSB ----
 ggplot(ssb, aes(year, est, color=model, fill=model, ymin=est-1.96*se, ymax=est+1.96*se)) +
   geom_ribbon(alpha=.5) + geom_line(lwd=2)
 
@@ -493,9 +494,38 @@ ssb %>%
   select(year, paste0(c("est_","se_"),rep(unique(ssb$model), each = 2))) %>%
   as.data.frame()
 
-# Plot selectivities
+# * Plot selectivity ----
 plot_selectivity(sdrep = mod_list[-6],
                  model_names = model_names[-6])
+
+# * Plot OSA residuals ----
+quantities_list <- list(quantities_mod1, quantities_mod2, quantities_mod3, quantities_mod4, quantities_mod5, quantities_mod6, quantities_mod7, quantities_mod8, quantities_mod9)
+
+r_osa_list <- list()
+g_osa_list <- list()
+
+for(i in 1:length(quantities_list)){
+  r_osa_list[[i]] <- try(plot_osa_comps(obs=quantities_list[[i]]$res_fish[,1:10],
+                                    exp=quantities_list[[i]]$res_fish[,11:20],
+                              ages=1:10,
+                              years=dat$fshyrs,
+                              Neff=dat$multN_fsh,
+                              model=model_names[i],
+                              plot.type='default'), silent = TRUE)
+  g_osa_list[[i]] <- try(plot_osa_comps(obs=quantities_list[[i]]$res_fish[,1:10],
+                                   exp=quantities_list[[i]]$res_fish[,11:20],
+                              ages=1:10,
+                              years=dat$fshyrs,
+                              Neff=dat$multN_fsh,
+                              model=model_names[i],
+                              plot.type='ggplot'), silent = TRUE)
+}
+
+sapply(r_osa_list, class) # 1 doesnt work
+sapply(g_osa_list, class) # 1 and 5 doesnt work
+
+# Only show models that make sense (2D ar1 and 3d ar)
+cowplot::plot_grid(g_osa_list[[4]], g_osa_list[[7]], g_osa_list[[8]], g_osa_list[[9]])
 
 
 
