@@ -757,7 +757,7 @@ Type objective_function<Type>::operator() ()
   Espawnbio_proj.setZero();
   Esrv_proj.setZero();
   loglik.setZero();
-
+  res_fish.setZero();
 
     // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
     for (i=0;i<nyrs_fsh;i++) {
