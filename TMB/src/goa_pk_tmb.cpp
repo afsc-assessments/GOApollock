@@ -865,9 +865,10 @@ Type objective_function<Type>::operator() ()
   // LIKELIHOODS
   // -----------------------------------------------
   loglik.setZero();
+  res_fish.setZero();
 
-  // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
-  for (i=0;i<nyrs_fsh;i++) {
+    // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
+    for (i=0;i<nyrs_fsh;i++) {
     if(ifshyrs(i)>endyr) break;
     for (j=a0;j<=a1;j++) {
       if(j<iac_yng_fsh(i)) {
