@@ -1,10 +1,11 @@
 ## LIBRARIES AND DATA ----
 source("TMB/R/prepare_tmb_objects.R")
-source("TMB/R/phaser.R")
-source("TMB/R/plot_selectivity.R")
-source("TMB/R/osa_comp_plots.R")
+source("TMB/R/Functions/phaser.R")
+source("TMB/R/Functions/plot_selectivity.R")
+source("TMB/R/Functions/osa_comp_plots.R")
+source("TMB/R/Functions/create_bounds.R")
 
-map <- lapply(map, function(x) as.factor(as.numeric(x)*NA))
+# map <- lapply(map, function(x) as.factor(as.numeric(x)*NA))
 
 
 ## COMPILE AND BUILD TMB ----
@@ -50,7 +51,9 @@ random <- c("slp1_fsh_dev", "inf1_fsh_dev", "slp2_fsh_dev", "inf2_fsh_dev")
 obj_mod1 <- MakeADFun(data=dat, parameters=pars, map=map_mod1, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod1 <- with(obj_mod1, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod1)$lwr
+upr <- get_bounds(obj_mod1)$upr
+opt_mod1 <- with(obj_mod1, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod1 <- sdreport(obj_mod1)
 quantities_mod1 <- obj_mod1$report(obj_mod1$env$last.par.best)
@@ -99,7 +102,9 @@ random <- c("selpars_re")
 obj_mod2 <- MakeADFun(data=dat, parameters=pars, map=map_mod2, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod2 <- with(obj_mod2, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod2)$lwr
+upr <- get_bounds(obj_mod2)$upr
+opt_mod2 <- with(obj_mod2, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod2 <- sdreport(obj_mod2)
 quantities_mod2 <- obj_mod2$report(obj_mod2$env$last.par.best)
@@ -150,7 +155,9 @@ random <- c("selpars_re")
 obj_mod3 <- MakeADFun(data=dat, parameters=pars_mod3, map=map_mod3, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod3 <- with(obj_mod3, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod3)$lwr
+upr <- get_bounds(obj_mod3)$upr
+opt_mod3 <- with(obj_mod3, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod3 <- sdreport(obj_mod3)
 quantities_mod3 <- obj_mod3$report(obj_mod3$env$last.par.best)
@@ -188,21 +195,23 @@ dat$seltype <- 4
 random <- c("selpars_re")
 
 # -- Phase
-# phased_pars_mod4 <- TMBphase(
-#   data = dat,
-#   parameters = pars_mod4,
-#   map = map_mod4,
-#   random = random,
-#   phases = phases,
-#   model_name = "goa_pk_tmb",
-#   silent = TRUE,
-#   use_gradient = TRUE)
+phased_pars_mod4 <- TMBphase(
+  data = dat,
+  parameters = pars_mod4,
+  map = map_mod4,
+  random = random,
+  phases = phases,
+  model_name = "goa_pk_tmb",
+  silent = TRUE,
+  use_gradient = TRUE)
 
 # -- Build model obj
-obj_mod4 <- MakeADFun(data=dat, parameters=pars_mod4, map=map_mod4, random=random, silent=TRUE)
+obj_mod4 <- MakeADFun(data=dat, parameters=phased_pars_mod4, map=map_mod4, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod4 <- with(obj_mod4, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod4)$lwr
+upr <- get_bounds(obj_mod4)$upr
+opt_mod4 <- with(obj_mod4, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod4 <- sdreport(obj_mod4)
 quantities_mod4 <- obj_mod4$report(obj_mod4$env$last.par.best)
@@ -247,7 +256,9 @@ random <- c("selpars_re")
 obj_mod5 <- MakeADFun(data=dat, parameters=pars, map=map_mod5, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod5 <- with(obj_mod5, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod5)$lwr
+upr <- get_bounds(obj_mod5)$upr
+opt_mod5 <- with(obj_mod5, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod5 <- sdreport(obj_mod5)
 quantities_mod5 <- obj_mod5$report(obj_mod5$env$last.par.best)
@@ -294,7 +305,9 @@ random <- c("selpars_re")
 obj_mod6 <- MakeADFun(data=dat, parameters=pars_mod6, map=map_mod6, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod6 <- with(obj_mod6, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod6)$lwr
+upr <- get_bounds(obj_mod6)$upr
+opt_mod6 <- with(obj_mod6, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj)
 sdrep_mod6 <- sdreport(obj_mod6)
 quantities_mod6 <- obj_mod6$report(obj_mod6$env$last.par.best)
@@ -342,7 +355,9 @@ random <- c("selpars_re")
 obj_mod7 <- MakeADFun(data=dat, parameters=pars_mod7, map=map_mod7, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod7 <- with(obj_mod7, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod7)$lwr
+upr <- get_bounds(obj_mod7)$upr
+opt_mod7 <- with(obj_mod7, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj_mod7)
 sdrep_mod7 <- sdreport(obj_mod7)
 quantities_mod7 <- obj_mod7$report(obj_mod7$env$last.par.best)
@@ -392,7 +407,9 @@ random <- c("selpars_re")
 obj_mod8 <- MakeADFun(data=dat, parameters=pars_mod8, map=map_mod8, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod8 <- with(obj_mod8, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod8)$lwr
+upr <- get_bounds(obj_mod8)$upr
+opt_mod8 <- with(obj_mod8, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj_mod8)
 sdrep_mod8 <- sdreport(obj_mod8)
 quantities_mod8 <- obj_mod8$report(obj_mod8$env$last.par.best)
@@ -442,7 +459,9 @@ random <- c("selpars_re")
 obj_mod9 <- MakeADFun(data=dat, parameters=pars_mod9, map=map_mod9, random=random, silent=TRUE)
 
 # - Optimize
-opt_mod9 <- with(obj_mod9, nlminb(par,fn,gr))
+lwr <- get_bounds(obj_mod9)$lwr
+upr <- get_bounds(obj_mod9)$upr
+opt_mod9 <- with(obj_mod9, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
 # opt <- TMBhelper::fit_tmb(obj_mod9)
 sdrep_mod9 <- sdreport(obj_mod9)
 quantities_mod9 <- obj_mod9$report(obj_mod9$env$last.par.best)

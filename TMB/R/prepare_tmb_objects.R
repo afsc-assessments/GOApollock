@@ -14,7 +14,7 @@ pars <- readRDS('TMB/data/pars.RDS')
 map <- readRDS('TMB/data/map.RDS')
 
 
-## Selectivity projection years
+## Selectivity projection years ----
 dat$projfsh_nyrs <- 5
 pars$slp1_fsh_dev <- c(pars$slp1_fsh_dev, rep(0, dat$projfsh_nyrs))
 pars$slp2_fsh_dev <- c(pars$slp2_fsh_dev, rep(0, dat$projfsh_nyrs))
@@ -22,7 +22,7 @@ pars$inf1_fsh_dev <- c(pars$inf1_fsh_dev, rep(0, dat$projfsh_nyrs))
 pars$inf2_fsh_dev <- c(pars$inf2_fsh_dev, rep(0, dat$projfsh_nyrs))
 
 
-## BUILD FULL MAP
+## BUILD FULL MAP ----
 map_full <- lapply(pars, function(x) factor(1:length(x)))
 for(i in 1:length(map)){
   map_full[names(map)[i]] <- map[names(map)[i]]
@@ -30,7 +30,7 @@ for(i in 1:length(map)){
 map <- map_full
 
 
-## ADD "NEW" PARAMETER OBJECTS
+## ADD "NEW" PARAMETER OBJECTS ----
 # - Double logistic with random effects on ascending portion
 # - Adjust fishery random walk standard deviation to parameter
 pars$ln_sel_sd <- log(dat$rwlk_sd[1]) # All the same so reducing to length of 1
@@ -46,7 +46,7 @@ pars$sel_rho_y <- 0
 pars$sel_rho_c <- 0
 
 
-## ADD NEW DATA OBJECTS
+## ADD NEW DATA OBJECTS ----
 # - Number of years
 dat$nyrs <- (dat$endyr - dat$styr + 1)
 dat$nages <- dat$trmage - dat$rcrage + 1;
@@ -76,14 +76,16 @@ map$log_slp1_fsh_mean <- as.factor(NA)
 map$log_slp2_fsh_mean <- as.factor(NA)
 
 
-map$ln_sel_sd <- as.factor(NA)
-
 # - Non-parametric params
 map$selpars_re <- factor(rep(NA, length(pars$selpars_re)))
 map$mean_sel <- as.factor(NA)
 map$sel_rho_a <- as.factor(NA)
 map$sel_rho_y <- as.factor(NA)
 map$sel_rho_c <- as.factor(NA)
+
+
+## Optimization control ----
+control <- list(eval.max=10000, iter.max=10000)
 
 
 ## PHASES ----
@@ -131,5 +133,6 @@ phases <- list(
   selpars_re = 4,
   mean_sel = 3,
   sel_rho_y = 4,
-  sel_rho = 4
+  sel_rho_c = 4,
+  sel_rho_a = 4
 )
