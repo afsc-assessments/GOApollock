@@ -221,37 +221,30 @@ params_mod4 <- obj_mod4$env$parList()
 
 
 ## MODEL 5 ----
-# - Non-parametric 1D-AR1 age random effects
-# - Turn on mean_sel, rho, sd, and ranef vector
+# - Non-parametric by age (No random effects)
+# - Turn on mean_sel
 map_mod5 <- map
 
-# -- Random effect pars
-map_mod5$selpars_re <- as.factor(1:length(pars$selpars_re))
-
 # -- Fixed effect pars
-map_mod5$ln_sel_sd <- as.factor(1)
-map_mod5$sel_rho_a <- as.factor(1)
-map_mod5$mean_sel <- as.factor(1)
+map_mod5$mean_sel <- as.factor(1:dat$nages)
 
 # -- Data switch
 dat$seltype <- 5
 
 # - Build model
-random <- c("selpars_re")
 
 # -- Phase
 # phased_pars_mod5 <- TMBphase(
 #   data = dat,
 #   parameters = pars,
 #   map = map_mod5,
-#   random = random,
 #   phases = phases,
 #   model_name = "goa_pk_tmb",
 #   silent = TRUE,
 #   use_gradient = TRUE)
 
 # -- Build model obj
-obj_mod5 <- MakeADFun(data=dat, parameters=pars, map=map_mod5, random=random, silent=TRUE)
+obj_mod5 <- MakeADFun(data=dat, parameters=pars, map=map_mod5, silent=TRUE)
 
 # - Optimize
 lwr <- get_bounds(obj_mod5)$lwr
@@ -280,7 +273,7 @@ map_mod6$selpars_re <- as.factor(1:length(pars_mod6$selpars_re))
 # -- Fixed effect pars
 map_mod6$ln_sel_sd <- as.factor(1)
 map_mod6$sel_rho_y <- as.factor(1)
-map_mod6$mean_sel <- as.factor(1)
+map_mod6$mean_sel <- as.factor(1:dat$nages)
 
 # -- Data switch
 dat$seltype <- 6
@@ -330,7 +323,7 @@ map_mod7$selpars_re <- as.factor(1:length(pars_mod7$selpars_re))
 map_mod7$ln_sel_sd <- as.factor(1)
 map_mod7$sel_rho_a <- as.factor(1)
 map_mod7$sel_rho_y <- as.factor(1)
-map_mod7$mean_sel <- as.factor(1)
+map_mod7$mean_sel <- as.factor(1:dat$nages)
 
 # -- Data switch
 dat$seltype <- 7
@@ -381,7 +374,7 @@ map_mod8$ln_sel_sd <- as.factor(1)
 map_mod8$sel_rho_a <- as.factor(1)
 map_mod8$sel_rho_y <- as.factor(1)
 map_mod8$sel_rho_c <- as.factor(1)
-map_mod8$mean_sel <- as.factor(1)
+map_mod8$mean_sel <- as.factor(1:dat$nages)
 
 # -- Data switch
 dat$seltype <- 8
@@ -433,7 +426,7 @@ map_mod9$ln_sel_sd <- as.factor(1)
 map_mod9$sel_rho_a <- as.factor(1)
 map_mod9$sel_rho_y <- as.factor(1)
 map_mod9$sel_rho_c <- as.factor(1)
-map_mod9$mean_sel <- as.factor(1)
+map_mod9$mean_sel <- as.factor(1:dat$nages)
 
 # -- Data switch
 dat$seltype <- 8
@@ -472,4 +465,4 @@ params_mod9 <- obj_mod9$env$parList()
 
 ## Save Image ----
 save.image(file='TMB/Selectivity_runs.RData')
-s
+

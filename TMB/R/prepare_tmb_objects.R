@@ -30,22 +30,6 @@ for(i in 1:length(map)){
 map <- map_full
 
 
-## ADD "NEW" PARAMETER OBJECTS ----
-# - Double logistic with random effects on ascending portion
-# - Adjust fishery random walk standard deviation to parameter
-pars$ln_sel_sd <- log(dat$rwlk_sd[1]) # All the same so reducing to length of 1
-
-# - Non-parametric params
-pars$selpars_re <- array(rep(0, dat$trmage), dim = c(dat$trmage, 1))
-
-pars$mean_sel <- 0
-
-# - AR params
-pars$sel_rho_a <- 0
-pars$sel_rho_y <- 0
-pars$sel_rho_c <- 0
-
-
 ## ADD NEW DATA OBJECTS ----
 # - Number of years
 dat$nyrs <- (dat$endyr - dat$styr + 1)
@@ -58,10 +42,26 @@ dat$sel_vartype <- 0
 
 # Create an index for ages and years to feed into TMB, which helps construct the precision matrix
 dat$ay_Index <- as.matrix(expand.grid("age" = seq_len(dat$nages),
-                                  "year" = seq_len(dat$nyrs + dat$projfsh_nyrs) ))
+                                      "year" = seq_len(dat$nyrs + dat$projfsh_nyrs) ))
 
 
-## BUILD NEW MAP
+## ADD "NEW" PARAMETER OBJECTS ----
+# - Double logistic with random effects on ascending portion
+# - Adjust fishery random walk standard deviation to parameter
+pars$ln_sel_sd <- log(dat$rwlk_sd[1]) # All the same so reducing to length of 1
+
+# - Non-parametric params
+pars$selpars_re <- array(rep(0, dat$trmage), dim = c(dat$trmage, 1))
+
+pars$mean_sel <- rep(0, dat$nages)
+
+# - AR params
+pars$sel_rho_a <- 0
+pars$sel_rho_y <- 0
+pars$sel_rho_c <- 0
+
+
+## ADD NEW MAP OBJECTS ----
 # - SET TO NA FOR ALL FISHERIES SELECTIVTY PARAMS
 map$slp1_fsh_dev <- as.factor(rep(NA,length(pars$slp1_fsh_dev)))
 map$slp2_fsh_dev <- as.factor(rep(NA,length(pars$slp2_fsh_dev)))
@@ -78,7 +78,7 @@ map$log_slp2_fsh_mean <- as.factor(NA)
 
 # - Non-parametric params
 map$selpars_re <- factor(rep(NA, length(pars$selpars_re)))
-map$mean_sel <- as.factor(NA)
+map$mean_sel <- factor(rep(NA, length(pars$mean_sel)))
 map$sel_rho_a <- as.factor(NA)
 map$sel_rho_y <- as.factor(NA)
 map$sel_rho_c <- as.factor(NA)

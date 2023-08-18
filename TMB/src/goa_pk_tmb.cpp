@@ -387,7 +387,7 @@ Type objective_function<Type>::operator() ()
 
   // SELECTIVITY PARAMETERS
   // - Fishery selectivity
-  PARAMETER(mean_sel); // Mean selectivity
+  PARAMETER_VECTOR(mean_sel); // Mean selectivity
   PARAMETER_MATRIX(selpars_re); // AR selectivity parameters
   PARAMETER(sel_rho_a); // AR1 age correlation
   PARAMETER(sel_rho_y); // AR1 year correlation
@@ -699,11 +699,11 @@ Type objective_function<Type>::operator() ()
     }
     break;
 
-    // Non-parametric AR1 on age
+    // Non-parametric age-specific
   case 5:
     for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
-        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,0)))); // Random effects are constant across years and cohorts
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel(j)))); // No random effects
       }
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
@@ -715,7 +715,7 @@ Type objective_function<Type>::operator() ()
   case 6:
     for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
-        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(0,i)))); // Random effects are constant across years and cohorts
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel(j) + selpars_re(0,i)))); // Random effects are constant across years and cohorts
         //slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
       }
     }
@@ -725,7 +725,7 @@ Type objective_function<Type>::operator() ()
   case 7:
     for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
-        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel(j) + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
@@ -737,7 +737,7 @@ Type objective_function<Type>::operator() ()
   case 8:
     for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
-        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel + selpars_re(j,i)))); // Random effects are constant across years and cohorts
+        slctfsh(i,j) = 1 / (1 + exp(-(mean_sel(j) + selpars_re(j,i)))); // Random effects are constant across years and cohorts
       }
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
