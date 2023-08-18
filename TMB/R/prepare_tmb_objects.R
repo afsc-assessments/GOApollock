@@ -85,7 +85,7 @@ map$sel_rho_c <- as.factor(NA)
 
 
 ## Optimization control ----
-control <- list(eval.max=10000, iter.max=10000)
+control <- list(eval.max=1e6, iter.max=1e6)
 
 
 ## PHASES ----
