@@ -4,6 +4,7 @@ source("TMB/R/Functions/phaser.R")
 source("TMB/R/Functions/plot_selectivity.R")
 source("TMB/R/Functions/osa_comp_plots.R")
 source("TMB/R/Functions/create_bounds.R")
+source("TMB/R/Functions/construct_Q.R")
 
 # map <- lapply(map, function(x) as.factor(as.numeric(x)*NA))
 
@@ -53,8 +54,8 @@ obj_mod1 <- MakeADFun(data=dat, parameters=pars, map=map_mod1, random=random, si
 # - Optimize
 lwr <- get_bounds(obj_mod1)$lwr
 upr <- get_bounds(obj_mod1)$upr
-#opt_mod1 <- with(obj_mod1, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod1 <- TMBhelper::fit_tmb(obj_mod1, upper = upr, lower = lwr, quiet = TRUE)
+opt_mod1 <- with(obj_mod1, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod1 <- TMBhelper::fit_tmb(obj_mod1, upper = upr, lower = lwr, quiet = TRUE)
 sdrep_mod1 <- sdreport(obj_mod1)
 quantities_mod1 <- obj_mod1$report(obj_mod1$env$last.par.best)
 
@@ -104,8 +105,8 @@ obj_mod2 <- MakeADFun(data=dat, parameters=pars, map=map_mod2, random=random, si
 # - Optimize
 lwr <- get_bounds(obj_mod2)$lwr
 upr <- get_bounds(obj_mod2)$upr
-#opt_mod2 <- with(obj_mod2, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod2 <- TMBhelper::fit_tmb(obj_mod2, lower=lwr, upper=upr)
+opt_mod2 <- with(obj_mod2, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod2 <- TMBhelper::fit_tmb(obj_mod2, lower=lwr, upper=upr)
 sdrep_mod2 <- sdreport(obj_mod2)
 quantities_mod2 <- obj_mod2$report(obj_mod2$env$last.par.best)
 
@@ -157,8 +158,8 @@ obj_mod3 <- MakeADFun(data=dat, parameters=pars_mod3, map=map_mod3, random=rando
 # - Optimize
 lwr <- get_bounds(obj_mod3)$lwr
 upr <- get_bounds(obj_mod3)$upr
-#opt_mod3 <- with(obj_mod3, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod3 <- TMBhelper::fit_tmb(obj_mod3, lower=lwr, upper=upr)
+opt_mod3 <- with(obj_mod3, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod3 <- TMBhelper::fit_tmb(obj_mod3, lower=lwr, upper=upr)
 sdrep_mod3 <- sdreport(obj_mod3)
 quantities_mod3 <- obj_mod3$report(obj_mod3$env$last.par.best)
 
@@ -211,8 +212,8 @@ obj_mod4 <- MakeADFun(data=dat, parameters=pars_mod4, map=map_mod4, random=rando
 # - Optimize
 lwr <- get_bounds(obj_mod4)$lwr
 upr <- get_bounds(obj_mod4)$upr
-#opt_mod4 <- with(obj_mod4, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod4 <- TMBhelper::fit_tmb(obj_mod4, lower=lwr, upper=upr)
+opt_mod4 <- with(obj_mod4, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod4 <- TMBhelper::fit_tmb(obj_mod4, lower=lwr, upper=upr)
 sdrep_mod4 <- sdreport(obj_mod4)
 quantities_mod4 <- obj_mod4$report(obj_mod4$env$last.par.best)
 
@@ -258,8 +259,8 @@ obj_mod5 <- MakeADFun(data=dat, parameters=pars, map=map_mod5, random=random, si
 # - Optimize
 lwr <- get_bounds(obj_mod5)$lwr
 upr <- get_bounds(obj_mod5)$upr
-#opt_mod5 <- with(obj_mod5, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod5 <- TMBhelper::fit_tmb(obj_mod5, lower=lwr, upper=upr)
+opt_mod5 <- with(obj_mod5, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod5 <- TMBhelper::fit_tmb(obj_mod5, lower=lwr, upper=upr)
 sdrep_mod5 <- sdreport(obj_mod5)
 quantities_mod5 <- obj_mod5$report(obj_mod5$env$last.par.best)
 
@@ -307,8 +308,8 @@ obj_mod6 <- MakeADFun(data=dat, parameters=pars_mod6, map=map_mod6, random=rando
 # - Optimize
 lwr <- get_bounds(obj_mod6)$lwr
 upr <- get_bounds(obj_mod6)$upr
-#opt_mod6 <- with(obj_mod6, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod6 <- TMBhelper::fit_tmb(obj_mod6, lower=lwr, upper=upr)
+opt_mod6 <- with(obj_mod6, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod6 <- TMBhelper::fit_tmb(obj_mod6, lower=lwr, upper=upr)
 sdrep_mod6 <- sdreport(obj_mod6)
 quantities_mod6 <- obj_mod6$report(obj_mod6$env$last.par.best)
 
@@ -357,8 +358,8 @@ obj_mod7 <- MakeADFun(data=dat, parameters=pars_mod7, map=map_mod7, random=rando
 # - Optimize
 lwr <- get_bounds(obj_mod7)$lwr
 upr <- get_bounds(obj_mod7)$upr
-#opt_mod7 <- with(obj_mod7, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod7 <- TMBhelper::fit_tmb(obj_mod7, lower=lwr, upper=upr)
+opt_mod7 <- with(obj_mod7, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod7 <- TMBhelper::fit_tmb(obj_mod7, lower=lwr, upper=upr)
 sdrep_mod7 <- sdreport(obj_mod7)
 quantities_mod7 <- obj_mod7$report(obj_mod7$env$last.par.best)
 
@@ -409,8 +410,8 @@ obj_mod8 <- MakeADFun(data=dat, parameters=pars_mod8, map=map_mod8, random=rando
 # - Optimize
 lwr <- get_bounds(obj_mod8)$lwr
 upr <- get_bounds(obj_mod8)$upr
-#opt_mod8 <- with(obj_mod8, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod8 <- TMBhelper::fit_tmb(obj_mod8, lower=lwr, upper=upr)
+opt_mod8 <- with(obj_mod8, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod8 <- TMBhelper::fit_tmb(obj_mod8, lower=lwr, upper=upr)
 sdrep_mod8 <- sdreport(obj_mod8)
 quantities_mod8 <- obj_mod8$report(obj_mod8$env$last.par.best)
 
@@ -461,8 +462,8 @@ obj_mod9 <- MakeADFun(data=dat, parameters=pars_mod9, map=map_mod9, random=rando
 # - Optimize
 lwr <- get_bounds(obj_mod9)$lwr
 upr <- get_bounds(obj_mod9)$upr
-#opt_mod9 <- with(obj_mod9, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-helper_opt_mod9 <- TMBhelper::fit_tmb(obj_mod9, lower=lwr, upper=upr)
+opt_mod9 <- with(obj_mod9, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# helper_opt_mod9 <- TMBhelper::fit_tmb(obj_mod9, lower=lwr, upper=upr)
 sdrep_mod9 <- sdreport(obj_mod9)
 quantities_mod9 <- obj_mod9$report(obj_mod9$env$last.par.best)
 
@@ -471,7 +472,9 @@ stdtmb_mod9 <- with(sdrep_mod9, data.frame(par=names(value), est=value, se=sqrt(
   group_by(par) %>% mutate(year=1969+1:n()) %>% ungroup
 params_mod9 <- obj_mod9$env$parList()
 
-save.image(file='TMB/Selectivity_runs_tmbhelper.RData')
+
+## Save Image ----
+save.image(file='TMB/Selectivity_runs.RData')
 
 
 ## Combine objects ----
@@ -492,6 +495,10 @@ mod_list <- list(sdrep_mod1, sdrep_mod2, sdrep_mod3, sdrep_mod4, sdrep_mod5, sdr
 
 # - Opt objects
 opt_list <- list(opt_mod1, opt_mod2, opt_mod3, opt_mod4, opt_mod5, opt_mod6, opt_mod7, opt_mod8, opt_mod9)
+
+obj_list <- list(obj_mod1, obj_mod2, obj_mod3, obj_mod4, obj_mod5, obj_mod6, obj_mod7, obj_mod8, obj_mod9)
+
+par_list <- lapply(obj_list, function(x) x$env$parList())
 
 # - ssb
 ssb <- rbind(cbind(model=model_names[1],filter(stdtmb_mod1, par=='Espawnbio')),
@@ -530,16 +537,14 @@ aic_table <- data.frame(
 write.csv(aic_table, file = "TMB/Output/Selectivity_runs_AIC_full_estimation.csv")
 
 
-save.image(file='TMB/Selectivity_runs_phased.RData')
-
 ## PLOTS ----
 # * Plot SSB ----
 ggplot(ssb, aes(year, est, color=model, fill=model, ymin=est-1.96*se, ymax=est+1.96*se)) +
   geom_ribbon(alpha=.5) + geom_line(lwd=2)
 
 # * Plot selectivity ----
-plot_selectivity(sdrep = mod_list[-6],
-                 model_names = model_names[-6])
+plot_selectivity(sdrep = mod_list,
+                 model_names = model_names)
 
 # * Plot OSA residuals ----
 quantities_list <- list(quantities_mod1, quantities_mod2, quantities_mod3, quantities_mod4, quantities_mod5, quantities_mod6, quantities_mod7, quantities_mod8, quantities_mod9)
@@ -581,5 +586,12 @@ sapply(g_osa_list, class) # 1 and 5 doesnt work
 # Only show models that make sense (2D ar1 and 3d ar)
 cowplot::plot_grid(g_osa_list[[1]], g_osa_list[[2]], g_osa_list[[5]], g_osa_list[[8]], g_osa_list[[9]], g_osa_list[[10]])
 
+
+# * Plot cor ----
+mod = 9
+plot_cor(n_years = dat$nyrs +5, n_ages = dat$nages,
+         rho_y = par_list[[mod]]$sel_rho_y,
+         rho_a = par_list[[mod]]$sel_rho_a,
+         rho_c = par_list[[mod]]$sel_rho_c, log_sigma = par_list[[mod]]$ln_sel_sd)
 
 

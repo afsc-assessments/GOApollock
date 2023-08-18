@@ -33,8 +33,8 @@ get_bounds <- function(obj){
   upr['mean_sel'] <- 50
   lwr['mean_sel'] <- -50
 
-  upr['selpars_re'] <- 50
-  lwr['selpars_re'] <- -50
+  upr['selpars_re'] <- 20
+  lwr['selpars_re'] <- -20
 
   upr['ln_sel_sd'] <- 5
   lwr['ln_sel_sd'] <- -50

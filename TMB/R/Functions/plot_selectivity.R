@@ -21,7 +21,7 @@ plot_selectivity <- function(sdrep, model_names = NULL){
   }
 
   # Objects
-  years <- 1970:2022
+  years <- 1970:(2022+5)
   ages <- 1:10
 
   sel_list <- list()
