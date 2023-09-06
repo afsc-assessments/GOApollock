@@ -523,7 +523,7 @@ Type objective_function<Type>::operator() ()
   // log likelihood containers
   vector<Type> loglik(24);
   loglik.setZero();
-  vector<Type> llcatp(nyrs_fsh);
+  matrix<Type> llcatp(nyrs_fsh, nages); llcatp.setZero();
   vector<Type> lllenp(nyrslen_fsh);
   vector<Type> llsrvp1(nyrsac_srv1);
   vector<Type> llsrvlenp1(nyrslen_srv1);
@@ -900,21 +900,21 @@ Type objective_function<Type>::operator() ()
 
 
   // Age composition
+  llcatp.setZero();
   for (i=0;i<nyrs_fsh;i++) {
     // if(ifshyrs(i)>y1) break; 	// ignore data after retroyear
-    llcatp(i) = 0;
     for (j=iac_yng_fsh(i);j<=iac_old_fsh(i);j++) {
-      llcatp(i) += multN_fsh(i)*(catp(i,j)+o)*log((Ecatp(ifshyrs(i),j)+o)/(catp(i,j)+o));
+      llcatp(i,j) += multN_fsh(i)*(catp(i,j)+o)*log((Ecatp(ifshyrs(i),j)+o)/(catp(i,j)+o));
       res_fish(i,j)=catp(i,j);
       res_fish(i,a1-a0+j+1)=Ecatp(ifshyrs(i),j);
       if(multN_fsh(i)>0) {
         pearson_fish(i,j)=(catp(i,j)-Ecatp(ifshyrs(i),j))/sqrt((Ecatp(ifshyrs(i),j)*(1.-Ecatp(ifshyrs(i),j)))/multN_fsh(i));
       }
+      loglik(1) += llcatp(i,j);
     }
     if(multN_fsh(i)>0) {
       //   effN_fsh(i) = sum(Ecatp(ifshyrs(i))*(1-Ecatp(ifshyrs(i))))/sum(square(catp(i)-Ecatp(ifshyrs(i))));
     }
-    loglik(1) += llcatp(i);
   }
 
 
@@ -1038,10 +1038,10 @@ Type objective_function<Type>::operator() ()
   // - Double logistic with deviates
   if(seltype == 1){
     for(i=y0+1;i<=y1+projfsh_nyrs;i++){ // FIXME: maybe we don't include projection in likelihood?
-      loglik(18) += -0.5*square( (slp1_fsh_dev(i)-slp1_fsh_dev(i-1))/sel_sd);
-      loglik(18) += -0.5*square( (inf1_fsh_dev(i)-inf1_fsh_dev(i-1))/(4*sel_sd));
-      loglik(18) += -0.5*square( (slp2_fsh_dev(i)-slp2_fsh_dev(i-1))/sel_sd);
-      loglik(18) += -0.5*square( (inf2_fsh_dev(i)-inf2_fsh_dev(i-1))/sel_sd);
+      loglik(18) += dnorm( slp1_fsh_dev(i), slp1_fsh_dev(i-1), sel_sd, true);
+      loglik(18) += dnorm( inf1_fsh_dev(i), inf1_fsh_dev(i-1), (4*sel_sd), true);
+      //loglik(18) += dnorm( slp2_fsh_dev(i), slp2_fsh_dev(i-1), sel_sd, true);
+      //loglik(18) += dnorm( inf2_fsh_dev(i), inf2_fsh_dev(i-1), sel_sd, true);
     }
   }
 
