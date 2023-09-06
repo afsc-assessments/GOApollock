@@ -1,10 +1,9 @@
-source/*.cpp
-source/*.obj
-source/*.exe
-source/*.htp
-source/*.cll
-source/*.o
-source/*.dll
+TMB/src/*.obj
+TMB/src/*.exe
+TMB/src/*.htp
+TMB/src/*.cll
+TMB/src/*.o
+TMB/src/*.dll
 .Rproj.user
 .Rhistory
 tests/model_20_8
