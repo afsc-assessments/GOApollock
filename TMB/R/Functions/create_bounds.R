@@ -38,5 +38,20 @@ get_bounds <- function(obj){
 
   upr['ln_sel_sd'] <- 5
   lwr['ln_sel_sd'] <- -50
+
+  # - CEATTLE bounds
+  upr['inf1_fsh_dev'] <- 5
+  upr['slp1_fsh_dev'] <- 5
+  upr['dev_log_recruit'] <- 15
+  upr['dev_log_initN'] <- 23
+  upr['dev_log_F'] <- 10
+
+
+  lwr['inf1_fsh_dev'] <- -5
+  lwr['slp1_fsh_dev'] <- -5
+  lwr['dev_log_recruit'] <- -1000
+  lwr['dev_log_initN'] <- -1000
+  lwr['dev_log_F'] <- -1000
+
   return(list(lwr=lwr, upr=upr))
 }

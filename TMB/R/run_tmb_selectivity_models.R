@@ -5,6 +5,9 @@ source("TMB/R/Functions/create_bounds.R")
 
 # map <- lapply(map, function(x) as.factor(as.numeric(x)*NA))
 
+# trace = 1, print fixed effects vector?
+# map off rho?
+
 
 ## COMPILE AND BUILD TMB ----
 compile("TMB/src/goa_pk_tmb.cpp")

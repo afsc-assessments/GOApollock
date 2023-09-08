@@ -49,10 +49,16 @@ mod_list <- list(sdrep_mod1, sdrep_mod2, sdrep_mod3, sdrep_mod4, sdrep_mod5, sdr
 # - Opt objects
 opt_list <- list(opt_mod1, opt_mod2, opt_mod3, opt_mod4, opt_mod5, opt_mod6, opt_mod7, opt_mod8, opt_mod9)
 lapply(opt_list, function(x) x$evaluations)
-
 obj_list <- list(obj_mod1, obj_mod2, obj_mod3, obj_mod4, obj_mod5, obj_mod6, obj_mod7, obj_mod8, obj_mod9)
-
 par_list <- lapply(obj_list, function(x) x$env$parList())
+
+
+# - Check number of evaluations
+for(i in 1:length(opt_list)){
+  print(opt_list[[i]]$evaluations)
+}
+control
+
 
 # - ssb
 ssb <- rbind(cbind(model=model_names[1],filter(stdtmb_mod1, par=='Espawnbio')),
@@ -84,6 +90,8 @@ aic_table <- data.frame(
   model = model_names,
   nll = sapply(opt_list, function(x) x$objective),
   k = sapply(opt_list, function(x) length(x$par)),
+  convergence = sapply(opt_list, function(x) x$message),
+  iterations = sapply(opt_list, function(x) x$evaluations[1]),
   AIC = sapply(opt_list, function(x) TMBAIC(x))
 ) %>%
   mutate(dAIC = AIC - min(AIC))
