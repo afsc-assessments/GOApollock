@@ -489,7 +489,7 @@ Type objective_function<Type>::operator() ()
   vector<Type> slctsrv3_logit(nages);
   vector<Type> slctsrv6_logit(nages);
   matrix<Type> slctfsh_logit(nyrs+projfsh_nyrs,nages);
-
+  matrix<Type> selexF(nyrs+projfsh_nyrs,nages);
 
   // -----------------------------------------------
   // Expected values
@@ -625,7 +625,6 @@ Type objective_function<Type>::operator() ()
 
 
   // Fishery selectivity
-
   switch(seltype){
   // - Double logistic with random effects on parameters
   case 1:
@@ -641,7 +640,7 @@ Type objective_function<Type>::operator() ()
       // The plan would be to check and adjust the max selected age as needed
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -659,7 +658,7 @@ Type objective_function<Type>::operator() ()
       // The plan would be to check and adjust the max selected age as needed
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -677,7 +676,7 @@ Type objective_function<Type>::operator() ()
       // The plan would be to check and adjust the max selected age as needed
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -695,8 +694,8 @@ Type objective_function<Type>::operator() ()
       // The plan would be to check and adjust the max selected age as needed
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
-    }
+      // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+    } 
     break;
 
     // Non-parametric age-specific
@@ -707,7 +706,7 @@ Type objective_function<Type>::operator() ()
       }
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      //slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -729,7 +728,7 @@ Type objective_function<Type>::operator() ()
       }
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      //slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
 
@@ -741,11 +740,19 @@ Type objective_function<Type>::operator() ()
       }
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
-      slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+      // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
   }
-
+  // get sel*F for reporting. Using average to smooth out
+  // output. Useful for comparing selex modules that aren't
+  // normalized to the same max (1).
+  Type avgF=F.sum()/F.size();
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
+      for (j=a0;j<=a1;j++) {
+	selexF(i,j)=slctfsh(i,j)*avgF;
+      }
+    }
 
   //Survey 1 selectivity
   for (j=a0;j<=a1;j++) {
@@ -1246,6 +1253,7 @@ Type objective_function<Type>::operator() ()
   ADREPORT(Esumbio);
   ADREPORT(Espawnbio_log);
   ADREPORT(Esumbio_log);
+  ADREPORT(selexF);
 
   return(objfun);
 }
