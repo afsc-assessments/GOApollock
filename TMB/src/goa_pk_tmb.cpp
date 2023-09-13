@@ -626,6 +626,25 @@ Type objective_function<Type>::operator() ()
 
   // Fishery selectivity
   switch(seltype){
+  // - Double logistic constant in time. Need special case to
+  // - avoid NLL calcs below with case 1 (i.e. can't just map
+  // - them off)
+  case 0:
+    for (i=y0;i<=y1+projfsh_nyrs;i++) {
+      slp1_fsh(i)=exp(log_slp1_fsh_mean);
+      inf1_fsh(i)=inf1_fsh_mean;
+      slp2_fsh(i)=exp(log_slp2_fsh_mean);
+      inf2_fsh(i)=inf2_fsh_mean;
+      for (j=a0;j<=a1;j++) {
+        slctfsh(i,j) = (1/(1+exp(-(slp1_fsh(i))*(double(j+1)-(inf1_fsh(i))))))*
+          (1-1/(1+exp(-(slp2_fsh(i))*(double(j+1)-(inf2_fsh(i))))));
+      }
+      // The plan would be to check and adjust the max selected age as needed
+      //vector<Type> slctfsh_tmp = slctfsh.row(i);
+      //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
+      // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
+    }
+    break;
   // - Double logistic with random effects on parameters
   case 1:
     for (i=y0;i<=y1+projfsh_nyrs;i++) {
@@ -698,7 +717,7 @@ Type objective_function<Type>::operator() ()
     } 
     break;
 
-    // Non-parametric age-specific
+    // Age-specific fixed effects, constant in time
   case 5:
     for (i=y0;i<=y1+projfsh_nyrs;i++) {
       for (j=a0;j<=a1;j++) {
