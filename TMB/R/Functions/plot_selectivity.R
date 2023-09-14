@@ -4,6 +4,23 @@ gg_color_hue <- function(n) {
 }
 
 
+plot_fsh_selex <- function(fit){
+  modelname <- paste('Model', fit$modelnum)[1]
+  years <- 1970:(2022+5)
+  ## df <- fit$std %>% filter(par=='slctfsh') %>%
+  ##   mutate(age=rep(1:10, each=length(years)),
+  ##          year=rep(years, times=10), model=model)
+  sel <- t(fit$report$slctfsh)
+  persp(y = years, x =  1:10,
+        z = sel,
+        col = "white",
+        xlab = "Age", ylab = "\n\nYear",
+        zlab = "\n\nSelectivity", expand = 0.5,
+        box = TRUE, ticktype = "detailed", phi = 35,
+        theta = -19, main = modelname)
+}
+
+
 #' Plot selectivity (persp, terminal, and time-varying plots)
 #'
 #' @param sdrep list or single sdreport object

@@ -29,11 +29,6 @@ plot_fsh_selex <- function(fit){
 compile("TMB/src/goa_pk_tmb.cpp")
 dyn.load('TMB/src/goa_pk_tmb.dll')
 
-## !!to do!! fix these the real way. For now t urn off these for all
-## models to help stabilize esitmation
-map$log_q1_dev <- factor(NA*map$log_q1_dev)
-map$log_q3_dev <- factor(NA*map$log_q3_dev)
-
 ## MODEL 0 ----
 dat$seltype <- 0
 ## - Double logistic constant in time
