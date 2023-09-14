@@ -13,6 +13,52 @@ source("TMB/R/Functions/create_bounds.R")
 compile("TMB/src/goa_pk_tmb.cpp")
 dyn.load('TMB/src/goa_pk_tmb.dll')
 
+
+## MODEL 0 ----
+# - Double logistic
+# - Turn on slp and inf parameters
+map_mod0 <- map
+dat$seltype <- 0
+
+# -- Fixed effect pars
+map_mod0$inf1_fsh_mean <- as.factor(1)
+map_mod0$inf2_fsh_mean <- as.factor(1)
+map_mod0$log_slp1_fsh_mean <- as.factor(1)
+map_mod0$log_slp2_fsh_mean <- as.factor(1)
+
+# -- Data switch
+dat$seltype <- 1
+
+# - Build model 1
+
+# -- Phase
+# phased_pars_mod0 <- TMBphase(
+#   data = dat,
+#   parameters = pars,
+#   map = map_mod0,
+#   random = random,
+#   phases = phases,
+#   model_name = "goa_pk_tmb",
+#   silent = TRUE,
+#   use_gradient = TRUE)
+
+# -- Build model obj
+obj_mod0 <- MakeADFun(data=dat, parameters=pars, map=map_mod0, random = NULL, silent=TRUE)
+
+# - Optimize
+lwr <- get_bounds(obj_mod0)$lwr
+upr <- get_bounds(obj_mod0)$upr
+opt_mod0 <- with(obj_mod0, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
+# fit_mod0 <- TMBhelper::fit_tmb(obj_mod0, upper=upr, lower=lwr, control=control, newtonsteps=1)
+sdrep_mod0 <- sdreport(obj_mod0)
+quantities_mod0 <- obj_mod0$report(obj_mod0$env$last.par.best)
+
+# - Get objects
+stdtmb_mod0 <- with(sdrep_mod0, data.frame(par=names(value), est=value, se=sqrt(diag(cov)))) %>%
+  group_by(par) %>% mutate(year=1969+1:n()) %>% ungroup
+params_mod0 <- obj_mod0$env$parList()
+
+
 ## MODEL 1 ----
 # - Double logistic with random effects on ascending portion
 # - Turn on sel sd and slp and inf parameters
@@ -55,7 +101,7 @@ obj_mod1 <- MakeADFun(data=dat, parameters=pars, map=map_mod1, random=random, si
 lwr <- get_bounds(obj_mod1)$lwr
 upr <- get_bounds(obj_mod1)$upr
 opt_mod1 <- with(obj_mod1, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod1 <- TMBhelper::fit_tmb(obj_mod1, upper = upr, lower = lwr, quiet = TRUE)
+# fit_mod1 <- TMBhelper::fit_tmb(obj_mod1, upper=upr, lower=lwr, control=control, newtonsteps=3)
 sdrep_mod1 <- sdreport(obj_mod1)
 quantities_mod1 <- obj_mod1$report(obj_mod1$env$last.par.best)
 
@@ -106,7 +152,7 @@ obj_mod2 <- MakeADFun(data=dat, parameters=pars, map=map_mod2, random=random, si
 lwr <- get_bounds(obj_mod2)$lwr
 upr <- get_bounds(obj_mod2)$upr
 opt_mod2 <- with(obj_mod2, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod2 <- TMBhelper::fit_tmb(obj_mod2, lower=lwr, upper=upr)
+# fit_mod2 <- TMBhelper::fit_tmb(obj_mod2, upper=upr, lower=lwr, control=control, newtonsteps=1)
 sdrep_mod2 <- sdreport(obj_mod2)
 quantities_mod2 <- obj_mod2$report(obj_mod2$env$last.par.best)
 
@@ -159,7 +205,7 @@ obj_mod3 <- MakeADFun(data=dat, parameters=pars_mod3, map=map_mod3, random=rando
 lwr <- get_bounds(obj_mod3)$lwr
 upr <- get_bounds(obj_mod3)$upr
 opt_mod3 <- with(obj_mod3, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod3 <- TMBhelper::fit_tmb(obj_mod3, lower=lwr, upper=upr)
+# fit_mod3 <- TMBhelper::fit_tmb(obj_mod3, upper=upr, lower=lwr, loopnum=3, control=control, newtonsteps=2)
 sdrep_mod3 <- sdreport(obj_mod3)
 quantities_mod3 <- obj_mod3$report(obj_mod3$env$last.par.best)
 
@@ -213,7 +259,7 @@ obj_mod4 <- MakeADFun(data=dat, parameters=pars_mod4, map=map_mod4, random=rando
 lwr <- get_bounds(obj_mod4)$lwr
 upr <- get_bounds(obj_mod4)$upr
 opt_mod4 <- with(obj_mod4, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod4 <- TMBhelper::fit_tmb(obj_mod4, lower=lwr, upper=upr)
+# fit_mod4 <- TMBhelper::fit_tmb(obj_mod4, upper=upr, lower=lwr, loopnum=3, control=control, newtonsteps=2)
 sdrep_mod4 <- sdreport(obj_mod4)
 quantities_mod4 <- obj_mod4$report(obj_mod4$env$last.par.best)
 
@@ -253,7 +299,7 @@ obj_mod5 <- MakeADFun(data=dat, parameters=pars, map=map_mod5, silent=TRUE)
 lwr <- get_bounds(obj_mod5)$lwr
 upr <- get_bounds(obj_mod5)$upr
 opt_mod5 <- with(obj_mod5, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod5 <- TMBhelper::fit_tmb(obj_mod5, lower=lwr, upper=upr)
+# fit_mod5 <- TMBhelper::fit_tmb(obj_mod5, upper=upr, lower=lwr, loopnum=3, control=control, newtonsteps=2)
 sdrep_mod5 <- sdreport(obj_mod5)
 quantities_mod5 <- obj_mod5$report(obj_mod5$env$last.par.best)
 
@@ -302,7 +348,7 @@ obj_mod6 <- MakeADFun(data=dat, parameters=pars_mod6, map=map_mod6, random=rando
 lwr <- get_bounds(obj_mod6)$lwr
 upr <- get_bounds(obj_mod6)$upr
 opt_mod6 <- with(obj_mod6, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod6 <- TMBhelper::fit_tmb(obj_mod6, lower=lwr, upper=upr)
+# fit_mod6 <- TMBhelper::fit_tmb(obj_mod6, upper=upr, lower=lwr, loopnum=3, control=control, newtonsteps=3)
 sdrep_mod6 <- sdreport(obj_mod6)
 quantities_mod6 <- obj_mod6$report(obj_mod6$env$last.par.best)
 
@@ -352,7 +398,7 @@ obj_mod7 <- MakeADFun(data=dat, parameters=pars_mod7, map=map_mod7, random=rando
 lwr <- get_bounds(obj_mod7)$lwr
 upr <- get_bounds(obj_mod7)$upr
 opt_mod7 <- with(obj_mod7, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod7 <- TMBhelper::fit_tmb(obj_mod7, lower=lwr, upper=upr)
+# fit_mod7 <- TMBhelper::fit_tmb(obj_mod7, upper=upr, lower=lwr, loopnum=3, control=control, newtonsteps=2)
 sdrep_mod7 <- sdreport(obj_mod7)
 quantities_mod7 <- obj_mod7$report(obj_mod7$env$last.par.best)
 
@@ -404,7 +450,7 @@ obj_mod8 <- MakeADFun(data=dat, parameters=pars_mod8, map=map_mod8, random=rando
 lwr <- get_bounds(obj_mod8)$lwr
 upr <- get_bounds(obj_mod8)$upr
 opt_mod8 <- with(obj_mod8, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod8 <- TMBhelper::fit_tmb(obj_mod8, lower=lwr, upper=upr)
+# fit_mod8 <- fit_tmb(obj_mod8, upper=upr, lower=lwr, loopnum=3, control=control, newtonsteps=2)
 sdrep_mod8 <- sdreport(obj_mod8)
 quantities_mod8 <- obj_mod8$report(obj_mod8$env$last.par.best)
 
@@ -456,7 +502,7 @@ obj_mod9 <- MakeADFun(data=dat, parameters=pars_mod9, map=map_mod9, random=rando
 lwr <- get_bounds(obj_mod9)$lwr
 upr <- get_bounds(obj_mod9)$upr
 opt_mod9 <- with(obj_mod9, nlminb(par,fn, gr, control = control, lower=lwr, upper=upr))
-# helper_opt_mod9 <- TMBhelper::fit_tmb(obj_mod9, lower=lwr, upper=upr)
+# fit_mod9 <- fit_tmb(obj_mod9, upper=upr, lower=lwr, loopnum=3, control=control, newtonsteps=0, getSD=FALSE)
 sdrep_mod9 <- sdreport(obj_mod9)
 quantities_mod9 <- obj_mod9$report(obj_mod9$env$last.par.best)
 
@@ -468,4 +514,6 @@ params_mod9 <- obj_mod9$env$parList()
 
 ## Save Image ----
 save.image(file='TMB/Selectivity_runs.RData')
+# fit_mod_list <- list(# fit_mod0=# fit_mod0,# fit_mod1=# fit_mod1,# fit_mod2=# fit_mod2,# fit_mod3=# fit_mod3,# fit_mod4=# fit_mod4,# fit_mod5=# fit_mod5,# fit_mod6=# fit_mod6,# fit_mod7=# fit_mod7,# fit_mod8=# fit_mod8,# fit_mod9=# fit_mod9)
+# saveRDS(fit_list, 'TMB/Output/fit_list.RDS')
 

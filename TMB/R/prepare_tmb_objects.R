@@ -32,8 +32,15 @@ map <- map_full
 
 ## ADD NEW DATA OBJECTS ----
 # - Number of years
-dat$nyrs <- (dat$endyr - dat$styr + 1)
+dat$yrs <- dat$styr:dat$endyr
+dat$nyrs <- length(dat$yrs)
 dat$nages <- dat$trmage - dat$rcrage + 1;
+
+
+# - Switches for estimating q devs
+dat$est_q1_dev <- dat$yrs %in% do.call(seq, as.list(range(dat$srv_acyrs1)))
+dat$est_q2_dev <- dat$yrs %in% do.call(seq, as.list(range(dat$srv_acyrs2)))
+dat$est_q3_dev <- dat$yrs %in% do.call(seq, as.list(range(dat$srv_acyrs3)))
 
 
 # - Add fishery selectivity switch
@@ -82,6 +89,12 @@ map$mean_sel <- factor(rep(NA, length(pars$mean_sel)))
 map$sel_rho_a <- as.factor(NA)
 map$sel_rho_y <- as.factor(NA)
 map$sel_rho_c <- as.factor(NA)
+
+
+# - q devs (turn off where no data)
+map$log_q1_dev <- as.factor(as.numeric(map$log_q1_dev) * ifelse(dat$est_q1_dev, 1, NA))
+map$log_q2_dev <- as.factor(as.numeric(map$log_q2_dev) * ifelse(dat$est_q2_dev, 1, NA))
+map$log_q3_dev <- as.factor(as.numeric(map$log_q3_dev) * ifelse(dat$est_q3_dev, 1, NA))
 
 
 ## Optimization control ----

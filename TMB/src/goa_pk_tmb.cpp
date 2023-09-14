@@ -232,6 +232,7 @@ Type objective_function<Type>::operator() ()
   // Survey 1 (Acoustic) EK500 (biosonic deleted in 2022)
   DATA_INTEGER(nyrs_srv1); // Number of survey biomass estimates
   DATA_IVECTOR(srvyrs1);   // Years in which surveys occured
+  DATA_IVECTOR(est_q1_dev); // Vector for what devs to estimate
   DATA_VECTOR(indxsurv1);  // Survey index
   DATA_VECTOR(indxsurv_log_sd1); // Survey index (cv) = sdev of log(indxsurv)
   DATA_VECTOR(q1_rwlk_sd);	 // Random walk stdevs
@@ -251,6 +252,7 @@ Type objective_function<Type>::operator() ()
   // Survey 2 (Bottom trawl)
   DATA_INTEGER(nyrs_srv2);	    // Number of surveys
   DATA_IVECTOR(srvyrs2);	// Years in which surveys occured
+  DATA_IVECTOR(est_q2_dev); // Vector for what devs to estimate
   DATA_VECTOR(indxsurv2);	// Survey index
   DATA_VECTOR(indxsurv_log_sd2); // Survey index (cv) = sdev of log(indxsurv)
   DATA_VECTOR(q2_rwlk_sd);	 // Random walk stdevs
@@ -270,6 +272,7 @@ Type objective_function<Type>::operator() ()
   // Survey 3 (ADFG coastal survey)
   DATA_INTEGER(nyrs_srv3); // Number of survey biomass estimates
   DATA_IVECTOR(srvyrs3);   // Years in which surveys occured
+  DATA_IVECTOR(est_q3_dev); // Vector for what devs to estimate
   DATA_VECTOR(indxsurv3);  // Survey index
   DATA_VECTOR(indxsurv_log_sd3); // Survey index (cv) = sdev of log(indxsurv)
   DATA_VECTOR(q3_rwlk_sd);	 // Random walk stdevs
@@ -610,7 +613,7 @@ Type objective_function<Type>::operator() ()
   recruit = exp(log_recruit);
 
   // Acoustic survey random walk setup
-  for (i=y0;i<=y1;i++) {
+  for (i=0;i<nyrs;i++){
     log_q1(i)=log_q1_mean+log_q1_dev(i);
     log_q2(i)=log_q2_mean+log_q2_dev(i);
     log_q3(i)=log_q3_mean+log_q3_dev(i);
@@ -645,7 +648,7 @@ Type objective_function<Type>::operator() ()
       // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
     }
     break;
-  // - Double logistic with random effects on parameters
+    // - Double logistic with random effects on parameters
   case 1:
     for (i=y0;i<=y1+projfsh_nyrs;i++) {
       slp1_fsh(i)=exp(log_slp1_fsh_mean+slp1_fsh_dev(i));
@@ -714,7 +717,7 @@ Type objective_function<Type>::operator() ()
       //vector<Type> slctfsh_tmp = slctfsh.row(i);
       //slctfsh.row(i)=slctfsh.row(i)/maxvec(slctfsh_tmp); //slctfsh(i,6);
       // slctfsh.row(i)=slctfsh.row(i)/slctfsh(i,6);
-    } 
+    }
     break;
 
     // Age-specific fixed effects, constant in time
@@ -767,11 +770,11 @@ Type objective_function<Type>::operator() ()
   // output. Useful for comparing selex modules that aren't
   // normalized to the same max (1).
   Type avgF=F.sum()/F.size();
-    for (i=y0;i<=y1+projfsh_nyrs;i++) {
-      for (j=a0;j<=a1;j++) {
-	selexF(i,j)=slctfsh(i,j)*avgF;
-      }
+  for (i=y0;i<=y1+projfsh_nyrs;i++) {
+    for (j=a0;j<=a1;j++) {
+      selexF(i,j)=slctfsh(i,j)*avgF;
     }
+  }
 
   //Survey 1 selectivity
   for (j=a0;j<=a1;j++) {
@@ -893,8 +896,8 @@ Type objective_function<Type>::operator() ()
   loglik.setZero();
   res_fish.setZero();
 
-    // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
-    for (i=0;i<nyrs_fsh;i++) {
+  // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
+  for (i=0;i<nyrs_fsh;i++) {
     if(ifshyrs(i)>endyr) break;
     for (j=a0;j<=a1;j++) {
       if(j<iac_yng_fsh(i)) {
@@ -1102,9 +1105,17 @@ Type objective_function<Type>::operator() ()
 
 
   // Random walk for q devs
-  for(i=y0+1;i<=y1;i++){
-    loglik(20) += -0.5*square( (log_q1_dev(i)-log_q1_dev(i-1))/q1_rwlk_sd(i-1));
-    loglik(20) += -0.5*square( (log_q3_dev(i)-log_q3_dev(i-1))/q3_rwlk_sd(i-1));
+  for(i=0;i<nyrs;i++){
+
+    // - Survey 1
+    if(est_q1_dev[i] == 1){
+      loglik(20) += -0.5*square( (log_q1_dev(i)-log_q1_dev(i-1))/q1_rwlk_sd(i-1));
+    }
+
+    // - Survey 3
+    if(est_q3_dev[i] == 1){
+      loglik(20) += -0.5*square( (log_q3_dev(i)-log_q3_dev(i-1))/q3_rwlk_sd(i-1));
+    }
   }
 
   // // Prior on trawl catchability
