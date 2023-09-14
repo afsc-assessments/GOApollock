@@ -72,9 +72,9 @@ map_mod1$inf1_fsh_dev <- as.factor(1:length(pars$inf1_fsh_dev))
 
 # -- Fixed effect pars
 map_mod1$ln_sel_sd <- as.factor(1)
-map_mod1$inf1_fsh_mean <- as.factor(1)
+# map_mod1$inf1_fsh_mean <- as.factor(1) # removing mean because no zero constraint
 map_mod1$inf2_fsh_mean <- as.factor(1)
-map_mod1$log_slp1_fsh_mean <- as.factor(1)
+# map_mod1$log_slp1_fsh_mean <- as.factor(1) # removing mean because no zero constraint
 map_mod1$log_slp2_fsh_mean <- as.factor(1)
 
 # -- Data switch

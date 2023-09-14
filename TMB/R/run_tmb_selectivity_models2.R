@@ -59,9 +59,9 @@ map1$ln_sel_sd <- as.factor(1)
 ### the devs b/c not using a dev_vector approach, so we have to
 ### drop a degree of freedom. Arbitrarily setting the means to
 ### the previous MLE.
-map1$inf1_fsh_mean <- as.factor(1)
+# map1$inf1_fsh_mean <- as.factor(1)
 map1$inf2_fsh_mean <- as.factor(1)
-map1$log_slp1_fsh_mean <- as.factor(1)
+# map1$log_slp1_fsh_mean <- as.factor(1)
 map1$log_slp2_fsh_mean <- as.factor(1)
 random <- c("slp1_fsh_dev", "inf1_fsh_dev", "slp2_fsh_dev", "inf2_fsh_dev")[1:2]
 obj1 <- MakeADFun(data=dat, parameters=pars, map=map1, random=random, silent=TRUE)
