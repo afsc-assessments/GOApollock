@@ -817,7 +817,7 @@ Type objective_function<Type>::operator() ()
 
   for (i=y0;i<=y1+projfsh_nyrs;i++) {
     for (j=a0;j<=a1;j++) {
-      slctfsh_logit(i,j)=-log(2/(slctfsh(i,j)-1e-10)-1);
+      slctfsh_logit(i,j)=-log(1/(slctfsh(i,j)-1e-10)-1);
     }
   }
 
