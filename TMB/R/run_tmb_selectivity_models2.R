@@ -286,7 +286,7 @@ obj9$fn()
 lwr <- get_bounds(obj9)$lwr
 upr <- get_bounds(obj9)$upr
 fit9 <- fit_tmb(obj9, upper=upr, lower=lwr, loopnum=3,
-                control=control, newtonsteps=0, getSD=FALSE)
+                control=control, newtonsteps=3)
 fit9$report <- obj9$report(obj9$env$last.par.best)
 ## fit9$std <- with(fit9$SD, data.frame(par=names(value), est=value, se=sd)) %>%
 ##   group_by(par) %>% mutate(year=1969+1:n()) %>% ungroup

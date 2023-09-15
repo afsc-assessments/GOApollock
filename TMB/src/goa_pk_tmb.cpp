@@ -1147,11 +1147,15 @@ Type objective_function<Type>::operator() ()
   REPORT(N);
 
   // Fish sel
+  ADREPORT(rho_a);
+  ADREPORT(rho_c);
+  ADREPORT(rho_y);
+  ADREPORT(sel_sd);
   REPORT(rho_a);
   REPORT(rho_c);
   REPORT(rho_y);
-  REPORT(Q_sparse);
   REPORT(sel_sd);
+  REPORT(Q_sparse);
   REPORT(inf2_fsh_mean);
   REPORT(slp1_fsh);
   REPORT(inf1_fsh);
