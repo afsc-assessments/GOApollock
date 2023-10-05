@@ -295,15 +295,21 @@ fit9$modelnum <- 9
 plot_fsh_selex(fit9)
 
 
+## Save Image ----
+fits <- list(fit0=fit0,fit1=fit1,fit2=fit2,fit3=fit3,fit4=fit4,fit5=fit5,fit6=fit6,fit7=fit7,fit8=fit8,fit9=fit9)
+saveRDS(fits, 'TMB/Output/fits.RDS')
+## save.image(file='TMB/Selectivity_runs.RData')
+
+
 ## q <- fit9$report$Q_sparse %>% as.matrix
 ## q[1:20, 1:20]
 ## sum(q)
 
 ### quick checks on the 3D models
-cor8 <- cov2cor(solve(fit8$report$Q_sparse))
-cor9 <- cov2cor(solve(fit9$report$Q_sparse))
+cor7 <- cov2cor(solve(fits$fit7$report$Q_sparse))
+cor8 <- cov2cor(solve(fits$fit8$report$Q_sparse))
+corrplot::corrplot(cor7[1:20,1:20])
 corrplot::corrplot(cor8[1:20,1:20])
-corrplot::corrplot(cor9[1:20,1:20])
 
 with(fit8$SD, data.frame(par=names(par.fixed), est=par.fixed, se=sqrt(diag(cov.fixed)))) %>%
   filter(grepl('rho|ln', par)) %>% mutate(lwr=est-1.96*se, upr=est+1.96*se)%>% print(digits=2)
@@ -311,12 +317,6 @@ with(fit8$SD, data.frame(par=names(par.fixed), est=par.fixed, se=sqrt(diag(cov.f
 fit9$opt$diagnostics %>% filter(grepl('rho|ln', Param))  %>%
   print(digits=2)
 
-sp8 <- fit8$parList$selpars_re
-sp9 <- fit9$parList$selpars_re
-zlim <- range(c(sp8, sp9))
-par(mfrow=c(1,2))
-image(t(sp8), y=1:10, x=years, zlim=zlim)
-image(t(sp9), y=1:10, x=years, zlim=zlim)
 
 sm8 <- fit8$parList$mean_sel
 sm9 <- fit9$parList$mean_sel
@@ -324,12 +324,15 @@ sm9 <- fit9$parList$mean_sel
 plot(sm9, type='b', ylim=c(-10,10))
 lines(sm8)
 
-## Save Image ----
-fits <- list(fit0=fit0,fit1=fit1,fit2=fit2,fit3=fit3,fit4=fit4,fit5=fit5,fit6=fit6,fit7=fit7,fit8=fit8,fit9=fit9)
-saveRDS(fits, 'TMB/Output/fits.RDS')
-## save.image(file='TMB/Selectivity_runs.RData')
 
 
 par(mfrow=c(3,4), mar = c(3.2, 3.2 , 1 , 0.5) ,
     oma = c(0 , 0 , 0 , 0), tcl = -0.8, mgp = c(10, 0.6, 0))
 trash <- lapply(fits, plot_fsh_selex)
+
+sp8 <- fits$fit8$parList$selpars_re
+sp7 <- fits$fit7$parList$selpars_re
+zlim <- range(c(sp7, sp8))
+par(mfrow=c(1,2))
+image(t(sp7), y=1:10, x=years, ylab='age',  zlim=zlim, main='2D AR(1)')
+image(t(sp8), y=1:10, x=years, ylab='age', zlim=zlim, main='3D AR(1) conditional')
