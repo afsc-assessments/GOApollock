@@ -68,9 +68,9 @@ write_spm_dynamics_tmb <- function(replist, datlist, ayr, path){
   x <- c(x, "# Maturity")
   x <- c(x, paste(datlist$mat, collapse=' '))
   x <- c(x, "# Spawning WAA")
-  x <- c(x, paste(colMeans(head(datlist$wt_srv1,5))*1000, collapse=' '))
+  x <- c(x, paste(colMeans(tail(datlist$wt_srv1,5))*1000, collapse=' '))
   x <- c(x, "# Fishery WAA")
-  x <- c(x, paste(colMeans(head(datlist$wt_fsh,5))*1000, collapse=' '))
+  x <- c(x, paste(datlist$wt_fsh[datlist$nyrs,]*1000, collapse=' '))
   x <- c(x, "# Fishery selex, averaged over last 5 years")
   ## This is wrong b/c ignores most recent year
   ## x <- c(x, paste(colMeans(tail(replist$Fishery_selectivity,

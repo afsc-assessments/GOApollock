@@ -118,6 +118,7 @@ write.csv(save_ssb, file = "TMB/Output/Selectivity_runs_terminal_ssb_full_estima
 aic_table <- data.frame(
   model = model_names,
   nll = unlist(sapply(opt_list, function(x) as.numeric(x$objective))),
+  fish_age_nll= sapply(quantities_list, function(x) round(-x$loglik[2],1)),
   k = sapply(opt_list, function(x) length(x$par)),
   AIC = unlist(sapply(opt_list, function(x) as.numeric(x$AIC)))
 ) %>%
