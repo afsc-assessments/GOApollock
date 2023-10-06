@@ -1044,6 +1044,8 @@ Type objective_function<Type>::operator() ()
   loglik(23) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
   objfun = -sum(loglik);
 
+  REPORT(styr);
+  REPORT(endyr);
   REPORT(objfun);
   REPORT(loglik);
   REPORT(recruit); 

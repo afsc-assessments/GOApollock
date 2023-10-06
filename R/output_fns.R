@@ -8,7 +8,12 @@
 #'   to console
 #' @export
 calculate_rho <- function(reps, max_peels=NULL){
-  ssb <- mymelt(reps, 'Expected_spawning_biomass') %>%
+  if(is.null(reps[[1]]$Expected_spawning_biomass)){
+    ssb <- mymelt(reps, 'Espawnbio')
+  } else {
+    ssb <- mymelt(reps, 'Expected_spawning_biomass')
+  }
+  ssb %>%
     mutate(model=as.numeric(gsub('peel','', model))) %>%
     rename(peel=model, SSB=value) %>%
     group_by(year) %>%
@@ -206,3 +211,6 @@ read_pk_std <- function(model='goa_pk', path=getwd(), version='none', endyr, sty
     mutate(lwr=est-1.96*se, upr=est+1.96*se)
   df
 }
+
+
+

@@ -24,12 +24,16 @@ opt <- with(obj, nlminb(par,fn,gr))
 ##opt <- TMBhelper::fit_tmb(obj, control=list(trace=50))
 rep <- obj$report()
 sdrep <- sdreport(obj)
-stdtmb <- with(sdrep, data.frame(par=names(value), est=value, se=sqrt(diag(cov)))) %>%
-  group_by(par) %>% mutate(year=1969+1:n()) %>% ungroup
+stdtmb <- with(sdrep, data.frame(name=names(value), est=value, se=sqrt(diag(cov)))) %>%
+  group_by(name) %>% mutate(year=1969+1:n(), lwr=est-1.96*se, upr=est+1.96*se) %>% ungroup
+stds <- bind_rows(cbind(model='TMB',stdtmb),
+              cbind(model='ADBM',stdadmb))
+saveRDS(stds, 'admb_tmb_stds.RDS') # used in Sep PT presentation folder
 
-ssb <- rbind(cbind(model='TMB',filter(stdtmb, par=='Espawnbio')),
-             cbind(model='ADBM',filter(stdadmb, name=='Espawnbio') %>% select(par=name, est,se, year)))
-filter(ssb, year>2015) %>% arrange(year)
+ssb <- bind_rows(cbind(model='TMB',filter(stdtmb, name=='Espawnbio')),
+             cbind(model='ADMB',filter(stdadmb, name=='Espawnbio'))) %>%
+  select(model, par=name, est,se, year)
+filter(ssb, year==2015) %>% arrange(year)
 ggplot(ssb, aes(year, est, color=model, fill=model, ymin=est-1.96*se, ymax=est+1.96*se)) +
   geom_ribbon(alpha=.5) + geom_line(lwd=2)
 
@@ -95,11 +99,10 @@ for(i in 1:10){
 df <- bind_rows(df)
 df <- df %>% mutate(pardiff=est1-est0)
 s <- filter(df, !grepl('dev', par))
+filter(df, par=='mean_log_recruit')
 
 ggplot(s, aes(i, pardiff, color=nll)) + geom_point() +
   facet_wrap('par')
 ggplot(s, aes(init1, pardiff, color=log(abs(maxgrad)))) + geom_point() +
   facet_wrap('par', scales='free_x')
-
-
 

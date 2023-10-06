@@ -144,7 +144,9 @@ plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
 plot_pk_ssb <- function(x, add_uncertainty=TRUE, plotlog=TRUE,
   uselog=FALSE, plot=TRUE, alpha1=.5, alpha2=.8){
   nmods <- length(x)
+  labs <- sapply(x, function(x) x$version[1])
   x <- bind_rows(x)
+  x$version <- factor(x$version, levels=labs)
   tmp <- 'Espawnbio'
   if(uselog)  tmp <- 'Espawnbio_log'
   if(uselog & nrow(filter(x, name==tmp))==0){
