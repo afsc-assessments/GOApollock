@@ -64,7 +64,6 @@ hist(re)
 
 cowplot::plot_grid(g1,g2)
 
-
 ### Try to get the model to be more stable
 control <- list(eval.max=10000, iter.max=10000)
 obj <- MakeADFun(data=dat, parameters=pars, map=map, random=NULL,
@@ -99,10 +98,8 @@ for(i in 1:10){
 df <- bind_rows(df)
 df <- df %>% mutate(pardiff=est1-est0)
 s <- filter(df, !grepl('dev', par))
-filter(df, par=='mean_log_recruit')
 
 ggplot(s, aes(i, pardiff, color=nll)) + geom_point() +
   facet_wrap('par')
 ggplot(s, aes(init1, pardiff, color=log(abs(maxgrad)))) + geom_point() +
   facet_wrap('par', scales='free_x')
-
