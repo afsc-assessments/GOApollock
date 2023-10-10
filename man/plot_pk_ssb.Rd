@@ -9,7 +9,9 @@ plot_pk_ssb(
   add_uncertainty = TRUE,
   plotlog = TRUE,
   uselog = FALSE,
-  plot = TRUE
+  plot = TRUE,
+  alpha1 = 0.5,
+  alpha2 = 0.8
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ intervals. These are calculated in log space.}
 
 \item{plot}{Whether to plot and return the ggplot object
 (TRUE) or return the data (FALSE).}
+
+\item{alpha1}{Transparency for ribbons}
+
+\item{alpha2}{Transparency for lines}
 }
 \value{
 Either a ggplot object or the data used for it,

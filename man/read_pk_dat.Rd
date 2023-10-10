@@ -4,7 +4,7 @@
 \alias{read_pk_dat}
 \title{Read text file input for ADMB model}
 \usage{
-read_pk_dat(filename, path = NULL)
+read_pk_dat(filename, path = NULL, writedat = FALSE)
 }
 \arguments{
 \item{filename}{The filename to be read in}
