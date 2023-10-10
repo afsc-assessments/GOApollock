@@ -184,6 +184,10 @@ Type objective_function<Type>::operator() ()
 
   int nyrs=endyr-styr+1;
   int nages=trmage-rcrage+1;
+  vector<int> ages(nages);
+  vector<int> years(nyrs);
+  for(int i=0;i<nages;i++) ages(i)=i+1;
+  for(int i=0;i<nyrs;i++) years(i)=1970+i;
   
   // Population vectors
   matrix<Type> wt_pop(nyrs,nages);   // Population weight at age
@@ -792,6 +796,7 @@ Type objective_function<Type>::operator() ()
 
   
   //Age composition
+  res_fish.setZero();
   for (i=0;i<nyrs_fsh;i++) {
     // if(ifshyrs(i)>y1) break; 	// ignore data after retroyear
     llcatp(i) = 0;
@@ -1045,6 +1050,10 @@ Type objective_function<Type>::operator() ()
   objfun = -sum(loglik);
 
   REPORT(objfun);
+  REPORT(styr);
+  REPORT(endyr);
+  REPORT(ages);
+  REPORT(years);
   REPORT(loglik);
   REPORT(recruit); 
   REPORT(Espawnbio);
