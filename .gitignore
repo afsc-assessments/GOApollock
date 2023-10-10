@@ -4,7 +4,7 @@ TMB/src/*.htp
 TMB/src/*.cll
 TMB/src/*.o
 TMB/src/*.dll
-source/*.cpp
+source/goa_pk.cpp
 source/*.obj
 source/*.exe
 source/*.htp
