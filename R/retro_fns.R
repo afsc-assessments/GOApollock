@@ -179,10 +179,10 @@ fit_peel <- function(obj, peel, getsd=FALSE, ...){
   attributes(dat2) <- attributes(obj$env$data)
   attributes(dat2)$check.passed <- NULL
   yrs <- dat$styr:dat$endyr
-  for(ii in names(map2)){
-    if(length(pars2[[ii]]) !=    length(map2[[ii]]))
-      stop("wrong length in map for ",ii)
-  }
+  ## for(ii in names(map2)){
+  ##   if(length(pars2[[ii]]) !=    length(map2[[ii]]))
+  ##     stop("wrong length in map for ",ii)
+  ## }
   pars2 <- peel_pars(pars=obj$env$parList(), peel)
   map2 <- peel_map(map=obj$env$map, pars2, yrs)
   obj2 <- TMB::MakeADFun(data=dat2, parameters=pars2, map=map2,

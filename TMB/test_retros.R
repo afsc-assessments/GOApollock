@@ -1,3 +1,20 @@
+library(GOApollock)
+library(TMB)
+devtools::load_all('C:/Users/cole.monnahan/GOApollock/')
+
+## The dat and rep files from the 2022 final model
+dat <- readRDS('datfile.RDS')
+replist <- readRDS("repfile.RDS")
+stdadmb <- readRDS("stdfile.RDS")
+pars <- readRDS('pars.RDS')
+map <- readRDS('map.RDS')
+years <- 1970:2022
+
+## Fit the model and compare to ADMB. Should be identical
+compile("../source/goa_pk_tmb.cpp")
+dyn.load('../source/goa_pk_tmb.dll')
+obj <- MakeADFun(data=dat, parameters=pars, map=map, random=NULL,
+                 silent=TRUE, DLL='goa_pk_tmb')
 
 
 retros <- lapply(0:7, function(i) fit_peel(obj, i, getsd=0))
