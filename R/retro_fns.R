@@ -1,4 +1,25 @@
 
+#' Fit a sequence of models to peeled data set for retrospective
+#' calculations
+#'
+#' @param obj TMB obj from fitted model
+#' @param peels Vector of peels to fit, with 0 being the original
+#'   data set
+#' @param
+#' @param ... Additional arguments to pass to \link{\code{fit_pk}}
+#' @return A list of model fits of class 'pkfit'
+#' @details This function fits a series of models to peels based
+#'   off an original fit. The data, parameter, and map lists are
+#'   modified based on the peel in a way that the original MLEs
+#'   are preserved so that it runs faster. Pass an unfitted obj
+#'   if this is undesired behavior.
+#' @export
+fit_pk_retros <- function(obj, peels=0:7, getsd=TRUE, ...){
+  retros <- lapply(peels, function(i) fit_peel(obj, peel=i, getsd=getsd, ...))
+  return(retros)
+}
+
+#' Modify parameter list to match peel
 peel_pars <- function(pars, peel){
   p <- pars
   stopifnot(peel>=0)
@@ -17,6 +38,7 @@ peel_pars <- function(pars, peel){
   return(p)
 }
 
+#' Modify map to match peel
 peel_map <- function(map, pars, yrs){
   ## tricky part is map elements may or may not be specified so
   ## do this generically
@@ -39,7 +61,8 @@ peel_map <- function(map, pars, yrs){
   return(m)
 }
 
-
+#' Modify data list to match peel
+#'
 peel_data <- function(dat, peel){
   stopifnot(peel>=0)
   stopifnot(is.list(dat))
@@ -172,31 +195,20 @@ peel_data <- function(dat, peel){
   return(d)
 }
 
-fit_peel <- function(obj, peel, getsd=FALSE, ...){
+#' Internal wrapper function to fit a single peel
+#'
+fit_peel <- function(obj, peel, getsd=TRUE, ...){
   control <- list(eval.max=10000, iter.max=10000, trace=0)
   stopifnot(peel>=0)
   dat2 <- peel_data(dat=obj$env$data, peel)
   attributes(dat2) <- attributes(obj$env$data)
   attributes(dat2)$check.passed <- NULL
   yrs <- dat$styr:dat$endyr
-  ## for(ii in names(map2)){
-  ##   if(length(pars2[[ii]]) !=    length(map2[[ii]]))
-  ##     stop("wrong length in map for ",ii)
-  ## }
   pars2 <- peel_pars(pars=obj$env$parList(), peel)
   map2 <- peel_map(map=obj$env$map, pars2, yrs)
-  obj2 <- TMB::MakeADFun(data=dat2, parameters=pars2, map=map2,
-                         random=obj$random, DLL='goa_pk_tmb', silent=TRUE)
-  ## print(obj$fn())
-  ## print(obj2$fn())
-  ## print(obj$gr())
-  ## print(obj2$gr())
-  lwr <- get_bounds(obj2)$lwr
-  upr <- get_bounds(obj2)$upr
+  input2 <- list(version=paste0('peel',peel), dat=dat2, pars=pars2, map=map2, random=obj$env$random)
   message("Starting optimization for peel=",peel)
-  opt <- TMBhelper::fit_tmb(obj2, lower=lwr, loopnum=3,
-                            upper=upr, getsd=getsd, control=control,
-                            newtonsteps=1)
-  opt$rep <- obj2$report()
-  return(opt)
+  fit <- fit_pk(input=input2, getsd=getsd, control=control, ...)
+  return(fit)
 }
+

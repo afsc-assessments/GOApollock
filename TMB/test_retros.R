@@ -1,41 +1,51 @@
+### need to make sure the TMB model retro approach can replicate
+### the old ADMB model
+
 library(GOApollock)
 library(TMB)
 devtools::load_all('C:/Users/cole.monnahan/GOApollock/')
 
 ## The dat and rep files from the 2022 final model
+setwd("Data")
+stdadmb <- readRDS("stdfile.RDS")
 dat <- readRDS('datfile.RDS')
 replist <- readRDS("repfile.RDS")
-stdadmb <- readRDS("stdfile.RDS")
-pars <- readRDS('pars.RDS')
-map <- readRDS('map.RDS')
-years <- 1970:2022
+setwd("..")
+input <- prepare_pk_input(dat)
+## Fit the full model
+fit <- fit_pk(input, getsd=FALSE)
+obj <- fit$obj
 
-## Fit the model and compare to ADMB. Should be identical
-compile("../source/goa_pk_tmb.cpp")
-dyn.load('../source/goa_pk_tmb.dll')
-obj <- MakeADFun(data=dat, parameters=pars, map=map, random=NULL,
-                 silent=TRUE, DLL='goa_pk_tmb')
+retros <- fit_pk_retros(obj=obj)
 
 
-retros <- lapply(0:7, function(i) fit_peel(obj, i, getsd=0))
 
-get_std <- function(x, version) {
-  ss <- x$SD
-  with(ss, data.frame(version=version, name=names(value), est=value, se=sqrt(diag(cov)))) %>%
-  group_by(name) %>% mutate(year=1969+1:n(), lwr=est-1.96*se, upr=est+1.96*se) %>% ungroup
-}
+stds <- get_std(retros)
+ssbtmb <- filter(stds, name=='Espawnbio')
+ssbadmb <-
+  readRDS('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results/retro_stds.RDS') %>%
+  filter(name=='Espawnbio')
 
 
-test <- lapply(0:7, function(x) get_std(retros[[x+1]], version=paste0('peel',x)))
+ssb <- bind_rows(cbind(model='TMB', ssbtmb),
+                 cbind(model='ADMB',ssbadmb)) %>%
+  mutate(peel=as.numeric(gsub('peel','', version))) %>%
+  filter(peel<=7) %>% arrange(peel, year) %>%
+  select(model, est, se, year, peel)
+library(tidyr)
+estdiff <- ssb %>% select(-se) %>%
+  pivot_wider(names_from='model', values_from='est')%>%
+  mutate(estdiff=(TMB-ADMB)/ADMB)
+sediff <- ssb %>% select(-est) %>%
+  pivot_wider(names_from='model', values_from='se')%>%
+  mutate(sediff=(TMB-ADMB)/ADMB)
 
-ssbs <- lapply(0:7, function(x){
-  data.frame(version=paste('peel',x),
-             ssb=retros[[x+1]]$rep$Espawnbio) %>%
-    mutate(year=1969+1:n())}) %>% bind_rows
+## yep matches
+sediff$sediff %>% abs %>% max
+estdiff$estdiff %>% abs %>% max
 
-ggplot(ssbs, aes(year, ssb, color=version)) + geom_line()
-
-reps <- lapply(retros, \(x) x$rep)
-calculate_rho(reps)
-
-mymelt(reps[[1]], 'Espawnbio')
+diffs <- cbind(estdiff, sediff=sediff$sediff)
+ggplot(diffs, aes(year, estdiff, color=factor(peel))) +
+  geom_line()
+ggplot(diffs, aes(year, sediff, color=factor(peel))) +
+  geom_line()

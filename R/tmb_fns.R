@@ -1,4 +1,22 @@
 
+#' Extract sdreport data.frames from fitted models
+#' @param fits A single model or list of models as returned by
+#'   \code{\link{fit_pk}}
+#' @return A cleanly formatted data frame of sdreport objects,
+#'   with columns 'name', 'est', 'se', 'year', 'lwr', 'upr', and
+#'   'version'
+get_std <- function(fits) {
+  ## single fit
+  if(class(fits[[1]])[1]!='pkfit'){
+    out <- fits$sd
+  } else {
+    ## list of fits
+    out <- lapply(fits, function(x) x$sd) %>% bind_rows
+  }
+  return(out)
+}
+
+
 #' Fit a GOA pollock model (BETA)
 #' @param input Input list as returned by
 #'   \code{prepare_pk_input}.
@@ -42,7 +60,8 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
   sdrep <- sdreport(obj)
   rep <- obj$report()
   std <- with(sdrep, data.frame(name=names(value), est=value, se=sqrt(diag(cov)))) %>%
-    group_by(name) %>% mutate(year=1969+1:n(), lwr=est-1.96*se, upr=est+1.96*se) %>% ungroup
+    group_by(name) %>% mutate(year=1969+1:n(), lwr=est-1.96*se,
+  upr=est+1.96*se) %>% ungroup %>% mutate(version=input$version)
 
   fit <- list(version=input$version, rep=rep, opt=opt, sd=std, obj=obj)
   class(fit) <- c('pkfit', 'list')
