@@ -12,10 +12,6 @@
 // Implements 2 corrections to coding errors noticed by Teresa in Spring 2014
 // Namely: Uses 20 iterations rather than 10 to get the correct spawning biomass in the HCR, AND implements the bias corrected log likelihood for survey biomass correctly.
 
-// Command line option '-retro N' added to allow for easy
-// retrospective analyses. In this mode RMSE for indices are not
-// calculated (fixed at zero).
-
 // Added log biomass sdreport vectors. Will use those for
 // uncertainties moving forward.
 
@@ -27,7 +23,7 @@
 // output.
 
 // July 2023 started conversion to TMB
-
+// Oct 2023 took out retro option (done in R)
 #include <TMB.hpp>
 #include <iostream>
 //#include "helper_functions.hpp"
@@ -44,27 +40,7 @@ Type objective_function<Type>::operator() ()
 {
 
 
-  // // Command line argument to do a retrospective peel
-  // // To use this flag, run the model using: "-retro n" to peel n years.
-  // //
-  // // Modified in 2021 by code Steve Martell wrote for ATF. The
-  // // general idea is to read in the data with dimensions as is,
-  // // then redefine endyr in the parameter section to be shorter
-  // // by n years. To avoid over-running arrays it breaks out of
-  // // for loops early and has conditionals based on isretro value
-  // int retro_yrs 
-  // int isretro
-  // !! int on,opt;
-  // !! retro_yrs=0;
-  // !! isretro=0;
-  // !! if((on=option_match(ad_comm::argc,ad_comm::argv,"-retro",opt))>-1){
-  // !!   retro_yrs=atoi(ad_comm::argv[on+1]);
-  // !!   isretro=1;
-  // !!   cout << "\n!!  Implementing retro w/ peels="<< retro_yrs << " !!\n";
-  // !! }
-  
   // !!CLASS ofstream report1("mceval.dat")
-  //int isretro=0;
   DATA_INTEGER(styr);	    // Starting year for population model
   DATA_INTEGER(endyr);	    // Ending year for population model
   DATA_INTEGER(rcrage);	    // Recruitment age
@@ -209,18 +185,7 @@ Type objective_function<Type>::operator() ()
   
   Type o=0.00001;                                       // A small number
 
-  // After all the data is read in, redefine the endyr to be the
-  // retroyr, then **carefully* redefine calculations throughout
-  // to not overindex the data inputs
-  // int endyr0=endyr;			// original endyr
-
-  // LOC_CALCS
-  //  if(retro_yrs<0){cerr << "bad peels in -retro option" << endl; ad_exit(1);};
-  //  endyr0=endyr;
-  //  endyr=endyr-retro_yrs;
-  // END_CALCS
-
-  // Projection parameters
+   // Projection parameters
   vector<Type> wt_pop_proj(nages);
   vector<Type> wt_spawn_proj(nages);
   vector<Type> wt_fsh_proj(nages);
@@ -769,7 +734,6 @@ Type objective_function<Type>::operator() ()
 
     // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
     for (i=0;i<nyrs_fsh;i++) {
-    if(ifshyrs(i)>endyr) break;
     for (j=a0;j<=a1;j++) {
       if(j<iac_yng_fsh(i)) {
 	Ecatp(ifshyrs(i),iac_yng_fsh(i)) += Ecatp(ifshyrs(i),j);
@@ -780,8 +744,7 @@ Type objective_function<Type>::operator() ()
     }
   } 
     for (i=0;i<nyrs_srv1;i++) {
-    if(isrvyrs1(i)>endyr) break;
-    for (j=a0;j<=a1;j++) {
+     for (j=a0;j<=a1;j++) {
       if(j<iac_yng_srv1(i)) {
 	Esrvp1(isrvyrs1(i),iac_yng_srv1(i)) += Esrvp1(isrvyrs1(i),j);
 	Esrvp1(isrvyrs1(i),j) = 0;
@@ -794,7 +757,6 @@ Type objective_function<Type>::operator() ()
   // Fishery likelihoods
   //Total catch
   for(i=y0; i<=y1;i++){
-    if(i>y1) break;
     loglik(0) += -.5*square((log(cattot(i))-log(Ecattot(i)))/cattot_log_sd(i));
   }	  
 
@@ -802,7 +764,6 @@ Type objective_function<Type>::operator() ()
   //Age composition
   res_fish.setZero();
   for (i=0;i<nyrs_fsh;i++) {
-    // if(ifshyrs(i)>y1) break; 	// ignore data after retroyear
     llcatp(i) = 0;
     for (j=iac_yng_fsh(i);j<=iac_old_fsh(i);j++) {
       llcatp(i) += multN_fsh(i)*(catp(i,j)+o)*log((Ecatp(ifshyrs(i),j)+o)/(catp(i,j)+o));
@@ -821,7 +782,6 @@ Type objective_function<Type>::operator() ()
   // //Length composition
   // loglik(2)=0;
   // for (i=0;i<nyrslen_fsh;i++) {
-  //   if(fshlenyrs(i)>y1) break;
   //   lllenp(i) = 0;
   //   for (j=0;j<nbins1;j++) {
   //     lllenp(i) += multNlen_fsh(i)*(lenp(i,j)+o)*log((Elenp(fshlenyrs(i),j)+o)/(lenp(i,j)+o));
@@ -833,7 +793,6 @@ Type objective_function<Type>::operator() ()
   // Total biomass  
   loglik(3)=0;
   for(i=0; i<nyrs_srv1;i++){
-    if(isrvyrs1(i)>y1) break;
     loglik(3)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(isrvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
   }
 
@@ -844,7 +803,6 @@ Type objective_function<Type>::operator() ()
   //Age composition
   loglik(4)=0;
   for (i=0;i<nyrsac_srv1;i++) {
-    if(isrv_acyrs1(i)>y1) break;
     llsrvp1(i) = 0;
     for (j=a0;j<=a1;j++) {
       llsrvp1(i) += multN_srv1(i)*(srvp1(i,j)+o)*log((Esrvp1(isrv_acyrs1(i),j)+o)/(srvp1(i,j)+o));
@@ -873,7 +831,6 @@ Type objective_function<Type>::operator() ()
   //Total biomass    
   loglik(6) =0;
   for (i=0;i<nyrs_srv2;i++){
-    if(isrvyrs2(i)>y1) break;
     loglik(6)+=-.5*square((log(indxsurv2(i))-log(Eindxsurv2(isrvyrs2(i)))+square(indxsurv_log_sd2(i))/2.)/indxsurv_log_sd2(i));
   }
   RMSE_srv2=0;
@@ -884,7 +841,6 @@ Type objective_function<Type>::operator() ()
   loglik(7)=0;
   for (i=0;i<nyrsac_srv2;i++) {
     llsrvp2(i) = 0;
-    if(isrv_acyrs2(i)>y1) break;
     for (j=a0;j<=a1;j++) {
       llsrvp2(i) += multN_srv2(i)*(srvp2(i,j)+o)*log((Esrvp2(isrv_acyrs2(i),j)+o)/(srvp2(i,j)+o));
       res_srv2(i,j)=srvp2(i,j);
@@ -913,7 +869,6 @@ Type objective_function<Type>::operator() ()
   //Total biomass
   loglik(10)=0;
   for(i=0; i<nyrs_srv3;i++){
-    if(isrvyrs3(i)>y1) break;
     loglik(10) += -.5*square((log(indxsurv3(i))-log(Eindxsurv3(isrvyrs3(i)))+square(indxsurv_log_sd3(i))/2.)/indxsurv_log_sd3(i));
   }
   RMSE_srv3=0;
@@ -923,7 +878,6 @@ Type objective_function<Type>::operator() ()
   // age composition
   loglik(11)=0;
   for (i=0;i<nyrsac_srv3;i++) {
-    if(isrv_acyrs3(i)>y1) break;
     llsrvp3(i) = 0;
     for (j=a0;j<=a1;j++) {
       llsrvp3(i) += multN_srv3(i)*(srvp3(i,j)+o)*log((Esrvp3(isrv_acyrs3(i),j)+o)/(srvp3(i,j)+o));
@@ -955,7 +909,6 @@ Type objective_function<Type>::operator() ()
 
   // Survey 4 and 5 likelihoods
   for(i=0; i<nyrs_srv4;i++){ 	// assuming srv4 and srv5 have identical structure
-    if(isrvyrs4(i) >y1) break;
     loglik(13) += -.5*square((log(indxsurv4(i))-log(Eindxsurv4(isrvyrs4(i)))+square(indxsurv_log_sd4(i))/2.)/indxsurv_log_sd4(i));
     loglik(14) += -.5*square((log(indxsurv5(i))-log(Eindxsurv5(isrvyrs5(i)))+square(indxsurv_log_sd5(i))/2.)/indxsurv_log_sd5(i));
   }
@@ -970,7 +923,6 @@ Type objective_function<Type>::operator() ()
   //Total biomass    
   loglik(15)=0;
   for(i=0;i<nyrs_srv6;i++){
-    if(isrvyrs6(i)>y1) break;
     loglik(15)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(isrvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
   }
   RMSE_srv6=0;
@@ -980,7 +932,6 @@ Type objective_function<Type>::operator() ()
   // Age composition
   loglik(16)=0;
   for (i=0;i<nyrsac_srv6;i++) {
-    if(isrv_acyrs6(i)>y1) break;
     llsrvp6(i) = 0;
     for (j=a0;j<=a1;j++) {
       llsrvp6(i) += multN_srv6(i)*(srvp6(i,j)+o)*log((Esrvp6(isrv_acyrs6(i),j)+o)/(srvp6(i,j)+o));
