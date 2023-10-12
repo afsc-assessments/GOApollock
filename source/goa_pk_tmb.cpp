@@ -484,6 +484,10 @@ Type objective_function<Type>::operator() ()
   // vector<int> isrv_acyrs4=srv_acyrs4-styr;
   // vector<int> isrv_acyrs5=srv_acyrs5-styr;
   vector<int> isrv_acyrs6=srv_acyrs6-styr;
+  vector<int> isrv_lenyrs1=srv_lenyrs1-styr;
+  vector<int> isrv_lenyrs2=srv_lenyrs2-styr;
+  vector<int> isrv_lenyrs3=srv_lenyrs3-styr;
+  vector<int> isrv_lenyrs6=srv_lenyrs6-styr;
   vector<int> iac_yng_fsh=ac_yng_fsh-1;
   vector<int> iac_old_fsh=ac_old_fsh-1;
   vector<int> iac_yng_srv1=ac_yng_srv1-1;
@@ -816,10 +820,10 @@ Type objective_function<Type>::operator() ()
 
   // //Length composition
   // loglik(2)=0;
-  // for (i=1;i<=nyrslen_fsh;i++) {
+  // for (i=0;i<nyrslen_fsh;i++) {
   //   if(fshlenyrs(i)>y1) break;
   //   lllenp(i) = 0;
-  //   for (j=1;j<=nbins1;j++) {
+  //   for (j=0;j<nbins1;j++) {
   //     lllenp(i) += multNlen_fsh(i)*(lenp(i,j)+o)*log((Elenp(fshlenyrs(i),j)+o)/(lenp(i,j)+o));
   //   }
   //   loglik(2) += lllenp(i);
@@ -857,11 +861,10 @@ Type objective_function<Type>::operator() ()
   }
   // //length composition
   // loglik(5)=0;
-  // for (i=1;i<=nyrslen_srv1;i++) {
-  //   if(srv_lenyrs1(i)>y1) break;
+  // for (i=0;i<nyrslen_srv1;i++) {
   //   llsrvlenp1(i) = 0;
-  //   for (j=1;j<=nbins3;j++) {
-  //     llsrvlenp1(i) += multNlen_srv1(i)*(srvlenp1(i,j)+o)*log((Esrvlenp1(srv_lenyrs1(i),j)+o)/(srvlenp1(i,j)+o));
+  //   for (j=0;j<nbins3;j++) {
+  //     llsrvlenp1(i) += multNlen_srv1(i)*(srvlenp1(i,j)+o)*log((Esrvlenp1(isrv_lenyrs1(i),j)+o)/(srvlenp1(i,j)+o));
   //   }
   //   loglik(5) += llsrvlenp1(i);
   // }
@@ -895,16 +898,15 @@ Type objective_function<Type>::operator() ()
     }
     loglik(7) += llsrvp2(i);
   }
-  // // length composition
-  // loglik(8)=0;
-  // for (i=1;i<=nyrslen_srv2;i++) {
-  //   if(srv_lenyrs2(i) > y1) break;
-  //   llsrvlenp2(i) = 0;
-  //   for (j=1;j<=nbins2;j++) {
-  //     llsrvlenp2(i) += multNlen_srv2(i)*(srvlenp2(i,j)+o)*log((Esrvlenp2(srv_lenyrs2(i),j)+o)/(srvlenp2(i,j)+o));
-  //   }
-  //   loglik(8) += llsrvlenp2(i);
-  // }
+  // length composition
+  loglik(8)=0;
+  for (i=0;i<nyrslen_srv2;i++) {
+    llsrvlenp2(i) = 0;
+    for (j=0;j<nbins2;j++) {
+      llsrvlenp2(i) += multNlen_srv2(i)*(srvlenp2(i,j)+o)*log((Esrvlenp2(isrv_lenyrs2(i),j)+o)/(srvlenp2(i,j)+o));
+    }
+    loglik(8) += llsrvlenp2(i);
+  }
   loglik(9) = 0;
 
   // Survey 3 likelihoods
@@ -936,13 +938,12 @@ Type objective_function<Type>::operator() ()
     }
     loglik(11) += llsrvp3(i);
   }
-  // // length composition
+  // length composition
   // loglik(12)=0;
-  // for (i=1;i<=nyrslen_srv3;i++) {
-  //   if(srv_lenyrs3(i)>y1) break;
+  // for (i=0;i<nyrslen_srv3;i++) {
   //   llsrvlenp3(i) = 0;
-  //   for (j=1;j<=nbins2;j++) {
-  //     llsrvlenp3(i) += multNlen_srv3(i)*(srvlenp3(i,j)+o)*log((Esrvlenp3(srv_lenyrs3(i),j)+o)/(srvlenp3(i,j)+o));
+  //   for (j=0;j<nbins2;j++) {
+  //     llsrvlenp3(i) += multNlen_srv3(i)*(srvlenp3(i,j)+o)*log((Esrvlenp3(isrv_lenyrs3(i),j)+o)/(srvlenp3(i,j)+o));
   //     res_srv3len(i,j)=srvlenp3(i,j);
   //     res_srv3len(i,nbins2+j)=Esrvlenp3(srv_lenyrs3(i),j);
   //     if(multNlen_srv3(i)>0) {
@@ -994,15 +995,14 @@ Type objective_function<Type>::operator() ()
     }
     loglik(16) +=llsrvp6(i);
   }
-  // // length composition
-  // for (i=1;i<=nyrslen_srv6;i++) {
-  //   if(srv_lenyrs6(i)>y1) break;
-  //   llsrvlenp6(i) = 0;
-  //   for (j=1;j<=nbins2;j++) {
-  //     llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(srv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
-  //   }
-  //   loglik(16) += llsrvlenp6(i);
-  // }
+  // length composition
+  for (i=0;i<nyrslen_srv6;i++) {
+    llsrvlenp6(i) = 0;
+    for (j=0;j<nbins2;j++) {
+      llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(isrv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
+    }
+    loglik(16) += llsrvlenp6(i);
+  }
 
   // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
   loglik(17) += -0.5*norm2(dev_log_recruit)/square(sigmaR);
