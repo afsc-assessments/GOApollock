@@ -4,7 +4,7 @@
 \alias{fit_peel}
 \title{Internal wrapper function to fit a single peel}
 \usage{
-fit_peel(obj, peel, getsd = TRUE, ...)
+fit_peel(fit, peel, getsd = TRUE, ...)
 }
 \description{
 Internal wrapper function to fit a single peel

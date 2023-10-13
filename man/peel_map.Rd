@@ -4,7 +4,7 @@
 \alias{peel_map}
 \title{Modify map to match peel}
 \usage{
-peel_map(map, pars, yrs)
+peel_map(map, pars)
 }
 \description{
 Modify map to match peel

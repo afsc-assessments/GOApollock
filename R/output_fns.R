@@ -13,9 +13,9 @@ calculate_rho <- function(reps, max_peels=NULL){
   } else {
     ssb <- mymelt(reps, 'Expected_spawning_biomass')
   }
-  ssb %>%
-    mutate(model=as.numeric(gsub('peel','', model))) %>%
-    rename(peel=model, SSB=value) %>%
+  ssb <- ssb %>%
+    mutate(peel=as.numeric(gsub('peel','', model))) %>%
+    rename(SSB=value) %>%
     group_by(year) %>%
     mutate(SSB_Pct_Diff=100*(SSB-SSB[peel==0])/SSB[peel==0]) %>%
     ungroup()

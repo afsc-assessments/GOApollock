@@ -4,7 +4,7 @@
 \alias{peel_pars}
 \title{Modify parameter list to match peel}
 \usage{
-peel_pars(pars, peel)
+peel_pars(pars, dat, peel)
 }
 \description{
 Modify parameter list to match peel

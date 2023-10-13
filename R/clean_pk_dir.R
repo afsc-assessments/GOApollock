@@ -14,6 +14,7 @@ clean_pk_dir <- function(path=getwd(), full=FALSE){
   } else {
     r <- list.files(path, pattern='r0|b0|p0')
     r <- c(r,list.files(path, pattern='\\.cpp|\\.obj|\\.log|\\.eva|\\.bar|\\.htp|\\.dep'))
+    r <- r[-grep('tmb',r)]
     if(length(r)>0) trash <- file.remove(file.path(path, r))
     s <- file.size(r <- file.path(path, 'mceval.dat'))
     if(!is.na(s)){

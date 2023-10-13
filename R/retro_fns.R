@@ -2,10 +2,10 @@
 #' Fit a sequence of models to peeled data set for retrospective
 #' calculations
 #'
-#' @param obj TMB obj from fitted model
+#' @param obj A fitted model from \code{fit_pk}.
 #' @param peels Vector of peels to fit, with 0 being the original
 #'   data set
-#' @param
+#' @param getsd Whether to run sdreport
 #' @param ... Additional arguments to pass to \link{\code{fit_pk}}
 #' @return A list of model fits of class 'pkfit'
 #' @details This function fits a series of models to peels based
@@ -14,13 +14,14 @@
 #'   are preserved so that it runs faster. Pass an unfitted obj
 #'   if this is undesired behavior.
 #' @export
-fit_pk_retros <- function(obj, peels=0:7, getsd=TRUE, ...){
-  retros <- lapply(peels, function(i) fit_peel(obj, peel=i, getsd=getsd, ...))
+fit_pk_retros <- function(fit, peels=0:7, getsd=TRUE, ...){
+  if(class(fit)[1]!='pkfit') stop("fit argument is not a fitted model")
+  retros <- lapply(peels, function(i) fit_peel(fit, peel=i, getsd=getsd, ...))
   return(retros)
 }
 
 #' Modify parameter list to match peel
-peel_pars <- function(pars, peel){
+peel_pars <- function(pars, dat,  peel){
   p <- pars
   stopifnot(peel>=0)
   if(any(sapply(p, function(x) !is.null(dim(x))))) stop("matrix or arrays break retro code")
@@ -39,7 +40,7 @@ peel_pars <- function(pars, peel){
 }
 
 #' Modify map to match peel
-peel_map <- function(map, pars, yrs){
+peel_map <- function(map, pars){
   ## tricky part is map elements may or may not be specified so
   ## do this generically
   m <- map
@@ -197,16 +198,17 @@ peel_data <- function(dat, peel){
 
 #' Internal wrapper function to fit a single peel
 #'
-fit_peel <- function(obj, peel, getsd=TRUE, ...){
+fit_peel <- function(fit, peel, getsd=TRUE, ...){
   control <- list(eval.max=10000, iter.max=10000, trace=0)
   stopifnot(peel>=0)
-  dat2 <- peel_data(dat=obj$env$data, peel)
-  attributes(dat2) <- attributes(obj$env$data)
+  dat2 <- peel_data(dat=fit$obj$env$data, peel)
+  attributes(dat2) <- attributes(fit$obj$env$data)
   attributes(dat2)$check.passed <- NULL
-  yrs <- dat$styr:dat$endyr
-  pars2 <- peel_pars(pars=obj$env$parList(), peel)
-  map2 <- peel_map(map=obj$env$map, pars2, yrs)
-  input2 <- list(version=paste0('peel',peel), dat=dat2, pars=pars2, map=map2, random=obj$env$random)
+  pars2 <- peel_pars(pars=fit$obj$env$parList(), dat=dat2, peel)
+  map2 <- peel_map(map=fit$obj$env$map, pars2)
+  input2 <- list(version=paste0('peel',peel), path=fit$path,
+                 modfile=fit$modfile,
+                 dat=dat2, pars=pars2, map=map2, random=fit$obj$env$random)
   message("Starting optimization for peel=",peel)
   fit <- fit_pk(input=input2, getsd=getsd, control=control, ...)
   return(fit)

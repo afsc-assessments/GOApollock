@@ -5,15 +5,17 @@
 \title{Fit a sequence of models to peeled data set for retrospective
 calculations}
 \usage{
-fit_pk_retros(obj, peels = 0:7, getsd = TRUE, ...)
+fit_pk_retros(fit, peels = 0:7, getsd = TRUE, ...)
 }
 \arguments{
-\item{obj}{TMB obj from fitted model}
-
 \item{peels}{Vector of peels to fit, with 0 being the original
 data set}
 
+\item{getsd}{Whether to run sdreport}
+
 \item{...}{Additional arguments to pass to \link{\code{fit_pk}}}
+
+\item{obj}{A fitted model from \code{fit_pk}.}
 }
 \value{
 A list of model fits of class 'pkfit'

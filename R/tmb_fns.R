@@ -5,6 +5,7 @@
 #' @return A cleanly formatted data frame of sdreport objects,
 #'   with columns 'name', 'est', 'se', 'year', 'lwr', 'upr', and
 #'   'version'
+#' @export
 get_std <- function(fits) {
   ## single fit
   if(class(fits[[1]])[1]!='pkfit'){
@@ -12,6 +13,22 @@ get_std <- function(fits) {
   } else {
     ## list of fits
     out <- lapply(fits, function(x) x$sd) %>% bind_rows
+  }
+  return(out)
+}
+
+#' Extract report list from fitted models
+#' @param fits A single model or list of models as returned by
+#'   \code{\link{fit_pk}}
+#' @return Reports
+#' @export
+get_rep <- function(fits) {
+  ## single fit
+  if(class(fits[[1]])[1]!='pkfit'){
+    out <- fits$rep
+  } else {
+    ## list of fits
+    out <- lapply(fits, function(x) x$rep)
   }
   return(out)
 }
@@ -36,14 +53,13 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                    control=NULL, do.fit=TRUE,
                    use_bounds=FALSE){
 
-  compile("../source/goa_pk_tmb.cpp")
-  dyn.load('../source/goa_pk_tmb.dll')
+  cpp <- paste0(file.path(input$path, input$modfile),'.cpp')
+  if(!file.exists(cpp)) stop("file does not exist: ", cpp)
+  compile(cpp)
+  dyn.load(dynlib(file.path(input$path, input$modfile)))
   obj <- MakeADFun(data=input$dat, parameters=input$pars,
                    map=input$map, random=input$random,
-                   DLL='goa_pk_tmb', silent=TRUE)
-  obj <- MakeADFun(data=input$dat, parameters=input$pars,
-                   map=input$map, random=input$random,
-                   DLL='goa_pk_tmb', silent=TRUE)
+                   DLL=input$modfile, silent=TRUE)
   if(!do.fit) return(obj)
   if(use_bounds){
     lwr <- get_bounds(obj)$lwr
@@ -58,33 +74,41 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                             newtonsteps=newtonsteps, getsd=FALSE,
                             lower=lwr, upper=upr)
   sdrep <- sdreport(obj)
-  rep <- obj$report()
+  rep <- c(version=input$version, obj$report())
   std <- with(sdrep, data.frame(name=names(value), est=value, se=sqrt(diag(cov)))) %>%
     group_by(name) %>% mutate(year=1969+1:n(), lwr=est-1.96*se,
   upr=est+1.96*se) %>% ungroup %>% mutate(version=input$version)
 
-  fit <- list(version=input$version, rep=rep, opt=opt, sd=std, obj=obj)
+  fit <- list(version=input$version, path=input$path,
+              modfile=input$modfile, rep=rep, opt=opt, sd=std, obj=obj)
   class(fit) <- c('pkfit', 'list')
+  saveRDS(fit, file=paste0(input$path,'/fit.RDS'))
   return(fit)
 }
 
 #' Prepare inputs for the TMB GOA pollock model.
-#' @param dat Data list as read in with
-#'   \link{\code{read_pk_dat}}.
+#' @param path Directory containing the model and dat
+#'   files. Passed to \code{fit_pk}.
+#' @param datfile Name of dat file to be read in.
 #' @param version A character string for the model name, used for
 #'   plotting downstream
 #' @param random A character vector declaring random effect
 #'   vectors to be integrated. Defaults to NULL (fully penalized
 #'   ML)
+#' @param modfile Model name assumed to be 'goa_pk_tmb' unless
+#'   specified
 #' @return A list with the version, dat, pars, map and random
-#'   which are used to build a TMB 'obj' in
-#'   \link{\code{fit_pk}}.
+#'   which are used to build a TMB 'obj' in \link{\code{fit_pk}}.
 #' @export
-prepare_pk_input <- function(dat, version='none', random=NULL){
+prepare_pk_input <- function(path, datfile, version='none',
+                             random=NULL, modfile='goa_pk_tmb'){
+  if(!dir.exists(path)) stop("directory does not exist: ",path)
+  dat <- read_pk_dat(filename=datfile, path=path)
   ## Prepare the parameter list based on the data
   pars <- prepare_par(dat)
   map <- prepare_map(pars)
-  out <- list(version=version, dat=dat, pars=pars, map=map, random=random)
+  out <- list(version=version, path=path, modfile=modfile,
+              dat=dat, pars=pars, map=map, random=random)
   return(out)
 }
 

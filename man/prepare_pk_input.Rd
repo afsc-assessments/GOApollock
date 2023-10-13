@@ -4,11 +4,19 @@
 \alias{prepare_pk_input}
 \title{Prepare inputs for the TMB GOA pollock model.}
 \usage{
-prepare_pk_input(dat, version = "none", random = NULL)
+prepare_pk_input(
+  path,
+  datfile,
+  version = "none",
+  random = NULL,
+  modfile = "goa_pk_tmb"
+)
 }
 \arguments{
-\item{dat}{Data list as read in with
-\link{\code{read_pk_dat}}.}
+\item{path}{Directory containing the model and dat
+files. Passed to \code{fit_pk}.}
+
+\item{datfile}{Name of dat file to be read in.}
 
 \item{version}{A character string for the model name, used for
 plotting downstream}
@@ -16,11 +24,13 @@ plotting downstream}
 \item{random}{A character vector declaring random effect
 vectors to be integrated. Defaults to NULL (fully penalized
 ML)}
+
+\item{modfile}{Model name assumed to be 'goa_pk_tmb' unless
+specified}
 }
 \value{
 A list with the version, dat, pars, map and random
-which are used to build a TMB 'obj' in
-\link{\code{fit_pk}}.
+which are used to build a TMB 'obj' in \link{\code{fit_pk}}.
 }
 \description{
 Prepare inputs for the TMB GOA pollock model.
