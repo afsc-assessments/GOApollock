@@ -216,8 +216,8 @@ Type objective_function<Type>::operator() ()
   //   }
   // }
   // for predicting what the survey will see next year, Shelikof for now
-  wt_srv_proj=wt_spawn_proj;
-  wt_fsh_proj=wt_fsh(nyrs);
+  //  wt_srv_proj=wt_spawn_proj;
+  // wt_fsh_proj=wt_fsh(nyrs);
 
   // Population parameters
   //  init_bounded_number M(0.1,0.5,-1)
@@ -458,6 +458,19 @@ Type objective_function<Type>::operator() ()
   vector<int> iac_yng_srv1=ac_yng_srv1-1;
   vector<int> iac_old_srv1=ac_old_srv1-1;
 
+  // for projections take averages of WAA only from recent survey years with data
+  wt_pop_proj.setZero();
+  wt_spawn_proj.setZero();
+  for(int a=a0;a<=a1;a++){
+    for(int i=0;i<=2;i++)
+     wt_pop_proj(a)+=wt_srv2(isrv_acyrs2(nyrsac_srv2-i-1),a)/3;
+    for(int i=0;i<=4;i++){
+      wt_spawn_proj(a)+=wt_srv1(isrv_acyrs1(nyrsac_srv1-i-1),a)/5;
+      // for predicting what the survey will see next year, Shelikof for now
+      wt_srv_proj(a)+=wt_srv1(isrv_acyrs1(nyrsac_srv1-i-1),a)/5;
+    }	  
+  }
+  wt_fsh_proj=wt_fsh.row(y1);
   
   vector<Type> M(nages);
   M(0)=1.39; M(1)=0.69; M(2)=0.48; M(3)=0.37; M(4)=0.34;
@@ -549,7 +562,9 @@ Type objective_function<Type>::operator() ()
   slctsrv2_logit=-log(1/(slctsrv2-1e-10)-1);
   slctsrv3_logit=-log(1/(slctsrv3-1e-10)-1);
   slctsrv6_logit=-log(1/(slctsrv6-1e-10)-1);
-  slctfsh_logit=-log(1/(slctfsh(y1-1)-1e-10)-1);
+  // last year of fishery selex that has data
+  vector<Type> tmp=slctfsh.row(y1-1);
+  slctfsh_logit=-log(1/(tmp -1e-10)-1);
 
   for (i=y0;i<=y1;i++) {
     for (j=a0;j<=a1;j++) {
@@ -656,17 +671,17 @@ Type objective_function<Type>::operator() ()
   //  //   N_proj(y1+1,a0+1)=mean(recruit(1979,y1-1))*exp(-Z(y1,a0));
   //  //   N_proj(y1+1,a1)+=N(y1,a1)*exp(-Z(y1,a1));
 
-  //  // Averaging window for selectivity 
-  //  endyr_avg_slct=y1-1;
-  //  y0_avg_slct=endyr_avg_slct-4;
-
-  //  for (j=a0;j<=a1;j++) {
-  //    slctfsh_proj(j) = 0;
-  //    for (i=y0_avg_slct;i<=endyr_avg_slct;i++) {
-  //      slctfsh_proj(j) += slctfsh(i,j);
-  //    }
-  //  }
-  //  slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
+   // Averaging window for selectivity
+  slctfsh_proj.setZero();
+  int endyr_avg_slct=y1-1;
+   int y0_avg_slct=endyr_avg_slct-4;
+   for (j=a0;j<=a1;j++) {
+     slctfsh_proj(j) = 0;
+     for (i=y0_avg_slct;i<=endyr_avg_slct;i++) {
+       slctfsh_proj(j) += slctfsh(i,j);
+     }
+   }
+   slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
  
 
 
@@ -721,7 +736,6 @@ Type objective_function<Type>::operator() ()
 
   N_proj.setZero();
   recruit_proj.setZero();
-  slctfsh_proj.setZero();
   Z_proj.setZero();
   C_proj.setZero();
   Ecattot_proj.setZero();
@@ -1144,6 +1158,9 @@ Type objective_function<Type>::operator() ()
   ADREPORT(log_q1);
   ADREPORT(log_q2);
   ADREPORT(log_q3);
+  ADREPORT(log_q4);
+  ADREPORT(log_q5);
+  ADREPORT(log_q6);
   ADREPORT(endN);  
   ADREPORT(slctsrv1);
   ADREPORT(slctsrv2);
