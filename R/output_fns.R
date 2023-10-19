@@ -1,3 +1,32 @@
+#' Calculate SDNR for indices
+#' @param fit A fit or list of fits as returned by
+#'   \code{fit_pk}. Not currently implemented for the ADMB model.
+#' @return A data.frame of SDNR for all surveys with a column for
+#'   version
+#' @details SDNR=standard deviation of normalized residuals sd((o-e)/std)
+get_sdnr <- function(fit){
+  calc_sdnr <- function(obs,exp,CV) sd((obs-exp)/sqrt(log(CV^2+1)))
+  if(class(fit)[1]=='pkfit'){
+    dat <- fit$obj$env$data
+    rep <- fit$rep
+    yrs <- rep$years
+    out <- lapply(c(1:6), function(i){
+      obs <- dat[[paste0('indxsurv',i)]]
+      exp <- rep[[paste0('Eindxsurv',i)]][yrs %in% dat[[paste0('srvyrs',i)]]]
+      CV <- dat[[paste0('indxsurv_log_sd',i)]]
+      stopifnot(all.equal(length(obs), length(exp), length(CV)))
+      data.frame(survey=i, sdnr=calc_sdnr(obs, exp,CV),
+                 version=fit$version)
+    }
+    ) %>% do.call(rbind,.)
+  } else {
+    ## list of fits so use recursion
+    out <- lapply(fit, get_sdnr) %>% do.call(rbind,.)
+  }
+  return(out)
+}
+
+
 #' Calculate Mohn's rho
 #' @param reps A list of replists for each peel as returned by
 #'   \code{read_pk_rep}

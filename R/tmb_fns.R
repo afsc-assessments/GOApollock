@@ -12,7 +12,10 @@ get_std <- function(fits) {
     out <- fits$sd
   } else {
     ## list of fits
+    labs <- lapply(fits, function(x) x$version)
     out <- lapply(fits, function(x) x$sd) %>% bind_rows
+    ## preserve order in labels for downstream plots
+    out$version <- factor(out$version, levels=labs)
   }
   return(out)
 }
