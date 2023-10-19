@@ -937,7 +937,8 @@ Type objective_function<Type>::operator() ()
   //Total biomass    
   loglik(15)=0;
   for(i=0;i<nyrs_srv6;i++){
-    loglik(15)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(isrvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
+    if(indxsurv_log_sd6(i)>0) // dummy values to make retros work when no data
+      loglik(15)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(isrvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
   }
   RMSE_srv6=0;
   // if(!isretro)
@@ -946,27 +947,27 @@ Type objective_function<Type>::operator() ()
   // Age composition
   loglik(16)=0;
   for (i=0;i<nyrsac_srv6;i++) {
-    llsrvp6(i) = 0;
-    for (j=a0;j<=a1;j++) {
-      llsrvp6(i) += multN_srv6(i)*(srvp6(i,j)+o)*log((Esrvp6(isrv_acyrs6(i),j)+o)/(srvp6(i,j)+o));
-      res_srv6(i,j)=srvp6(i,j);
-      res_srv6(i,a1-a0+j+1)=Esrvp6(isrv_acyrs6(i),j);
-      if(multN_srv6(i)>0) {
-	pearson_srv6(i,j)=(srvp6(i,j)-Esrvp6(isrv_acyrs6(i),j))/sqrt((Esrvp6(isrv_acyrs6(i),j)*(1.-Esrvp6(isrv_acyrs6(i),j)))/multN_srv6(i));	
-      }  
+    if(multN_srv6(i)>0) {
+      llsrvp6(i) = 0;
+      for (j=a0;j<=a1;j++) {
+	llsrvp6(i) += multN_srv6(i)*(srvp6(i,j)+o)*log((Esrvp6(isrv_acyrs6(i),j)+o)/(srvp6(i,j)+o));
+	res_srv6(i,j)=srvp6(i,j);
+	res_srv6(i,a1-a0+j+1)=Esrvp6(isrv_acyrs6(i),j);
+	  pearson_srv6(i,j)=(srvp6(i,j)-Esrvp6(isrv_acyrs6(i),j))/sqrt((Esrvp6(isrv_acyrs6(i),j)*(1.-Esrvp6(isrv_acyrs6(i),j)))/multN_srv6(i));	
+      }
+      //  effN_srv6(i) = sum(Esrvp6(isrv_acyrs6(i))*(1-Esrvp6(isrv_acyrs6(i))))/sum(square(srvp6(i)-Esrvp6(isrv_acyrs6(i))));
+      loglik(16) +=llsrvp6(i);
     }
-    if(multN_srv6(i)>0) {	
-      //effN_srv6(i) = sum(Esrvp6(isrv_acyrs6(i))*(1-Esrvp6(isrv_acyrs6(i))))/sum(square(srvp6(i)-Esrvp6(isrv_acyrs6(i))));
-    }
-    loglik(16) +=llsrvp6(i);
   }
   // length composition
   for (i=0;i<nyrslen_srv6;i++) {
-    llsrvlenp6(i) = 0;
-    for (j=0;j<nbins2;j++) {
-      llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(isrv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
+    if(multNlen_srv6(i)>0) {
+      llsrvlenp6(i) = 0;
+      for (j=0;j<nbins2;j++) {
+	llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(isrv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
+      }
+      loglik(16) += llsrvlenp6(i);
     }
-    loglik(16) += llsrvlenp6(i);
   }
 
   // Constraints on recruitment. Assumed sigmaR=1.3 for all devs

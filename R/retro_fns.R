@@ -149,25 +149,49 @@ peel_data <- function(dat, peel){
   d$srvlenp3 <- d$srvlenp3[i5,]
   d$wt_srv3 <- d$wt_srv3[i0,]
   i3 <- which(d$srvyrs6 <=endyr)
-  d$srvyrs6 <- d$srvyrs6[i3]
-  d$nyrs_srv6 <- length(d$srvyrs6)
-  d$indxsurv6 <- d$indxsurv6[i3]
-  d$indxsurv_log_sd6 <- d$indxsurv_log_sd6[i3]
-  d$q6_rwlk_sd <- d$q6_rwlk_sd[i0]
+  if(d$srvyrs6[1] > endyr){
+    warning('peeling to endyr=', endyr,
+            ' leaves no survey 6 index data, so dummy values used w/ CV=0')
+    d$srvyrs6 <- dat$styr
+    d$nyrs_srv6 <- 1
+    d$indxsurv6 <- 1
+    d$indxsurv_log_sd6 <- 0
+    d$srv_acyrs6 <- dat$styr
+    d$nyrsac_srv6 <- 1
+    d$multN_srv6 <- 0
+    d$srvp6 <- d$srvp6[1,,drop=FALSE]
+    d$ac_yng_srv6 <- 1
+    d$ac_old_srv6 <- 10
+  } else {
+    d$srvyrs6 <- d$srvyrs6[i3]
+    d$nyrs_srv6 <- length(d$srvyrs6)
+    d$indxsurv6 <- d$indxsurv6[i3]
+    d$indxsurv_log_sd6 <- d$indxsurv_log_sd6[i3]
+    i4 <- which(d$srv_acyrs6<=endyr)
+    d$srv_acyrs6 <- d$srv_acyrs6[i4]
+    d$srvp6 <- d$srvp6[i4,, drop=FALSE]
+    d$nyrsac_srv6 <- length(d$srv_acyrs6)
+    d$multN_srv6 <- d$multN_srv6[i4]
+    d$ac_yng_srv6 <- d$ac_yng_srv6[i4]
+    d$ac_old_srv6 <- d$ac_old_srv6[i4]
+  }
   d$yrfrct_srv6 <- d$yrfrct_srv6[i0]
-  i4 <- which(d$srv_acyrs6<=endyr)
-  d$srv_acyrs6 <- d$srv_acyrs6[i4]
-  d$nyrsac_srv6 <- length(d$srv_acyrs6)
-  d$multN_srv6 <- d$multN_srv6[i4]
-  d$ac_yng_srv6 <- d$ac_yng_srv6[i4]
-  d$ac_old_srv6 <- d$ac_old_srv6[i4]
-  i5 <- which(d$srv_lenyrs6<=endyr)
-  d$srv_lenyrs6 <- d$srv_lenyrs6[i5]
-  d$nyrslen_srv6 <- length(d$srv_lenyrs6)
-  d$multNlen_srv6 <- d$multNlen_srv6[i5]
-  d$srvp6 <- d$srvp6[i4,]
-  d$srvlenp6 <- d$srvlenp6[i5,, drop=FALSE]
-  d$wt_srv6 <- d$wt_srv6[i0,]
+  if(d$srv_lenyrs6[1] > endyr){
+    warning('peeling to endyr=', endyr,
+            ' leaves no survey 6 length data, so dummy values used w/ Nsamp=0')
+    d$srv_lenyrs6 <- dat$styr
+    d$nyrslen_srv6 <- 1
+    d$multNlen_srv6 <- 0
+    d$srvlenp6 <- d$srvlenp6[1,, drop=FALSE]
+  } else {
+    i5 <- which(d$srv_lenyrs6<=endyr)
+    d$srv_lenyrs6 <- d$srv_lenyrs6[i5]
+    d$nyrslen_srv6 <- length(d$srv_lenyrs6)
+    d$multNlen_srv6 <- d$multNlen_srv6[i5]
+    d$srvp6 <- d$srvp6[i4,, drop=FALSE]
+    d$srvlenp6 <- d$srvlenp6[i5,, drop=FALSE]
+  }
+  d$wt_srv6 <- d$wt_srv6[i0,, drop=FALSE]
   i3 <- which(d$srvyrs4 <=endyr)
   d$srvyrs4 <- d$srvyrs4[i3]
   d$nyrs_srv4 <- length(d$srvyrs4)
@@ -180,16 +204,16 @@ peel_data <- function(dat, peel){
   d$indxsurv_log_sd5 <- d$indxsurv_log_sd5[i3]
   if(peel==0) stopifnot(all.equal(d,dat))
   ## this breaks makeadfun for some reason if not done??
-##   for(i in 1:length(dat)){
-## ##     browser()
-##     print(cbind(i=i, names(dat)[i], class(dat[[i]])[1], class(d[[i]])[1]))
-##     ## if(class(dat[[i]])[1]=='integer'){
-##     ##   message("converting ", names(dat)[i])
-##     ##   class(d[[i]]) <- 'integer'
-##     ## }
-##     class(d[[i]])[1] <- class(dat[[i]])[1]
-##     print(cbind(i=i, names(dat)[i], class(dat[[i]])[1], class(d[[i]])[1]))
-##   }
+  ##   for(i in 1:length(dat)){
+  ## ##     browser()
+  ##     print(cbind(i=i, names(dat)[i], class(dat[[i]])[1], class(d[[i]])[1]))
+  ##     ## if(class(dat[[i]])[1]=='integer'){
+  ##     ##   message("converting ", names(dat)[i])
+  ##     ##   class(d[[i]]) <- 'integer'
+  ##     ## }
+  ##     class(d[[i]])[1] <- class(dat[[i]])[1]
+  ##     print(cbind(i=i, names(dat)[i], class(dat[[i]])[1], class(d[[i]])[1]))
+  ##   }
   ## attributes(d) <- attributes(dat)
   ## attributes(d) <- attributes(dat)
   ## attributes(d)$checks.passed <- NULL
@@ -206,6 +230,10 @@ fit_peel <- function(fit, peel, getsd=TRUE, ...){
   attributes(dat2)$check.passed <- NULL
   pars2 <- peel_pars(pars=fit$obj$env$parList(), dat=dat2, peel)
   map2 <- peel_map(map=fit$obj$env$map, pars2)
+  if(dat2$endyr<2013){
+    warning("No survey 6 data so mapping off log_q6")
+    map2$log_q6 <- factor(NA)
+  }
   input2 <- list(version=paste0('peel',peel), path=fit$path,
                  modfile=fit$modfile,
                  dat=dat2, pars=pars2, map=map2, random=fit$obj$env$random)
