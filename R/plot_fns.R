@@ -90,6 +90,9 @@ plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
   x <-  bind_rows(x)
   ## redefine these to clear up plot
   x <- mutate(x, lwr=est-se, upr=est+se)
+  ## TMB verison doesn't have i column used for age below
+  if(is.null(as.data.frame(x)$i)) ## cast to DF to avoid warning
+    x <- group_by(x, name) %>% mutate(i=1:n()) %>% ungroup
   svys <- x %>%
     filter(name!='slctfsh_logit' & grepl('_logit',name)) %>%
     mutate(survey=gsub("slctsrv","Survey ", name),
@@ -98,14 +101,14 @@ plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
   if(nrow(svys)==0)
     stop("No survey selex found, maybe from old model version?")
   if(add_fishery){
-    fsh <-
-      filter(x, name=='slctfsh_logit' & is.finite(est)) %>%
-      mutate(survey='Fishery (2021)')
+    thisyear <- max(x$year)
+    fsh <- filter(x, name=='slctfsh_logit' & is.finite(est)) %>%
+      mutate(survey=paste0('Fishery (',thisyear-1,')'), i=1:10)
     if(nrow(fsh)==0)
       stop("No fishery selex found, maybe from old model version?")
     x <- bind_rows(svys,fsh)
   } else {
-    x <- svs
+    x <- svys
   }
   ## plot in logit space?
   if(!plot_logit){

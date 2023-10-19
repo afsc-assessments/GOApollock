@@ -140,7 +140,11 @@ mymelt <- function(replist, slot){
     ## Matrix already has dimnames for ages and years as appropriate
     y <- replist[[slot]]
     if(is.matrix(y)){
-      temp <- data.frame(model=replist$version, reshape2::melt(y))
+      ## onlyh need this for TMB output since doens't have
+      ## dimnames set by read_pk_rep
+      if(nrow(y)==length(replist$years) & ncol(y)==length(replist$ages))
+        dimnames(y) <- list(year=replist$years, age=replist$ages)
+      temp <- data.frame(version=replist$version, reshape2::melt(y))
       if(nrow(temp)==length(replist$ages)) temp <- cbind(temp, age=replist$ages)
       if(nrow(temp)==length(replist$years)) temp <- cbind(temp, year=replist$years)
       temp

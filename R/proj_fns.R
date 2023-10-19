@@ -78,6 +78,17 @@ write_spm_inputs <- function(replist, datlist, path=getwd()){
 
 
 write_spm_dynamics <- function(replist, datlist, ayr, path){
+  if(is.null(replist$Fishing_mortalities)){
+    ## new TMB names don't match so fix here
+    replist$Fishing_mortalities <- replist$F
+    replist$Natural_mortality <- replist$M
+    replist$Projection_spawning_weight_at_age <- replist$wt_spawn_proj
+    replist$Projection_fishery_weight_at_age <- replist$wt_fsh_proj
+    replist$Projection_fishery_selectivity <- colMeans(tail(replist$slctfsh,5)[-5,]) #replist$slctfsh_proj
+    replist$Expected_spawning_biomass <- replist$Espawnbio
+    replist$Recruits <- replist$recruit
+    replist$Numbers_at_age <- replist$N
+  }
   x <- c()
   x <-
   c(x,paste("# proj input file written by write_spm_inputs on", Sys.time()))

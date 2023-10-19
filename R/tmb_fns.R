@@ -77,7 +77,7 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
   rep <- c(version=input$version, obj$report())
   std <- with(sdrep, data.frame(name=names(value), est=value, se=sqrt(diag(cov)))) %>%
     group_by(name) %>% mutate(year=1969+1:n(), lwr=est-1.96*se,
-  upr=est+1.96*se) %>% ungroup %>% mutate(version=input$version)
+                              upr=est+1.96*se) %>% ungroup %>% mutate(version=input$version)
 
   fit <- list(version=input$version, path=input$path,
               modfile=input$modfile, rep=rep, opt=opt, sd=std, obj=obj)
