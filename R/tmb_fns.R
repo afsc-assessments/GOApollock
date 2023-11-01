@@ -9,11 +9,11 @@
 get_std <- function(fits) {
   ## single fit
   if(class(fits[[1]])[1]!='pkfit'){
-    out <- fits$sd
+    out <- fits$std
   } else {
     ## list of fits
     labs <- lapply(fits, function(x) x$version)
-    out <- lapply(fits, function(x) x$sd) %>% bind_rows
+    out <- lapply(fits, function(x) x$std) %>% bind_rows
     ## preserve order in labels for downstream plots
     out$version <- factor(out$version, levels=labs)
   }
@@ -48,8 +48,9 @@ get_rep <- function(fits) {
 #'   which is called internally.
 #' @return A list object of class 'pkfit' which contains a
 #'   "version" model name, rep, opt as returned by
-#'   \code{TMBHelper::fit_tmb} but without the SD slot, sd if
-#'   \code{getsd=TRUE}, and the obj.
+#'   \code{TMBHelper::fit_tmb} but without the SD slot, std
+#'   (formatted data frame) and sdrep if \code{getsd=TRUE}, and
+#'   the obj.
 #' @details This function is beta still.
 #' @export
 fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
@@ -76,14 +77,22 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
   opt <- TMBhelper::fit_tmb(obj, control=control,
                             newtonsteps=newtonsteps, getsd=FALSE,
                             lower=lwr, upper=upr)
-  sdrep <- sdreport(obj)
   rep <- c(version=input$version, obj$report())
-  std <- with(sdrep, data.frame(name=names(value), est=value, se=sqrt(diag(cov)))) %>%
-    group_by(name) %>% mutate(year=1969+1:n(), lwr=est-1.96*se,
-                              upr=est+1.96*se) %>% ungroup %>% mutate(version=input$version)
-
+  sdrep <- std <- NULL
+  if(getsd){
+    sdrep <- sdreport(obj)
+    std <- summary(sdrep)
+    std <- data.frame(dimnames(std)[[1]], std)
+    names(std) <- c('name', 'est', 'se')
+    row.names(std) <- NULL
+    std <- group_by(std, name) %>%
+      mutate(year=1969+1:n(), lwr=est-1.96*se,
+             upr=est+1.96*se, version=input$version) %>%
+      ungroup
+  }
   fit <- list(version=input$version, path=input$path,
-              modfile=input$modfile, rep=rep, opt=opt, sd=std, obj=obj)
+              modfile=input$modfile, rep=rep, opt=opt, std=std,
+              obj=obj, sdrep=sdrep)
   class(fit) <- c('pkfit', 'list')
   saveRDS(fit, file=paste0(input$path,'/fit.RDS'))
   return(fit)
