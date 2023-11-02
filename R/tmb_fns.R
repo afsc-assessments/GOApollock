@@ -9,11 +9,11 @@
 get_std <- function(fits) {
   ## single fit
   if(class(fits[[1]])[1]!='pkfit'){
-    out <- fits$std
+    out <- fits$sd
   } else {
     ## list of fits
     labs <- lapply(fits, function(x) x$version)
-    out <- lapply(fits, function(x) x$std) %>% bind_rows
+    out <- lapply(fits, function(x) x$sd) %>% bind_rows
     ## preserve order in labels for downstream plots
     out$version <- factor(out$version, levels=labs)
   }
@@ -91,7 +91,7 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
       ungroup
   }
   fit <- list(version=input$version, path=input$path,
-              modfile=input$modfile, rep=rep, opt=opt, std=std,
+              modfile=input$modfile, rep=rep, opt=opt, sd=std,
               obj=obj, sdrep=sdrep)
   class(fit) <- c('pkfit', 'list')
   saveRDS(fit, file=paste0(input$path,'/fit.RDS'))
