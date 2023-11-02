@@ -10,7 +10,7 @@ get_exec_table <- function(replist, bigfile, maxABCratio=1){
   means <- bigfile %>% filter(Yr > ayr & Yr <= ayr+2) %>%
     group_by(Alternative, Yr, Spp, SpNo) %>%
     summarize_all(mean) %>% ungroup
-  sumbio <- replist[[113]][1:2]*1e6
+  sumbio <- tail(replist$Esumbio,2)*1e6
   ssb <- filter(means,  Alternative==1) %>% pull(SSB) %>%
     round(0)
   if('B0' %in% names(means))
