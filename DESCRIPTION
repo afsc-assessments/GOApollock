@@ -14,7 +14,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends:
     R (>= 3.6.0),
-    dplyr
+    dplyr,
+    ggplot2,
+    tidyr
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

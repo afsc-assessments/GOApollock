@@ -30,8 +30,9 @@ which is called internally.}
 \value{
 A list object of class 'pkfit' which contains a
 "version" model name, rep, opt as returned by
-\code{TMBHelper::fit_tmb} but without the SD slot, sd if
-\code{getsd=TRUE}, and the obj.
+\code{TMBHelper::fit_tmb} but without the SD slot, std
+(formatted data frame) and sdrep if \code{getsd=TRUE}, and
+the obj.
 }
 \description{
 Fit a GOA pollock model (BETA)
