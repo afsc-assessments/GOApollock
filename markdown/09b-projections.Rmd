@@ -1,0 +1,180 @@
+### Projections and Status Determination
+<!-- !!!! this stuff came from the template, but Martin's SAFE -->
+<!-- didn't have it.. should probably add later
+
+<!-- Under the MSFCMA, the Secretary of Commerce is required to report -->
+<!-- on the status of each U.S. fishery with respect to overfishing. -->
+<!-- This report involves the answers to three questions: -->
+
+<!-- 1. Is the stock being subjected to overfishing? -->
+<!-- 2. Is the stock currently overfished? -->
+<!-- 3. Is the stock approaching an overfished condition? -->
+
+<!-- *Is the stock being subjected to overfishing?* The official catch -->
+<!-- estimate for the most recent complete year (`r year-1`) is -->
+<!-- *correct this later* r catch %\>% filter(Year==year-1) %\>% -->
+<!-- pull(Catch) %\>% format(., big.mark = ",")`t.  This is less than -->
+<!-- the`r year-1` OFL of 5,402 t.  Therefore, the stock is not being -->
+<!-- subjected to overfishing. -->
+
+<!-- Harvest Scenarios #6 and #7 are intended to permit determination -->
+<!-- of the status of a stock with respect to its minimum stock size -->
+<!-- threshold (MSST).  Any stock that is below its MSST is defined to -->
+<!-- be overfished.  Any stock that is expected to fall below its MSST -->
+<!-- in the next two years is defined to be approaching an overfished -->
+<!-- condition.  Harvest Scenarios #6 and #7 are used in these -->
+<!-- determinations as follows: -->
+
+<!-- *Is the stock currently overfished?* This depends on the stock's estimated spawning biomass in `r year`: -->
+<!-- -  If spawning biomass for `r year` is estimated to be below ½ -->
+<!--    $B_{35\%}$, the stock is below its MSST. -->
+<!-- -  If spawning biomass for `r year` is estimated to be above -->
+<!--    $B_{35\%}$ the stock is above its MSST. -->
+<!-- -  If spawning biomass for `r year` is estimated to be above ½ -->
+<!-- $B_{35\%}$ but below $B_{35\%}$, the stock's status relative to -->
+<!-- MSST is determined by referring to harvest Scenario #6 (Table -->
+<!-- 10.16). If the mean spawning biomass for 2028 is below -->
+<!-- $B_{35\%}$, the stock is below its MSST. Otherwise, the stock is -->
+<!-- above its MSST.   -->
+
+<!-- *Is the stock approaching an overfished -->
+<!-- condition?* This is determined by referring to harvest Scenario -->
+<!-- #7: -->
+<!-- -  If the mean spawning biomass for `r year+2` is below 1/2 -->
+<!--    $B_{35\%}$, the stock is approaching an overfished condition. -->
+<!-- -  If the mean spawning biomass for `r year+2` is above -->
+<!--    $B_{35\%}$, the stock is not approaching an overfished -->
+<!--    condition. -->
+<!-- -  If the mean spawning biomass for `r year+2` is above 1/2 -->
+<!--    $B_{35\%}$ but below $B_{35\%}$, the determination depends on -->
+<!--    the mean spawning biomass for `r year+12` If the mean spawning -->
+<!--    biomass for `r year+12` is below $B_{35\%}$, the stock is -->
+<!--    approaching an overfished condition. Otherwise, the stock is -->
+<!--    not approaching an overfished condition. Based on the above -->
+<!--    criteria and Table 10.16, the stock is not overfished and is -->
+<!--    not approaching an overfished condition. -->
+
+<!-- The fishing mortality that would have produced a catch for last year equal to last year's OFL is `r best_f`. -->
+
+A standard set of projections is required for each stock managed
+under Tiers 1, 2, or 3 of Amendment 56.  This set of projections
+encompasses seven harvest scenarios designed to satisfy the
+requirements of Amendment 56, the National Environmental Policy
+Act, and the Magnuson-Stevens Fishery Conservation and Management
+Act (MSFCMA). For each scenario, the projections begin with the
+vector of `r year` numbers at age as estimated in the assessment.
+This vector is then projected forward to the beginning of 
+`r year + 1` using the schedules of natural mortality and
+selectivity described in the assessment and the best available
+estimate of total (year-end) catch for `r year`.  In each
+subsequent year, the fishing mortality rate is prescribed on the
+basis of the spawning biomass in that year and the respective
+harvest scenario.  In each year, recruitment is drawn from an
+inverse Gaussian distribution whose parameters consist of maximum
+likelihood estimates determined from recruitments estimated in
+the assessment.  Spawning biomass is computed in each year based
+on the time of peak spawning and the maturity and weight
+schedules described in the assessment.  Total catch after 
+`r year` is assumed to equal the catch associated with the
+respective harvest scenario in all years. This projection scheme
+is run 1,000 times to obtain distributions of possible future
+stock sizes, fishing mortality rates, and catches.
+
+Five of the seven standard scenarios support the alternative
+harvest strategies analyzed in the Alaska Groundfish Harvest
+Specifications Final Environmental Impact Statement. These five
+scenarios, which are designed to provide a range of harvest
+alternatives that are likely to bracket the final TAC for 
+`r year+1`, are as follow ($\text{max}F_{ABC}$ refers to the maximum
+permissible value of $F_{ABC}$ under Amendment 56):
+
+- Scenario 1: In all future years, *F* is set equal to $max
+  F_{ABC}$. (Rationale: Historically, TAC has been constrained
+  by ABC, so this scenario provides a likely upper limit on
+  future TACs.)
+
+- Scenario 2: In `r year` and `r year + 1`, *F* is set equal to a
+  constant fraction of $max F_{ABC}$, where this fraction is
+  equal to the ratio of the realized catches in `r year-3`-
+  `r year-1` to the ABC recommended in the assessment for each of
+  those years.  For the remainder of the future years, maximum
+  permissible ABC is used.  (Rationale: In many fisheries the ABC
+  is routinely not fully utilized, so assuming an average ratio
+  catch to ABC will yield more realistic projections.)
+
+- Scenario 3: In all future years, *F* is set equal to 50% of
+    $max F_{ABC}$. (Rationale: This scenario provides a likely
+    lower bound on FABC that still allows future harvest rates to
+    be adjusted downward when stocks fall below reference
+    levels.)
+
+- Scenario 4: In all future years, *F* is set equal to the 
+  `r year-4`-`r year` average *F*. (Rationale: For some stocks, TAC
+  can be well below ABC, and recent average *F* may provide a
+  better indicator of $F_{TAC}$ than $F_{ABC}$.)
+
+- Scenario 5: In all future years, *F* is set equal to zero.
+  (Rationale: In extreme cases, TAC may be set at a level close
+  to zero.)
+
+Two other scenarios are needed to satisfy the MSFCMA's
+requirement to determine whether a stock is currently in an
+overfished condition or is approaching an overfished condition.
+These two scenarios are as follows (for Tier 3 stocks, the MSY
+level is defined as $B_{35\%}$):
+
+- Scenario 6: In all future years, *F* is set equal to $F_{OFL}$.
+  Rationale: This scenario determines whether a stock is
+  overfished. If the stock is expected to be 1) above its MSY
+  level in `r year` or 2) above 1/2 of its MSY level in 
+  `r year` and above its MSY level in `r year+9` under this scenario, then
+  the stock is not overfished.
+
+- Scenario 7: In `r year+1` and `r year + 2`, *F* is set equal to
+  max $F_{ABC}$, and in all subsequent years F is set equal to
+  FOFL.  Rationale: This scenario determines whether a stock is
+  approaching an overfished condition. If the stock is 1) above
+  its MSY level in `r year+2` or 2) above 1/2 of its MSY level in
+  `r year+2` and expected to be above its MSY level in
+  `r year+11` under this scenario, then the stock is not approaching
+  an overfished condition.
+
+Results from scenarios 1-7 are presented in Table
+1.\@ref(tab:proj-scens). Mean spawning biomass is projected to
+decline to 2027 under full exploitation scenarios, but will
+stay stable under the F=0 and other low exploitation scenarios
+(Fig. 1.\@ref(fig:fig-proj-scens)). We project catches to
+increase through 2025, and then drop slightly in subsequent
+years.
+
+Under the MSFCMA, the Secretary of Commerce is required to report
+on the status of each U.S. fishery with respect to
+overfishing. This report involves the answers to three questions:
+1) Is the stock being subjected to overfishing? 2) Is the stock
+currently overfished? 3) Is the stock approaching an overfished
+condition?
+
+The catch estimate for the most recent complete year (`r year-1`)
+is `r F(tail(datfile$cattot,2)[1])` t, which is less than the
+`r year-1` OFL of `r ofl.last` t. Therefore, the stock is not
+subject to overfishing. The fishing mortality that would have
+produced a catch in `r year-1` equal to the `r year-1` OFL is
+0.239.
+
+Scenarios 6 and 7 are used to make the MSFCMA’s other required
+status determination as follows:
+
+Under scenario 6, spawning biomass is estimated to be `r ssb` t
+in `r year` (see Table 1.\@ref(tab:proj-scens)), which is above
+B35% (`r b35` t). Therefore, GOA pollock is not currently
+overfished.
+
+Under scenario 7, projected mean spawning biomass in `r year +2`
+is `r F(exec_table[3,4])` t, which is above B35% (`r b35`
+t). Therefore, GOA pollock is not approaching an overfished
+condition.
+
+
+The recommended area apportionment to management areas in the
+central and western portions of the Gulf of Alaska
+(central/western/west Yakutat) are provided in Appendix 1D.

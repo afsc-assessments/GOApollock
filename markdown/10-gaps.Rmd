@@ -34,15 +34,15 @@ primary assessment author, include:
   or directly to the physical environment
 
 # Acknowledgements
-We thank the AFSC survey personnel for the collection of data and
-providing the biomass estimates, and Wayne Palsson for providing
-summarized data. We are grateful to all the fishery observers
-working with the Fishery Monitoring and Analysis (FMA) Division
-who collect vital data for the stock assessments, and the staff
-of the AFSC Age and Growth Unit for the ageing of otoliths used
-to determine the age compositions in the assessment. We also
-thank Kally Spalinger for providing ADF&G survey data. Finally,
-we thank Aaron Berger for reviewing an earlier version of the
-document.
+We thank the AFSC survey personnel for the collection of data,
+providing the biomass estimates, and discussing results,
+particularly Ned Laman for providing summarized data and
+important historical context this year. We are grateful to all
+the fishery observers working with the Fishery Monitoring and
+Analysis (FMA) Division who collect vital data for the stock
+assessments, and the staff of the AFSC Age and Growth Unit for
+the ageing of otoliths used to determine the age compositions in
+the assessment. We also thank Kally Spalinger for providing ADF&G
+survey data.
 
 \pagebreak

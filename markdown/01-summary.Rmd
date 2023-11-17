@@ -3,67 +3,84 @@
 ## Summary of Changes in Assessment Inputs
 
 ### Changes to input data
-1. Fishery: 2021 total catch and catch at age.
-2. Shelikof Strait acoustic survey: 2022 biomass index and age composition.
-3. NMFS bottom trawl survey: 2021 age compositions
-4. Summer acoustic survey: 2021 age compositions
-5. ADF&G crab/groundfish trawl survey: 2022 biomass index 
+1. Fishery: 2022 total catch was updated and catch at age
+   added. The 2023 TAC was used for catch in 2023.
+2. Shelikof Strait acoustic survey: 2023 biomass index and age composition.
+3. NMFS bottom trawl survey: 2023 index and length compositions
+4. Summer acoustic survey: 2023 index and length compositions
+5. ADF&G crab/groundfish trawl survey: 2023 biomass index 
 
 ### Changes in assessment methodology
-Two minor changes were made to the model. First, a penalty of 1.3
-was added to recruitment deviations in all years. Previously
-the penalty of 1.0 was applied only to early and late
-deviations. Second, selectivity of the summer acoustic survey was
-estimated. Previously this was assumed 1.0 for all ages. Together
-these changes constitute model 19.1a.
+This year there was no change in model structure, but there was a
+transition to a new modeling platform named Template Model
+Builder (TMB; @kristensen2016a). A bridging analysis showed
+that the former 19.1a ADMB model and TMB model were equivalent,
+with differences of less than 0.02% in estimates and uncertainty
+of SSB and recruitment. Given a change in modeling platform, the
+previous model 19.1a was renamed to 23.0. Moving to TMB allows
+for more flexibility in modeling process errors due to its
+ability to efficiently apply the Laplace approximation to get the
+marginal likelihood in complex, non-linear hierarchical
+models. We explored a suite of alternative fisheries selectivity
+models (Appendix 1F) but did not bring them forward for
+consideration this year. The advantages of this flexibility will
+be explored in depth in future years, but the focus this year was
+to transition the assessment to the new platform.
 
 ## Summary of Results
 
-The base model projection of female spawning biomass in `r year`
-is `r ssb` t, which is `r round(100*Finv(ssb)/Finv(b100),2)`% of
+The base model projection of female spawning biomass in `r year+1`
+is `r ssb` t, which is `r round(100*Finv(ssb)/Finv(b100),1)`% of
 unfished spawning biomass (based on average post-1977
 recruitment) and above B40% (`r b40` t), thereby placing GOA
-pollock in sub-tier “a” of Tier 3. New surveys in 2022 include
-the winter Shelikof Strait acoustic survey and the ADF&G bottom
-trawl survey. These surveys showed similar trends in 2021 and
-2022, unlike previous years when they showed strongly contrasting
-trends. The risk matrix table recommended by the Scientific and
-Statistical Comittee (SSC) was used to determine whether to
+pollock in sub-tier "a" of Tier 3. New surveys in 2023 include
+the winter Shelikof Strait acoustic survey, summer acoustic
+survey, summer NMFS bottom trawl survey, and the ADF&G bottom
+trawl survey. These survey indices showed somewhat divergent trends,
+with large increases in the summer NMFS bottom trawl (79.4%) and
+summer acoustic (71.7%) from 2021, but decreases in the winter
+acoustic (-29.2%) and ADF&G bottom trawl survey (-22.5%)
+from 2022. Together the new data led to an increased spawning
+population relative to the prediction from last year.
+
+The risk matrix table recommended by the Scientific and
+Statistical Committee (SSC) was used to determine whether to
 recommend an ABC lower than the maximum permissible. The table is
 applied by evaluating the severity of four types of
 considerations that could be used to support a scientific
-recommendation to reduce the ABC from the maximum
-permissible. Although we identified some aspects of the stock
-that merit close tracking, there were no elevated concerns about
-stock assessment, population dynamics, environment/ecosystem, or
-fisheries performance categories. We therefore recommend no
+recommendation to reduce the ABC from the maximum permissible. We
+identified some elevated concerns about the stock assessment,
+but none for population dynamics, environment/ecosystem,
+or fisheries performance categories. We therefore recommend no
 reduction from maximum permissible ABC.
 
-The recommended `r year+1` ABC for pollock in the
-Gulf of Alaska west of 140° W lon. (W/C/WYK regions) is `r abc`
-t, which is an increase of `r round(100*(abcN-abcN.last)/abcN.last,1)`%
-from the `r year` ABC. The recommended `r year+2` ABC
-is `r F(exec_table[12,4])` t. The OFL in `r year+1` is `r ofl` t,
-and the OFL in `r year+2` if the ABC is taken in `r year+1` is 
+The recommended `r year+1` ABC for pollock in the Gulf of Alaska
+west of 140° W lon. (W/C/WYK regions) is `r abc` t, which is an
+increase of `r round(100*(abcN-abcN.last)/abcN.last,1)`% from the
+`r year` ABC. The recommended `r year+2` ABC is 
+`r F(exec_table[12,4])` t. The OFL in `r year+1` is `r ofl` t, and
+the OFL in `r year+2` if the ABC is taken in `r year+1` is 
 `r F(exec_table[10,4])` t. These calculations are based on a
-projected `r year` catch of `r F(tail(datfile$cattot,1))`
-t. The estimated scale of the stock increased about 20% compared to
-previous years, driven both by new data and model changes. 
+projected `r year` catch of `r F(tail(datfile$cattot,1))` t and
+the ABC for years `r year+1` and `r year+2`. The estimated scale
+of the stock increased about 40% compared to previous years,
+driven by new data, particularly the new high biomass indices
+from summer surveys.
 
 For pollock in southeast Alaska (Southeast Outside region, east
 of 140° W lon.), the ABC recommendation for both `r year+1` and
-`r year+2` is 11,363 t (see Appendix 1B) and the OFL
-recommendation for both `r year+1` and `r year +2` is 15,150 t. These
-recommendations are based on a Tier 5 assessment using the
-projected biomass in 2022 and 2023 from a random effects model
-fit to the 1990-2021 bottom trawl survey biomass estimates of the
-assessment area. There is no new index this year so this is a
-partial Tier 5 assessment update. 
+`r year+2` is 9,749 t (see Appendix 1B) and the OFL
+recommendation for both `r year+1` and `r year +2` is 12,998
+t. These recommendations are based on a Tier 5 assessment using
+the projected biomass in 2024 and 2025 from a random effects
+model fit to the 1990-2023 bottom trawl survey biomass estimates
+of the assessment area. 
 
-
+\pagebreak
 ```{r, child= "01a-main_table.Rmd", eval = T}
 
 ```
+
 
 
 <!-- Text table of area apportionments (if any) for the recommended one- and two-year ahead ABCs and OFLs, with a brief description of the apportionment methodology. -->
@@ -71,7 +88,7 @@ partial Tier 5 assessment update.
 ```{r, child= "01b-apportionment.Rmd", eval = T}
 
 ```
-
+\pagebreak
 
 <!-- If so are so kind as to provide tables for the plan team, place them here -->
 

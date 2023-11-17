@@ -5,10 +5,13 @@ params:
   species_complex: "no"
   area: "Gulf of Alaska"
   tier: 3
-author: "Cole C. Monnahan, Martin W. Dorn, Giancarlo M. Correa, Alison L. Deary, Bridget E. Ferriss, Mike Levine, David W. McGowan, Lauren Rogers, S. Kalei Shotwell, Abigail Tyrell and Stephani Zador "
-date: "November 2022"
+author: "Cole C. Monnahan, Grant D. Adams, Bridget E. Ferriss,
+         S. Kalei Shotwell, Denise R. McKelvey, David W. McGowan"
+date: "November 2023"
 
 # don't do anything below this line unless you are cool with the consequences
+# use html_document2 for kniting to html which is better during development
+# use word_document2 for final knitting
 output: 
   bookdown::word_document2:
      reference_docx: "template.docx"
@@ -64,15 +67,15 @@ suppressWarnings(library(readxl))
 ## library(tidyr)
 # globals
 addfig <- function(x){
-  ff <- file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/figures/',x)
+  ff <- file.path('C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2023/writeup/figures/',x)
   if(!file.exists(ff)){
-    warning(paste("File",ff, "does not exists, subbing in dummy one for now"))
+    stop(paste("File",ff, "does not exists, subbing in dummy one for now"))
      addfig('depletion.png')
 	} else {
 	 knitr::include_graphics(ff)
  }
  }
-table.path <-   'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/writeup/2022_GOApollock tables.xlsx'
+table.path <-   'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2023/writeup/2023_GOApollock tables.xlsx'
 gettab <- function(sheet, skip=1, maxcols=NULL, ...){
   p <- table.path
   stopifnot(file.exists(p))
@@ -85,25 +88,36 @@ gettab <- function(sheet, skip=1, maxcols=NULL, ...){
 }
 
 species = params$species
-year = 2022
+year = 2023
 ayears <- 1970:year
-date = 'October 22, 2022'
+date = 'October 22, 2023'
 model = "base"
 end_proj = year + 15
 best_f = 999 # from the best_f function in groundfishr package
 spr0 <- 0.0761106
-myres <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/results'
+myres <- 'C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2023/results'
 
 ## Read in the key output files from this year
-repfile <- readRDS(file.path(myres, 'repfile.RDS'))
-datfile <- readRDS(file.path(myres, 'datfile.RDS'))
-stdfile <- readRDS(file.path(myres, 'stdfile.RDS'))
-proj_scens <- read.csv(file.path(myres, 'proj_scens.csv'))
+tmbfit <- readRDS(file.path(myres, 'tmbfit.RDS'))
+## repfile <- readRDS(file.path(myres, 'repfile.RDS'))
+repfile <- tmbfit$rep
+repfile_admb <- readRDS(file.path(myres, 'repfile_admb.RDS'))
+datfile <- tmbfit$obj$env$data
+stdfile <- tmbfit$sd
+## datfile <- readRDS(file.path(myres, 'datfile.RDS'))
+## stdfile <- readRDS(file.path(myres, 'stdfile.RDS'))
+# proj_scens <- read.csv(file.path(myres, 'proj_scens.csv'))
 ## retro_reports <- readRDS(file.path(myres, 'retro_reports.RDS'))
+ spm_detail <- readRDS(file.path(myres, 'spm_detail.RDS'))
+ proj_scens <- spm_detail %>% dplyr::select(-Spp) %>%
+   dplyr::group_by(Alternative,Yr)%>%
+   dplyr::summarize_all('mean') %>% dplyr::arrange(Alternative,Yr) %>% 
+   dplyr::ungroup()
 # todo: read from proj output
-c1 = 999 # estimated catch in current year
-c2 = 999 # proj catch year + 1
-c3 = 999 # proj catch year + 2
+cc <- dplyr::filter(proj_scens, Yr %in% (year+0:2) & Alternative==1) %>% dplyr::pull(Catch) %>% round(0)
+c1 = cc[1] # estimated catch in current year
+c2 = cc[2] # proj catch year + 1
+c3 = cc[3] # proj catch year + 2
 ## retro_stds <- readRDS(file.path(myres, 'retro_stds.RDS'))
 
 ## This exec_table is constructed externally to have the old and
@@ -113,6 +127,7 @@ F <- function(x, digits=0) formatC(round(x,digits), format='d', big.mark=',')
 Finv <- function(x) as.numeric(gsub(',','',x))
 sumbio <- F(exec_table[2,3])
 ssb <- F(exec_table[3,3])
+
 b100 <- F(exec_table[4,3])
 b40 <- F(exec_table[5,3])
 b35 <- F(exec_table[6,3])
@@ -141,16 +156,13 @@ abcN.last <- Finv(abc.last)
 
 ## also need the old repfile for figures
 repfile.last <-
-GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/",
-endyr=2021)
-repfile.last <-
-GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m21_9_final/",
-endyr=2021)
+GOApollock::read_pk_rep(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2023/model_runs/m22_13_2022_final/",
+endyr=2022)
 
 ## stdfile.last <- GOApollock::read_pk_std(path="C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2022/model_runs/m22_14_2021_updated/", endyr=2021)
 
-avgrec <- with(repfile, round(mean(Recruits[years %in% 1978:(tail(years,1)-1)]),3))
-CVrec <- with(repfile, round(sd(Recruits[years %in% 1978:(tail(years,1)-1)])/avgrec,1))
+avgrec <- with(repfile, round(mean(recruit[years %in% 1978:(tail(years,1)-1)]),3))
+CVrec <- with(repfile, round(sd(recruit[years %in% 1978:(tail(years,1)-1)])/avgrec,1))
 avgrec.last <- with(repfile.last, round(mean(Recruits[years %in% 1978:(tail(years,1)-1)]),3))
 pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
 
@@ -181,6 +193,12 @@ pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
 ```{r, child="08-abc.Rmd", eval = T}
 ```
 
+```{r, child="09a-risk-table.Rmd", eval = T}
+```
+
+```{r, child="09b-projections.Rmd", eval = T}
+```
+
 ```{r, child="10-gaps.Rmd", eval = T}
 ```
 \pagebreak
@@ -188,9 +206,17 @@ pct.avgrec.change <- round(100*(avgrec-avgrec.last)/avgrec.last,1)
 # References
 <div id="refs"></div>
 
+\pagebreak
 ```{r, child="11-tables.Rmd", eval = T}
 ``` 
-
+\pagebreak
 ```{r, child="12-figures.Rmd", eval = T}
 ```
+
+\pagebreak
+# Appendix 1A. Ecosystem and Socioeconomic Profile of the Walleye Pollock stock in the Gulf of Alaska - Report Card
+Appendix 1.A is available at [this external
+link](https://apps-afsc.fisheries.noaa.gov/Plan_Team/2023/GOApollock_appA.pdf):
+https://apps-afsc.fisheries.noaa.gov/Plan_Team/2023/GOApollock_appA.pdf
+
 

@@ -22,7 +22,7 @@ population dynamics and estimation equations are presented in
 Appendix 1C.
 
 Model parameters were estimated by maximizing the joint log
-likelihood of the data and penalities, viewed as a function of
+likelihood of the data and penalties, viewed as a function of
 the parameters. Mean-unbiased log-normal likelihoods were used
 for survey biomass and total catch estimates, and multinomial
 likelihoods were used for age and length composition data. Model
@@ -46,9 +46,9 @@ previous versions of the model, a recruitment penalty of
 in the last two years of the model and the rest were were
 estimated as free parameters. Starting in 2022 with model 19.1a
 the penalty was applied to all deviations, with a value of
-$\sigma_R =1.3$ coming from an estimate of the state-space
-version of the model. This change had relatively small impact on
-the estimated recruits and management references.
+$\sigma_R =1.3$ coming from an estimate of a state-space research
+version of the model. This change had a relatively small impact on
+the estimated recruits and management reference points.
 
 ### Modeling fishery data
 To accommodate changes in selectivity, we estimated year-specific
@@ -70,7 +70,7 @@ of abundance [@kimura1991a].
 Survey catchability coefficients can be fixed or freely
 estimated. The base model estimated the NMFS bottom trawl survey
 catchability, but used a log normal prior with a median of 0.85
-and log standard deviation 0.1 based on expert judgement as a
+and log standard deviation 0.1 based on expert judgment as a
 constraint on potential values
 (Fig. 1.\@ref(fig:BT-prior)). Catchability coefficients for other
 surveys were estimated as free parameters. The age-1 and age-2
@@ -375,62 +375,57 @@ survey indicates that there has been a substantial change in
 weight at age for older pollock
 (Fig. 1.\@ref(fig:fig-waa-srv1)). For pollock greater than age 6,
 weight-at-age nearly doubled by 2012 compared to
-1983-1990. However, weight at age since 2012 has trended strongly
-downward, with some rebound in the last couple of years,
-including a notable increase in 2021 for all ages, and the
-heaviest age 2 fish to date (0.191 kg) and fourth heaviest age 3
-fish (0.321 kg) as well. Further analyses are needed to evaluate
-whether these changes are a density-dependent response to
-declining pollock abundance, or whether they are environmentally
-forced. Changes in weight-at-age have potential implications for
-status determination and harvest control rules.
+1983-1990. However, weight at age trended strongly downward from
+2012 to 2020, with some rebound in the last couple of
+years. Further analyses are needed to evaluate whether these
+changes are a density-dependent response to declining pollock
+abundance, or whether they are environmentally forced. Changes in
+weight-at-age have important implications for status
+determination and harvest control rules.
 
 A random effects (RE) model for weight at age [@ianelli2016a] was
 used to estimate of fishery weight at age in `r year` since age
 data were not available. The structural part of the model is an
 underlying von Bertalanffy growth curve. Year and cohort effects
 are estimated as random effects using the ADMB RE module. Further
-details are provided in @ianelli2016a. Input data included fishery
-weight age for 1975-`r year-1`. The model also incorporates survey
-data by modeling an offset between fishery and survey weight at
-age. Weight at age for the Shelikof Strait acoustic survey
-(1981-`r tail(datfile$srv_acyrs1,1)`) and the NMFS bottom trawl
-survey (1984-`r tail(datfile$srv_acyrs2,1)`) were used. The model
-also requires input standard deviations for the weight at age
-data, which are not available for GOA pollock. In the 2016
-assessment, a generalized variance function was developed using a
-quadratic curve to match the mean standard deviations at ages
-3-10 for the eastern Bering Sea pollock data. The standard
-deviation at age one was assumed to be equal to the standard
-deviation at age 10. Survey weights at age were assumed to have
-standard deviations that were 1.5 times the fishery weights at
-age. A comparison of RE model estimates from last year of the 
-`r year-1` fishery weight at age with the data now available
-indicate that the model overestimated weights slightly
-(Fig. 1.\@ref(fig:fig-waa-fsh)). In this assessment, RE model estimates of
-weight at age are used for the fishery in `r year` and for yield
-projections and harvest recommendations.
+details are provided in @ianelli2016a. Input data included
+fishery weight age for 1975-`r year-1`. The model also
+incorporates survey data by modeling an offset between fishery
+and survey weight at age. Weight at age for the Shelikof Strait
+acoustic survey (1981-`r tail(datfile$srv_acyrs1,1)`) and the
+NMFS bottom trawl survey (1984-`r tail(datfile$srv_acyrs2,1)`)
+were used. The model also requires input standard deviations for
+the weight at age data, which are not available for GOA
+pollock. In the 2016 assessment, a generalized variance function
+was developed using a quadratic curve to match the mean standard
+deviations at ages 3-10 for the eastern Bering Sea pollock
+data. The standard deviation at age one was assumed to be equal
+to the standard deviation at age 10. Survey weights at age were
+assumed to have standard deviations that were 1.5 times the
+fishery weights at age. A comparison of RE model estimates from
+last year of the `r year-1` fishery weight at age with the data
+now available indicate that the model overestimated weights
+slightly (Fig. 1.\@ref(fig:fig-waa-fsh)). In this assessment, RE
+model estimates of weight at age are used for the fishery in
+`r year` and for yield projections and harvest recommendations.
 
-Appendix 1F details an exploratory and promising approach using a
-state-space model to estimate the WAA within the assessment
-model.
+@correa2023a details an exploratory and promising approach using
+a state-space model to estimate the WAA within the assessment
+model and this will be explored further in future years.
 
 ## Parameters Estimated Inside the Assessment Model
 A large number of parameters are estimated when using this
 modeling approach, though many are year-specific deviations in
 fishery selectivity coefficients. Parameters were estimated using
-AD Model Builder (Version 13.0), a C++ software language
-extension and automatic differentiation library
-[@fournier2012a]. Parameters in nonlinear models are estimated in
-AD Model Builder using automatic differentiation software
-extended from @greiwank1991a and developed into C++
-class libraries. The optimizer in AD Model Builder is a
-quasi-Newton routine [@press1992a]. The model is determined
-to have converged when the maximum parameter gradient is less
-than a small constant (set to 1 x 10-6) and the Hessian matrix is
-invertible. AD Model Builder includes post-convergence routines
-to calculate standard errors (or likelihood profiles) for any
-quantity of interest.
+Template Model Builder [TMB; @kristensen2016a], a modeling platform
+based strongly on AD Model Builder [@fournier2012a] but which
+contains improved functionality for estimating non-linear
+hierarchical models. The model is determined to have converged
+when the maximum parameter gradient is less than a small constant
+(set to 1 x 10-6) and the Hessian matrix is invertible. Like AD Model
+Builder, TMB includes post-convergence routines to calculate standard
+errors (or likelihood profiles) for any quantity of interest, and
+has state of the art Bayesian integration capabilities [@monnahan2018a].
 
 A list of model parameters for the base model is shown below:
 
