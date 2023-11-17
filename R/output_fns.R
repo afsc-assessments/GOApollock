@@ -1,3 +1,68 @@
+
+
+#' Plot OSA composition residuals as bubble plots
+#' @param res A matrix of obs and exp results cbinded together,
+#'   as returned by the model
+#' @param years Vector of years for plotting
+#' @param Neff Effective sample size vector. Non-integer values
+#'   are rounded currently.
+#' @param ind Which age to drop, modified as need when 'drop' is
+#'   used.
+#' @param survey Character name for plotting
+#' @param drop Optional vector of ages to drop. Alters meaning of
+#'   'ind'
+#' @param plot Whether to plot or return the data instead
+#' @param minyear Filter out years before this
+#' @return A ggplot object if plot is TRUE or the melted data if
+#'   FALSE
+#' @export
+plot_osa_comps <- function(res, years, Neff, ind=1, survey,
+                           drop=NULL, plot=TRUE, minyear=NULL){
+  obs <- res[,1:10]
+  exp <- res[,11:20]
+  index <- 1:10
+  if(!is.null(minyear)){
+    indminyear <- which(years==minyear-1)
+    obs <- obs[-(1:indminyear),]
+    exp <- exp[-(1:indminyear),]
+    years <- years[-(1:indminyear)]
+    Neff <- Neff[-(1:indminyear)]
+  }
+  if(!is.null(drop)){
+    obs <- obs[,-drop]
+    exp <- exp[,-drop]
+    index <- index[-drop]
+  }
+  stopifnot(all.equal(nrow(obs), nrow(exp), length(years)))
+  stopifnot(all.equal(ncol(obs), ncol(exp), length(index)))
+  o <- round(Neff*obs/rowSums(obs),0); p=exp/rowSums(exp)
+  Neff2 <- apply(o,1, sum);
+  if(any(Neff2==0)) warning("Some Neff were rounded to 0")
+  index2 <- index[-ind]                 #move one to drop to end
+  o2 <- cbind(o[,-ind], o[,ind])
+  p2 <- cbind(p[,-ind], p[,ind])
+  resid <- compResidual::resMulti(t(o2), t(p2))
+  ## not sure why these fail sometimes?
+  if(!all(is.finite(resid))) {warning('failed when ind=',ind)}
+  mat <- t(matrix(resid, nrow=nrow(resid), ncol=ncol(resid)))
+  dimnames(mat) <- list(year=years, index=index2)
+  reslong <- reshape2::melt(mat, value.name='resid') #%>% filter(is.finite(resid))
+  g <- ggplot(reslong, aes(year, index, size=abs(resid),
+                           color=resid>0)) +
+    geom_point()+
+    ggtitle(paste0('OSA Residuals for the ', survey, ' w/o age=', index[ind])) +
+    labs(y='Age', x=NULL) + scale_y_continuous(breaks=1:10,
+                                               limits=c(1,10)) +
+    scale_size(range=c(0,3))
+  if(plot){
+    print(g)
+    return(invisible(g))
+  } else {
+    return(reslong)
+  }
+}
+
+
 #' Calculate SDNR for indices
 #' @param fit A fit or list of fits as returned by
 #'   \code{fit_pk}. Not currently implemented for the ADMB model.
