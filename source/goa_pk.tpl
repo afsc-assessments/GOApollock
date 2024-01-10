@@ -1337,6 +1337,7 @@ REPORT_SECTION
   report << "Projection log mean recruitment" << endl << log_recr_proj << endl;
   report << "Projection recruitment variability" << endl <<  sigmasq_recr<< endl;
   report << "Projection numbers at age" << endl << N_proj << endl;
+  report << "Projection total mortality" << endl << Z_proj << endl;	  
   report << "Projection catch at age" << endl << C_proj << endl; 
   report << "Projection survey numbers at age" << endl << Nsrv_proj << endl;
   report << "Projection population weight at age" << endl <<  wt_pop_proj << endl;  
@@ -1350,5 +1351,5 @@ REPORT_SECTION
   report << "Projection Ftarget" << endl << Ftarget << endl;
   report << "Projection B40" << endl <<  B40 << endl;  
   report << "Projection fishing mortality" << endl <<  F_proj << endl;  
-
+  
 

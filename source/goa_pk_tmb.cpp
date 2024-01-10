@@ -24,6 +24,12 @@
 
 // July 2023 started conversion to TMB
 // Oct 2023 took out retro option (done in R)
+
+// Jan 2024 added internal projection module back in. Now has
+// dynamic length depending on length of Ftarget input
+
+
+
 #include <TMB.hpp>
 #include <iostream>
 //#include "helper_functions.hpp"
@@ -172,7 +178,10 @@ Type objective_function<Type>::operator() ()
   wt_spawn=wt_srv1;
   DATA_VECTOR(mat);		// Proportion mature
 
-  DATA_VECTOR(Ftarget);
+  DATA_VECTOR(Ftarget);		// determines length of projections
+  int nyears_proj = Ftarget.size();
+
+  
   DATA_SCALAR(B40); // mean log recruitment
   // DATA_SCALAR(log_mean_recr_proj);
   DATA_SCALAR(sigmasq_recr);                       // Variance for log recr, recruitment indices
@@ -231,20 +240,20 @@ Type objective_function<Type>::operator() ()
   vector<Type> recruit(nyrs);
   vector<Type> log_recruit(nyrs);
 
-  // Forward projections 
+  // Forward projections
   PARAMETER_VECTOR(log_recr_proj);
-  vector<Type> recruit_proj(5);
-  matrix<Type> N_proj(5,nages);
-  vector<Type> F_proj(5);
-  matrix<Type> Z_proj(5,nages);
-  matrix<Type> C_proj(5,nages);
-  matrix<Type> Nsrv_proj(5,nages);
+  vector<Type> recruit_proj(nyears_proj);
+  matrix<Type> N_proj(nyears_proj,nages);
+  vector<Type> F_proj(nyears_proj);
+  matrix<Type> Z_proj(nyears_proj,nages);
+  matrix<Type> C_proj(nyears_proj,nages);
+  matrix<Type> Nsrv_proj(nyears_proj,nages);
   vector<Type> slctfsh_proj(nages);
-  vector<Type> Ecattot_proj(5);  
-  vector<Type> Esumbio_proj(5);
-  vector<Type> Espawnbio_proj(5);
-  vector<Type> Esrv_proj(5);
-  vector<Type> Exrate_proj(5);
+  vector<Type> Ecattot_proj(nyears_proj);  
+  vector<Type> Esumbio_proj(nyears_proj);
+  vector<Type> Espawnbio_proj(nyears_proj);
+  vector<Type> Esrv_proj(nyears_proj);
+  vector<Type> Exrate_proj(nyears_proj);
 
   // Selectivity parameters
 
@@ -638,43 +647,13 @@ Type objective_function<Type>::operator() ()
   Esumbio_log=log(Esumbio);
  
 
-  //  // ------------------------------------------------------------
-  //  // Projections 
-  //  //Recruitments 
-  //  for (i=y1+1;i<=y1+5;i++) {
-  //    //  recruitment with bias correction
-  //    //    recruit_proj(i)=exp(log_recr_proj(i)+(sigmasq_recr/2));
-  //    // for MCMC projections to get the prob < B20
-  //    //   recruit_proj(i)=exp(log_recr_proj(i));
-  //    // or just use average recruitment after 1977
-  //    // note that y1-1 is the last year for mean
-  //    // standard method
-  //    recruit_proj(i)=mean(recruit(1978,y1-1));
-  //  }
-  //  for (i=y1+1;i<=y1+5;i++) {
-  //    N_proj(i,a0)=recruit_proj(i);
-  //  }
-  // //Initialize the age composition
-
-  // //  Standard projection
-  //  for (j=a0;j<a1;j++) {
-  //    N_proj(y1+1,j+1)=N(y1,j)*exp(-Z(y1,j));
-  //  }  
-  //  N_proj(y1+1,a1)+=N(y1,a1)*exp(-Z(y1,a1));
-
-  //  // Set 2007 year class to mean
-  //  // note that y1-1 is the last year for mean
-  //  //   for (j=a0;j<a1;j++)
-  //  //   {
-  //  //   N_proj(y1+1,j+1)=N(y1,j)*exp(-Z(y1,j));
-  //  //   }  
-  //  //   N_proj(y1+1,a0+1)=mean(recruit(1979,y1-1))*exp(-Z(y1,a0));
-  //  //   N_proj(y1+1,a1)+=N(y1,a1)*exp(-Z(y1,a1));
+   // ------------------------------------------------------------
+   // Projections
 
    // Averaging window for selectivity
   slctfsh_proj.setZero();
   int endyr_avg_slct=y1-1;
-   int y0_avg_slct=endyr_avg_slct-4;
+  int y0_avg_slct=endyr_avg_slct-4;
    for (j=a0;j<=a1;j++) {
      slctfsh_proj(j) = 0;
      for (i=y0_avg_slct;i<=endyr_avg_slct;i++) {
@@ -683,68 +662,66 @@ Type objective_function<Type>::operator() ()
    }
    slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
  
-
-
-  //  //Forward projections
-  //   for (i=y1+1;i<=y1+5;i++) {
-  //     // have to get Z twice
-  //     //  Tuning loop to get the spawning biomass adjustment right
-  //     F_proj(i)=Ftarget(i+retro_yrs);
-  //     for (loop=1;loop<=20;loop++) {
-  //       for (j=a0;j<=a1;j++) {
-  // 	Z_proj(i,j)=(F_proj(i)*slctfsh_proj(j))+M(j);
-  //       }  
-  //       sbio = sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-0.21*Z_proj(i))),wt_spawn_proj),0.5*mat));
-  //       //  Set the fishing mortality rate
-  //       F_proj(i)=Ftarget(i+retro_yrs);
-  //       if (sbio < B40) {
-  // 	F_proj(i)=Ftarget(i+retro_yrs)*(((sbio/B40)-0.05)/(1-0.05));
-  // 	// SSL control rule
-  // 	//   F_proj(i)=Ftarget(i+retro_yrs)*(((sbio/B40)-0.2)/(1-0.2));
-  //       }
-  //     }
-  //   // Total mortality
-  //     for (j=a0;j<=a1;j++) {
-  //       Z_proj(i,j)=(F_proj(i)*slctfsh_proj(j))+M(j);
-  //     }  
-  //   //  Numbers at age
-  //    if(i<y1+5) {
-  //      for (j=a0;j<a1;j++) {
-  //        N_proj(i+1,j+1)=N_proj(i,j)*exp(-Z_proj(i,j));
-  //      }  
-  //      N_proj(i+1,a1)+=N_proj(i,a1)*exp(-Z_proj(i,a1)); 
-  //    }
-  //   // Catches
-  //   for (j=a0;j<=a1;j++) {
-  //     C_proj(i,j)=N_proj(i,j)*((F_proj(i)*slctfsh_proj(j))/Z_proj(i,j))*(1-exp(-Z_proj(i,j)));
-  //     //    Nsrv_proj(i,j)=q2*slctsrv1(j)*N_proj(i,j)*exp(-yrfrct_srv1(y1)*Z_proj(i,j));  
-  //     Nsrv_proj(i,j)=N_proj(i,j)*exp(-yrfrct_srv6(y1)*Z_proj(i,j));  
-  //   }
-  //   //  Total catches and biomass
-  //   Ecattot_proj(i) = 1000000*sum(elem_prod(C_proj(i),wt_fsh_proj));
-  //   // 3+ biomass
-  //   Esumbio_proj(i)= N_proj(i)(a0+2,a1)*wt_pop_proj(a0+2,a1);
-  //   // Alternative: 2+ biomass
-  //   //    Esumbio_proj(i)= N_proj(i)(a0+1,a1)*wt_pop_proj(a0+1,a1);
-  //   Exrate_proj(i)=Ecattot_proj(i)/(1000000*Esumbio_proj(i));
-  //   Espawnbio_proj(i)= sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-0.21*Z_proj(i))),wt_spawn_proj),0.5*mat));
-  //   //Summer acoustic
-  //   //    Esrv_proj(i)= q6*sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-yrfrct_srv6(y1)*Z_proj(i))),slctsrv6),wt_srv_proj));
-  //   //Winter acoutic 
-  //   Esrv_proj(i)= q1(y1)*sum(elem_prod(elem_prod(elem_prod(N_proj(i),exp(-yrfrct_srv1(y1)*Z_proj(i))),slctsrv1),wt_srv_proj));
-  //   }
-
   N_proj.setZero();
   recruit_proj.setZero();
   Z_proj.setZero();
   C_proj.setZero();
+  F_proj.setZero();
   Ecattot_proj.setZero();
   Esumbio_proj.setZero();
   Exrate_proj.setZero();
   Espawnbio_proj.setZero();
   Esrv_proj.setZero();
-  loglik.setZero();
+  Type sbio;
 
+  // recruits from 1978 to previous year, index starting at 0,
+  // with the first arg being the index start, and the second the
+  // number of years
+  vector<Type> rectmp=recruit.segment(1978-styr,endyr-1978);
+   for (i=0;i<nyears_proj;i++)  N_proj(i,a0)=rectmp.mean();
+   recruit_proj=N_proj.col(0);
+  //  Standard projection to get NAA in Jan-1 of first proj year
+  //  which is first row of projections, comes from last row of
+  //  standard quantities (this year)
+   for (j=a0;j<a1;j++)  N_proj(0,j+1)=N(y1,j)*exp(-Z(y1,j));
+   N_proj(0,a1)+=N(y1,a1)*exp(-Z(y1,a1)); // plus group
+
+  // Forward projections
+  for (i=0; i<nyears_proj; i++) {
+    // have to get Z twice
+    //  Tuning loop to get the spawning biomass adjustment right
+    F_proj(i)=Ftarget(i);
+    for (int loop=1;loop<=20;loop++) {
+      sbio=0.0;
+      for (j=a0;j<=a1;j++) {
+	Z_proj(i,j)=F_proj(i)*slctfsh_proj(j)+M(j);
+	sbio += N_proj(i,j)*exp(-0.21*Z_proj(i,j))*wt_spawn_proj(j)*0.5*mat(j);
+      }  
+      //  Set the fishing mortality rate, adjusting by the harvest control rule
+      F_proj(i)=Ftarget(i);
+      if (sbio < B40) 	F_proj(i)=Ftarget(i)*(((sbio/B40)-0.05)/(1-0.05));
+    } // end tuning loop so F_proj is right
+      
+    // Finalize total mortality
+    for (j=a0;j<=a1;j++) Z_proj(i,j)=F_proj(i)*slctfsh_proj(j) + M(j);
+    //  Calculate numbers at age given F
+    if(i<nyears_proj-1) {
+      for (j=a0;j<a1;j++) N_proj(i+1,j+1)=N_proj(i,j)*exp(-Z_proj(i,j));
+               N_proj(i+1,a1)+=N_proj(i,a1)*exp(-Z_proj(i,a1)); 
+    }
+    // Calculate all derived quantities given F and N
+    for (j=a0;j<=a1;j++) {
+      C_proj(i,j)=N_proj(i,j)*((F_proj(i)*slctfsh_proj(j))/Z_proj(i,j))*(1-exp(-Z_proj(i,j)));
+      Nsrv_proj(i,j)=N_proj(i,j)*exp(-yrfrct_srv6(y1)*Z_proj(i,j));  
+      Esrv_proj(i)  += q1(y1)*N_proj(i,j)*exp(-yrfrct_srv1(y1)*Z_proj(i,j))*slctsrv1(j)*wt_srv_proj(j);
+      Ecattot_proj(i) += 1000000*C_proj(i,j)*wt_fsh_proj(j);
+      if(j>=2) Esumbio_proj(i) += N_proj(i,j)*wt_pop_proj(j);
+      Espawnbio_proj(i) += N_proj(i,j)*exp(-0.21*Z_proj(i,j))*wt_spawn_proj(j)*0.5*mat(j);
+    }
+    Exrate_proj(i)=Ecattot_proj(i)/(1000000*Esumbio_proj(i));
+  } // end proj years
+
+  loglik.setZero();
 
     // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
     for (i=0;i<nyrs_fsh;i++) {
@@ -1149,6 +1126,7 @@ Type objective_function<Type>::operator() ()
   REPORT(Ftarget);
   REPORT(B40);  
   REPORT(F_proj);  
+  REPORT(Z_proj);
   ADREPORT(recruit);
   ADREPORT(log_recruit);
   ADREPORT(recruit_proj);  
