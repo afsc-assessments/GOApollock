@@ -28,6 +28,8 @@
 // Jan 2024 added internal projection module back in. Now has
 // dynamic length depending on length of Ftarget input
 
+// Feb 2024 switched to dnorm and dmultinom and added SIMULATE
+
 
 
 #include <TMB.hpp>
@@ -406,13 +408,26 @@ Type objective_function<Type>::operator() ()
   matrix<Type> pearson_srv3(nyrsac_srv3,nages);
   matrix<Type> pearson_srv3len(nyrslen_srv3,nbins2);
   matrix<Type> pearson_srv6(nyrsac_srv6,nages);
-
+  pearson_fish.setZero();
+  pearson_srv1.setZero();
+  pearson_srv2.setZero(); 
+  pearson_srv3.setZero(); 
+  pearson_srv3len.setZero();
+  pearson_srv6.setZero();
+  
+  // These are old, probably used for Francis tuning but not
+  // anymore. Left blank for now but consider taking out later
   vector<Type> effN_fsh(nyrs_fsh);
   vector<Type> effN_srv1(nyrsac_srv1);
   vector<Type> effN_srv2(nyrsac_srv2);
   vector<Type> effN_srv3(nyrsac_srv3);
   vector<Type> effN_srv6(nyrsac_srv6);
-
+  effN_fsh.setZero();
+  effN_srv1.setZero();
+  effN_srv2.setZero();
+  effN_srv3.setZero();
+  effN_srv6.setZero();
+ 
   Type RMSE_srv1;
   Type RMSE_srv2;
   Type RMSE_srv3;
@@ -470,6 +485,7 @@ Type objective_function<Type>::operator() ()
   // for projections take averages of WAA only from recent survey years with data
   wt_pop_proj.setZero();
   wt_spawn_proj.setZero();
+  wt_srv_proj.setZero();
   for(int a=a0;a<=a1;a++){
     for(int i=0;i<=2;i++)
      wt_pop_proj(a)+=wt_srv2(isrv_acyrs2(nyrsac_srv2-i-1),a)/3;
@@ -750,10 +766,12 @@ Type objective_function<Type>::operator() ()
   for(i=y0; i<=y1;i++){
     loglik(0) += -.5*square((log(cattot(i))-log(Ecattot(i)))/cattot_log_sd(i));
   }	  
+  //  loglik(0) = dnorm(log(cattot), log(Ecattot), cattot_log_sd, true).sum();
 
   
   //Age composition
   res_fish.setZero();
+  pearson_fish.setZero();
   for (i=0;i<nyrs_fsh;i++) {
     llcatp(i) = 0;
     for (j=iac_yng_fsh(i);j<=iac_old_fsh(i);j++) {
@@ -771,6 +789,7 @@ Type objective_function<Type>::operator() ()
   }
 
   // //Length composition
+  lllenp.setZero();
   // loglik(2)=0;
   // for (i=0;i<nyrslen_fsh;i++) {
   //   lllenp(i) = 0;
@@ -809,6 +828,7 @@ Type objective_function<Type>::operator() ()
     loglik(4) += llsrvp1(i);
   }
   // //length composition
+  llsrvlenp1.setZero();
   // loglik(5)=0;
   // for (i=0;i<nyrslen_srv1;i++) {
   //   llsrvlenp1(i) = 0;
@@ -883,6 +903,8 @@ Type objective_function<Type>::operator() ()
     }
     loglik(11) += llsrvp3(i);
   }
+
+  res_srv3len.setZero();
   // length composition
   // loglik(12)=0;
   // for (i=0;i<nyrslen_srv3;i++) {
@@ -923,9 +945,9 @@ Type objective_function<Type>::operator() ()
    
   // Age composition
   loglik(16)=0;
+  llsrvp6.setZero();
   for (i=0;i<nyrsac_srv6;i++) {
     if(multN_srv6(i)>0) {
-      llsrvp6(i) = 0;
       for (j=a0;j<=a1;j++) {
 	llsrvp6(i) += multN_srv6(i)*(srvp6(i,j)+o)*log((Esrvp6(isrv_acyrs6(i),j)+o)/(srvp6(i,j)+o));
 	res_srv6(i,j)=srvp6(i,j);
@@ -937,9 +959,9 @@ Type objective_function<Type>::operator() ()
     }
   }
   // length composition
+  llsrvlenp6.setZero();
   for (i=0;i<nyrslen_srv6;i++) {
     if(multNlen_srv6(i)>0) {
-      llsrvlenp6(i) = 0;
       for (j=0;j<nbins2;j++) {
 	llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(isrv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
       }
@@ -948,7 +970,8 @@ Type objective_function<Type>::operator() ()
   }
 
   // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
-  loglik(17) += -0.5*norm2(dev_log_recruit)/square(sigmaR);
+  //loglik(17) += dnorm(dev_log_recruit, Type(0.0), sigmaR, true).sum();
+  loglik(17 )+=-0.5*norm2(dev_log_recruit)/square(sigmaR);
 
   // Normal process error on selectivity deviations. Note
   // rwlk_sd(y0,y1-1) b/c if using retro they will be too
