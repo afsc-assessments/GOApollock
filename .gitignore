@@ -31,3 +31,5 @@ markdown.tex
 TMB/R/proj_calcs/proj/spm.exe
 TMB/Selectivity_runs.RData
 tests/model_23
+data/*.o
+data/*.dll

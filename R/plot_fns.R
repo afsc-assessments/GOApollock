@@ -129,14 +129,15 @@ plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
 
 #' Plot spawning biomass
 #'
-#' @param x A list of data frames as read in from
-#'   \link{\code{read_pk_cor}}
+#' @param fits A model fit or list of model fits as produced by
+#'   \link{\code{fit_tmb}}
 #' @param add_uncertainty Whether to add 95% confidence
-#'   intervals. These are calculated in log space.
+#'   intervals. These are calculated in log space depending on
+#'   \code{uselog}.
 #' @param uselog Whether to calculate in log space or not
-#' @param plotlog Whether to plot in log space or not
+#' @param plotlog Whether to plot SSB in log space or not
 #' @param plot Whether to plot and return the ggplot object
-#'   (TRUE) or return the data (FALSE).
+#'   (TRUE) or return the data used in the plot(FALSE).
 #' @param alpha1 Transparency for ribbons
 #' @param alpha2 Transparency for lines
 #'
@@ -144,34 +145,57 @@ plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
 #' depending on \code{plot} argument.
 #' @export
 #'
-plot_pk_ssb <- function(x, add_uncertainty=TRUE, plotlog=TRUE,
-  uselog=FALSE, plot=TRUE, alpha1=.5, alpha2=.8){
-  nmods <- length(x)
-  labs <- sapply(x, function(x) x$version[1])
-  x <- bind_rows(x)
-  x$version <- factor(x$version, levels=labs)
+plot_pk_ssb <- function(fits, add_uncertainty=TRUE, plotlog=FALSE,
+                        uselog=FALSE, addproj=FALSE,
+                        plot=TRUE, alpha1=.5, alpha2=.8){
+  if(is.pkfit(fits)){
+    nmods <- 1
+    labs <- fits$version
+  } else {
+    nmods <- length(fits)
+    labs <- sapply(fits, function(x) x$version[1])
+  }
+  ses <- get_std(fits)
+  ## get the order to match what the user puts in the fits list
+  ses$version <- factor(ses$version, levels=labs)
   tmp <- 'Espawnbio'
+  if(addproj & uselog) {
+    warning("Can't have uselog and addproj both, setting uselog=FALSE")
+    uselog <- FALSE
+  }
   if(uselog)  tmp <- 'Espawnbio_log'
-  if(uselog & nrow(filter(x, name==tmp))==0){
+  if(uselog & nrow(filter(ses, name==tmp))==0){
     tmp <- 'Espawnbio'
     uselog <- FALSE
     warning("Log of SSB not found in input, likely from old model run. Setting uselog=FALSE.")
   }
   if(uselog){
-    ses <- x %>% filter(name==tmp) %>%
+    ssb <- ses %>% filter(name==tmp) %>%
       mutate(est=exp(est), lwr=exp(lwr), upr=exp(upr))
   } else {
-    ses <- x %>% filter(name==tmp) %>%
+    ## assume they are lognormal
+    ssb <- ses %>% filter(name==tmp) %>%
       mutate(lwr=est/exp(1.96*sqrt(log(1+(se/est)^2))),
              upr=est*exp(1.96*sqrt(log(1+(se/est)^2))))
   }
-  g <- ggplot(ses, aes(year, est, ymin=lwr, ymax=upr, color=version, fill=version)) +
+  ## tack on the proj years, have to get the proj years manually
+  ## and by model since may differ later
+  if(addproj){
+    ssb <- ses %>% filter(name=='Espawnbio_proj') %>%
+      mutate(year=1+year-min(year))%>%
+      bind_rows(ssb) %>% group_by(version) %>%
+      mutate(maxyear=max(year)) %>%
+      mutate(year=ifelse(name=='Espawnbio', year, year+maxyear)) %>% ungroup
+    maxyear <- filter(ssb, name=='Espawnbio') %>% summarize(max(year)) %>% pull
+  }
+  g <- ggplot(ssb, aes(year, est, ymin=lwr, ymax=upr, color=version, fill=version)) +
     geom_line(alpha=alpha2, lwd=1) +
     theme_bw()+ labs(x=NULL,y='Spawning biomass (M mt)')
   if(plotlog) g <- g+ scale_y_log10()
   if(!plotlog) g <- g+ylim(0,NA)
+  if(addproj) g <-  g+geom_vline(xintercept=maxyear)
   if(add_uncertainty) g <-  g+ geom_ribbon(alpha=alpha1)
-  if(plot)  {print(g); g}  else  return(ses)
+  if(plot)  {print(g); g}  else  return(ssb)
 }
 
 #' Plot Pearson residual matrix

@@ -5,28 +5,30 @@
 \title{Plot spawning biomass}
 \usage{
 plot_pk_ssb(
-  x,
+  fits,
   add_uncertainty = TRUE,
-  plotlog = TRUE,
+  plotlog = FALSE,
   uselog = FALSE,
+  addproj = FALSE,
   plot = TRUE,
   alpha1 = 0.5,
   alpha2 = 0.8
 )
 }
 \arguments{
-\item{x}{A list of data frames as read in from
-\link{\code{read_pk_cor}}}
+\item{fits}{A model fit or list of model fits as produced by
+\link{\code{fit_tmb}}}
 
 \item{add_uncertainty}{Whether to add 95\% confidence
-intervals. These are calculated in log space.}
+intervals. These are calculated in log space depending on
+\code{uselog}.}
 
-\item{plotlog}{Whether to plot in log space or not}
+\item{plotlog}{Whether to plot SSB in log space or not}
 
 \item{uselog}{Whether to calculate in log space or not}
 
 \item{plot}{Whether to plot and return the ggplot object
-(TRUE) or return the data (FALSE).}
+(TRUE) or return the data used in the plot(FALSE).}
 
 \item{alpha1}{Transparency for ribbons}
 

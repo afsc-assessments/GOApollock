@@ -7,7 +7,7 @@
 mymelt(replist, slot)
 }
 \arguments{
-\item{replist}{Output from \code{read_pk_rep}. Can be a single
+\item{replist}{Output from \code{get_rep}. Can be a single
 report object or a list of them.}
 
 \item{slot}{The slot name to extract}

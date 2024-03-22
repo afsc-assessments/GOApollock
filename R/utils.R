@@ -34,3 +34,49 @@ calc_adsb <- function(base, new){
                                '**minor**'), ' model version (ADSB=',round(adsb,2),')')
   return(adsb)
 }
+
+
+
+#' Constructor for the "pkfit" (A-D fit) class
+#' @param x Fitted object from \code{\link{fit_tmb}}
+#' @return An object of class "pkfit"
+#' @export
+pkfit <- function(x){
+  if(!is.list(x)){
+    warning("Object passed to pkfit is not a list -- something went wrong in fitting?")
+    return(x)
+  }
+  if(is.null(x$version)) stop("No version found, something went wrong")
+  class(x) <- c('pkfit', 'list')
+  x
+}
+
+#' Check object of class pkfit
+#' @param x Returned list from \code{\link{fit_tmb}}
+#' @export
+is.pkfit <- function(x) inherits(x, "pkfit")
+
+
+#' Print summary of pkfit object
+#' @param fit Fitted object from \code{\link{fit_pk}}
+#' @param ... Ignored for now
+#' @return Summary printed to console
+#' @method print pkfit
+#' @export
+print.pkfit <- function(fit, ...){
+  cat("GOA pollock model version: ", fit$version, "\n")
+  rt <- as.numeric(fit$opt$time_for_run, units='secs')
+  ru <- 'seconds'
+  if(rt>60*60*24) {
+    rt <- rt/(60*60*24); ru <- 'days'
+  } else if(rt>60*60) {
+    rt <- rt/(60*60); ru <- 'hours'
+  } else if(rt>60){
+    rt <- rt/60; ru <- 'minutes'
+  }
+  cat("Total run time was", round(rt,2),  ru, '\n')
+  cat("Number of parameters:", paste(names(fit$opt$number_of_coefficients), fit$opt$number_of_coefficients, sep='='),"\n")
+  cat("Final maximum gradient=",
+      sprintf("%.3g", fit$opt$max_gradient), "\n")
+  cat("Marginal NLL=",  round(fit$opt$objective,5), "\n")
+}

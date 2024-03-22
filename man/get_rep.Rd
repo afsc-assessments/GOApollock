@@ -4,14 +4,19 @@
 \alias{get_rep}
 \title{Extract report list from fitted models}
 \usage{
-get_rep(fits)
+get_rep(fits, slot = NULL)
 }
 \arguments{
 \item{fits}{A single model or list of models as returned by
 \code{\link{fit_pk}}}
+
+\item{slot}{Which slot to extract and format into data.frame
+for easy plotting. If NULL (default) the whole report file
+is returned.}
 }
 \value{
-Reports
+Either a list of reports or a formatted data.frame
+containing the specified slot variable.
 }
 \description{
 Extract report list from fitted models

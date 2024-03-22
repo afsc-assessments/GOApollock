@@ -23,15 +23,24 @@ get_std <- function(fits) {
 #' Extract report list from fitted models
 #' @param fits A single model or list of models as returned by
 #'   \code{\link{fit_pk}}
-#' @return Reports
+#' @param slot Which slot to extract and format into data.frame
+#'   for easy plotting. If NULL (default) the whole report file
+#'   is returned.
+#' @return Either a list of reports or a formatted data.frame
+#'   containing the specified slot variable.
 #' @export
-get_rep <- function(fits) {
+get_rep <- function(fits, slot=NULL) {
   ## single fit
   if(class(fits[[1]])[1]!='pkfit'){
     out <- fits$rep
   } else {
     ## list of fits
     out <- lapply(fits, function(x) x$rep)
+  }
+  if(!is.null(slot)){
+    out <- mymelt(out, slot=slot)
+    if(nrow(out)==0)
+      warning("Slot", slot, "was not found in report file")
   }
   return(out)
 }
@@ -46,6 +55,9 @@ get_rep <- function(fits) {
 #' @param use_bounds Whether to use bounds, slows optimization
 #'   down but may be necessary. See \link{\code{get_bounds}}
 #'   which is called internally.
+#' @param save.sdrep Whether to return the sdreport object in the
+#'   fitted model. This is rarely used and large so turned off by
+#'   default.
 #' @return A list object of class 'pkfit' which contains a
 #'   "version" model name, rep, opt as returned by
 #'   \code{TMBHelper::fit_tmb} but without the SD slot, std
@@ -55,12 +67,12 @@ get_rep <- function(fits) {
 #' @export
 fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                    control=NULL, do.fit=TRUE,
-                   use_bounds=FALSE){
+                   use_bounds=FALSE, save.sdrep=FALSE){
 
   cpp <- paste0(file.path(input$path, input$modfile),'.cpp')
   if(!file.exists(cpp)) stop("file does not exist: ", cpp)
-  compile(cpp)
-  dyn.load(dynlib(file.path(input$path, input$modfile)))
+  suppressMessages(compile(cpp))
+  suppressMessages(dyn.load(dynlib(file.path(input$path, input$modfile))))
   obj <- MakeADFun(data=input$dat, parameters=input$pars,
                    map=input$map, random=input$random,
                    DLL=input$modfile, silent=TRUE)
@@ -74,11 +86,15 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
   if(is.null(control))
     control <- list(eval.max=10000, iter.max=10000, trace=100)
   ## optimize and compare
+  if(!require(TMBhelper)){
+    stop('TMBhelper package required to fit models, install using:\ndevtools::install_github("kaskr/TMB_contrib_R/TMBhelper")')
+  }
   opt <- TMBhelper::fit_tmb(obj, control=control,
                             newtonsteps=newtonsteps, getsd=FALSE,
                             lower=lwr, upper=upr)
   rep <- c(version=input$version, obj$report())
   sdrep <- std <- NULL
+  message("Finished optimization")
   if(getsd){
     sdrep <- sdreport(obj)
     std <- summary(sdrep)
@@ -89,11 +105,14 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
       mutate(year=1969+1:n(), lwr=est-1.96*se,
              upr=est+1.96*se, version=input$version) %>%
       ungroup
+    message("Finished sdreport")
   }
   fit <- list(version=input$version, path=input$path,
               modfile=input$modfile, rep=rep, opt=opt, sd=std,
-              obj=obj, sdrep=sdrep)
+              obj=obj, input=input)
+  if(save.sdrep) fit <- c(fit,sdrep=sdrep)
   class(fit) <- c('pkfit', 'list')
+  print(fit)
   saveRDS(fit, file=paste0(input$path,'/fit.RDS'))
   return(fit)
 }

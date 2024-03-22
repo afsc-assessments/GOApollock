@@ -6,6 +6,7 @@
 #' @param peels Vector of peels to fit, with 0 being the original
 #'   data set
 #' @param getsd Whether to run sdreport
+#' @param parallel Whether to run peels in parallel or not (default).
 #' @param ... Additional arguments to pass to \link{\code{fit_pk}}
 #' @return A list of model fits of class 'pkfit'
 #' @details This function fits a series of models to peels based
@@ -14,9 +15,20 @@
 #'   are preserved so that it runs faster. Pass an unfitted obj
 #'   if this is undesired behavior.
 #' @export
-fit_pk_retros <- function(fit, peels=0:7, getsd=TRUE, ...){
-  if(class(fit)[1]!='pkfit') stop("fit argument is not a fitted model")
-  retros <- lapply(peels, function(i) fit_peel(fit, peel=i, getsd=getsd, ...))
+fit_pk_retros <- function(fit, peels=0:7, getsd=TRUE, parallel=FALSE,...){
+  if(class(fit)[1]!='pkfit')
+    stop("fit argument is not a fitted model")
+  if(parallel){
+    message("Preparing parallel session..")
+    if(!require(snowfall))
+      stop("snowfall package required for parallel execution")
+    sfInit(parallel=TRUE, cpus=parallel::detectCores()-1)
+    sfLibrary(GOApollock)
+    retros <- sfLapply(peels, function(i) GOApollock:::fit_peel(fit, peel=i, getsd=getsd, ...))
+    sfStop()
+  } else {
+    retros <- lapply(peels, function(i) GOApollock:::fit_peel(fit, peel=i, getsd=getsd, ...))
+  }
   return(retros)
 }
 

@@ -10,7 +10,8 @@ fit_pk(
   newtonsteps = 1,
   control = NULL,
   do.fit = TRUE,
-  use_bounds = FALSE
+  use_bounds = FALSE,
+  save.sdrep = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,10 @@ fit_pk(
 \item{use_bounds}{Whether to use bounds, slows optimization
 down but may be necessary. See \link{\code{get_bounds}}
 which is called internally.}
+
+\item{save.sdrep}{Whether to return the sdreport object in the
+fitted model. This is rarely used and large so turned off by
+default.}
 }
 \value{
 A list object of class 'pkfit' which contains a

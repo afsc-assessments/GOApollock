@@ -219,7 +219,7 @@ read_pk_rep <- function(model='goa_pk', path=getwd(), version='none', endyr,
 
 
 #' Extract and melt a named object from a replist (beta)
-#' @param replist Output from \code{read_pk_rep}. Can be a single
+#' @param replist Output from \code{get_rep}. Can be a single
 #'   report object or a list of them.
 #' @param slot The slot name to extract
 #' @export
@@ -228,11 +228,16 @@ read_pk_rep <- function(model='goa_pk', path=getwd(), version='none', endyr,
 mymelt <- function(replist, slot){
 
   ## multiple runs together or single?
+  ## multi <- !is.pkfit(replist)
+  ## if(multi){
+  ##   if(!all(sapply(replist, is.pkfit)))
+  ##     stop("Some elements of replist are not pkfit objects")
+  ## }
   multi <- ifelse(length(replist)>100, FALSE,TRUE)
-
   if(!multi){
     ## Matrix already has dimnames for ages and years as appropriate
     y <- replist[[slot]]
+    if(NROW(y)==0) stop("Slot '", slot, "' not found in report")
     if(is.matrix(y)){
       ## onlyh need this for TMB output since doens't have
       ## dimnames set by read_pk_rep
@@ -243,15 +248,15 @@ mymelt <- function(replist, slot){
       if(nrow(temp)==length(replist$years)) temp <- cbind(temp, year=replist$years)
       temp
     } else {
-      temp <- data.frame(model=replist$version, value=y)
+      temp <- data.frame(version=replist$version, value=y)
       if(nrow(temp)==length(replist$ages)) temp <- cbind(temp, age=replist$ages)
       if(nrow(temp)==length(replist$years)) temp <- cbind(temp, year=replist$years)
       temp
     }
-    x <- temp
+    x <- cbind(temp, name=slot)
   }  else {
     ## use recursion to get individual ones
-    x <- do.call(rbind, lapply(replist, function(z) mymelt(z, slot=slot)))
+    x <- do.call(bind_rows, lapply(replist, function(z) mymelt(z, slot=slot)))
   }
   return(x)
 }
