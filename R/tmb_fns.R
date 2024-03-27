@@ -71,6 +71,7 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
 
   cpp <- paste0(file.path(input$path, input$modfile),'.cpp')
   if(!file.exists(cpp)) stop("file does not exist: ", cpp)
+  tryCatch(dyn.unload(dynlib(file.path(input$path, input$modfile))), error=function(e) 'error')
   suppressMessages(compile(cpp))
   suppressMessages(dyn.load(dynlib(file.path(input$path, input$modfile))))
   obj <- MakeADFun(data=input$dat, parameters=input$pars,

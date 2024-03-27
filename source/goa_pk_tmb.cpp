@@ -41,7 +41,27 @@ Type square(Type x){return x*x;};
 template <class Type>
 Type norm2(vector<Type> x){return (x*x).sum();};
 #define see(object) std::cout << #object ":\n" << object << "\n";
-
+// rmultinom taken from WHAM on 2024-03-22
+// https://github.com/timjmiller/wham/blob/master/src/age_comp_sim.hpp#L1C1-L19C2
+template<class Type>
+vector<Type> rmultinom(Type N, vector<Type> p)
+{
+  //multinomial
+  int dim = p.size();
+  vector<Type> x(dim);
+  int Nint = CppAD::Integer(N);
+  x.setZero();
+  for(int i = 0; i < Nint; i++)
+  {
+    Type y = runif(0.0,1.0);
+    for(int a = 0; a < dim; a++) if(y < p.head(a+1).sum())
+    {
+      x(a) += 1.0;
+      break;
+    }
+  }
+  return x;
+}
 
 template<class Type>
 Type objective_function<Type>::operator() ()
@@ -382,7 +402,6 @@ Type objective_function<Type>::operator() ()
   vector<Type> Etotalbio(nyrs);
   // log likelihood containers
   vector<Type> loglik(24);
-  loglik.setZero();
   vector<Type> llcatp(nyrs_fsh);
   vector<Type> lllenp(nyrslen_fsh);
   vector<Type> llsrvp1(nyrsac_srv1);
@@ -414,6 +433,12 @@ Type objective_function<Type>::operator() ()
   pearson_srv3.setZero(); 
   pearson_srv3len.setZero();
   pearson_srv6.setZero();
+  res_fish.setZero();
+  res_srv1.setZero();
+  res_srv2.setZero(); 
+  res_srv3.setZero(); 
+  res_srv3len.setZero();
+  res_srv6.setZero();
   
   // These are old, probably used for Francis tuning but not
   // anymore. Left blank for now but consider taking out later
@@ -737,8 +762,6 @@ Type objective_function<Type>::operator() ()
     Exrate_proj(i)=Ecattot_proj(i)/(1000000*Esumbio_proj(i));
   } // end proj years
 
-  loglik.setZero();
-
     // age accumulation (add 1st and 2nd ages) for fishery, turned off for the surveys
     for (i=0;i<nyrs_fsh;i++) {
     for (j=a0;j<=a1;j++) {
@@ -761,259 +784,307 @@ Type objective_function<Type>::operator() ()
     }
   } 
 
-  // Fishery likelihoods
-  //Total catch
-  for(i=y0; i<=y1;i++){
-    loglik(0) += -.5*square((log(cattot(i))-log(Ecattot(i)))/cattot_log_sd(i));
-  }	  
-  //  loglik(0) = dnorm(log(cattot), log(Ecattot), cattot_log_sd, true).sum();
+    loglik.setZero();
+    // ------------------------------------------------------------
+    // Calculate the likelihood components
 
+    // Fishery likelihoods
+    // Total catch
+    loglik(0) = dnorm(log(cattot), log(Ecattot), cattot_log_sd, true).sum();
+    SIMULATE {
+      cattot=exp(rnorm(log(Ecattot), cattot_log_sd));
+      REPORT(cattot);
+    }
   
-  //Age composition
-  res_fish.setZero();
-  pearson_fish.setZero();
-  for (i=0;i<nyrs_fsh;i++) {
-    llcatp(i) = 0;
-    for (j=iac_yng_fsh(i);j<=iac_old_fsh(i);j++) {
-      llcatp(i) += multN_fsh(i)*(catp(i,j)+o)*log((Ecatp(ifshyrs(i),j)+o)/(catp(i,j)+o));
-      res_fish(i,j)=catp(i,j);
-      res_fish(i,a1-a0+j+1)=Ecatp(ifshyrs(i),j);
-      if(multN_fsh(i)>0) {
-	pearson_fish(i,j)=(catp(i,j)-Ecatp(ifshyrs(i),j))/sqrt((Ecatp(ifshyrs(i),j)*(1.-Ecatp(ifshyrs(i),j)))/multN_fsh(i));	
+    //Age composition
+    res_fish.setZero();
+    pearson_fish.setZero();
+    llcatp.setZero();
+    for (i=0;i<nyrs_fsh;i++) {
+      int nagestmp=1+iac_old_fsh(i)-iac_yng_fsh(i); // .segment takes initial place and vector length
+      if(multN_fsh(i)>0) { // this allows turning off contribution easily from dat file
+	// Not sure why I have to do this in two steps
+	vector<Type> otmp= catp.row(i).segment(iac_yng_fsh(i), nagestmp);
+	vector<Type> etmp=Ecatp.row(ifshyrs(i)).segment(iac_yng_fsh(i), nagestmp);
+	otmp+=o; otmp*=multN_fsh(i);
+	etmp+=o;
+	llcatp(i) = dmultinom(otmp, etmp, true);
+	SIMULATE {
+	  otmp=rmultinom(multN_fsh(i), etmp);
+	  catp.row(i).segment(iac_yng_fsh(i), nagestmp)=otmp/otmp.sum();
+	}
+	// Residuals and outputs which get used by R functions 
+	for (j=iac_yng_fsh(i);j<=iac_old_fsh(i);j++) {
+	  res_fish(i,j)=catp(i,j); res_fish(i,a1-a0+j+1)=Ecatp(ifshyrs(i),j);
+	  pearson_fish(i,j)=(catp(i,j)-Ecatp(ifshyrs(i),j))/sqrt((Ecatp(ifshyrs(i),j)*(1.-Ecatp(ifshyrs(i),j)))/multN_fsh(i));	
+	}
+      } else {
+	// otherwise simulated data have original data left in there
+	SIMULATE catp.row(i).setZero();
       }
     }
-    if(multN_fsh(i)>0) {	
-      //   effN_fsh(i) = sum(Ecatp(ifshyrs(i))*(1-Ecatp(ifshyrs(i))))/sum(square(catp(i)-Ecatp(ifshyrs(i))));
+    REPORT(catp);
+    loglik(1) = llcatp.sum();
+    // //Length compositions no longer implemented
+    lllenp.setZero();
+
+
+    // Survey 1 likelihoods
+    // Total biomass
+    res_srv1.setZero();
+    for(i=0; i<nyrs_srv1;i++){
+      // Add bias correction on
+      Type Eindxsurv1_tmp=log(Eindxsurv1(isrvyrs1(i)));
+      Eindxsurv1_tmp -= square(indxsurv_log_sd1(i))/2.;
+      loglik(3)+= dnorm(log(indxsurv1(i)), Eindxsurv1_tmp, indxsurv_log_sd1(i), true);
+      SIMULATE {
+	indxsurv1(i)=exp(rnorm(Eindxsurv1_tmp, indxsurv_log_sd1(i)));
+	REPORT(indxsurv1);
+      }
     }
-    loglik(1) += llcatp(i);
-  }
-
-  // //Length composition
-  lllenp.setZero();
-  // loglik(2)=0;
-  // for (i=0;i<nyrslen_fsh;i++) {
-  //   lllenp(i) = 0;
-  //   for (j=0;j<nbins1;j++) {
-  //     lllenp(i) += multNlen_fsh(i)*(lenp(i,j)+o)*log((Elenp(fshlenyrs(i),j)+o)/(lenp(i,j)+o));
-  //   }
-  //   loglik(2) += lllenp(i);
-  // }
-
-  // Survey 1 likelihoods
-  // Total biomass  
-  loglik(3)=0;
-  for(i=0; i<nyrs_srv1;i++){
-    loglik(3)+=-.5*square((log(indxsurv1(i))-log(Eindxsurv1(isrvyrs1(i)))+square(indxsurv_log_sd1(i))/2.)/indxsurv_log_sd1(i));
-  }
-
-  RMSE_srv1=0;
-  // if(!isretro)
-  //   RMSE_srv1= sqrt(norm2(log(indxsurv1)-log(Eindxsurv1(isrvyrs1))+square(indxsurv_log_sd1)/2.)/nyrs_srv1);
+    RMSE_srv1=0;
+    // Age compositions
+    llsrvp1.setZero();
+    for (i=0;i<nyrsac_srv1;i++) {
+      int nagestmp=1+iac_old_srv1(i)-iac_yng_srv1(i); // .segment takes initial place and vector length
+      if(multN_srv1(i)>0) { // this allows turning off contribution easily from dat file
+	// Not sure why I have to do this in two steps.
+	vector<Type> otmp=srvp1.row(i).segment(iac_yng_srv1(i), nagestmp);
+	vector<Type> etmp=Esrvp1.row(isrv_acyrs1(i)).segment(iac_yng_srv1(i), nagestmp);
+	otmp+=o; otmp*=multN_srv1(i);
+	etmp+=o;
+	llsrvp1(i) = dmultinom(otmp, etmp, true);
+	SIMULATE {
+	  otmp=rmultinom(multN_srv1(i), etmp);
+	  srvp1.row(i).segment(iac_yng_srv1(i), nagestmp)=otmp/otmp.sum();
+	}
+	//Residuals and outputs which get used by R functions 
+	for (j=iac_yng_srv1(i);j<=iac_old_srv1(i);j++) {
+	  res_srv1(i,j)=srvp1(i,j); res_srv1(i,a1-a0+j+1)=Esrvp1(isrv_acyrs1(i),j);
+	  pearson_srv1(i,j)=(srvp1(i,j)-Esrvp1(isrv_acyrs1(i),j))/sqrt((Esrvp1(isrv_acyrs1(i),j)*(1.-Esrvp1(isrv_acyrs1(i),j)))/multN_srv1(i));	
+	}
+      } else {
+	// otherwise simulated data have original data left in there
+	SIMULATE srvp1.row(i).setZero();
+      }
+    }
+    REPORT(srvp1);
+    loglik(4)=llsrvp1.sum();
   
-  //Age composition
-  loglik(4)=0;
-  for (i=0;i<nyrsac_srv1;i++) {
-    llsrvp1(i) = 0;
-    for (j=a0;j<=a1;j++) {
-      llsrvp1(i) += multN_srv1(i)*(srvp1(i,j)+o)*log((Esrvp1(isrv_acyrs1(i),j)+o)/(srvp1(i,j)+o));
-      res_srv1(i,j)=srvp1(i,j);
-      res_srv1(i,a1-a0+j+1)=Esrvp1(isrv_acyrs1(i),j);
-      if(multN_srv1(i)>0) {
-	pearson_srv1(i,j)=(srvp1(i,j)-Esrvp1(isrv_acyrs1(i),j))/sqrt((Esrvp1(isrv_acyrs1(i),j)*(1.-Esrvp1(isrv_acyrs1(i),j)))/multN_srv1(i));	
+
+    // Survey 2 likelihoods
+    // Total biomass  
+    loglik(6)=0;
+    for(i=0; i<nyrs_srv2;i++){
+      // Add bias correction on
+      Type Eindxsurv2_tmp=log(Eindxsurv2(isrvyrs2(i)));
+      Eindxsurv2_tmp -= square(indxsurv_log_sd2(i))/2.;
+      loglik(6)+= dnorm(log(indxsurv2(i)), Eindxsurv2_tmp, indxsurv_log_sd2(i), true);
+      SIMULATE {
+	indxsurv2(i)=exp(rnorm(Eindxsurv2_tmp, indxsurv_log_sd2(i)));
+	REPORT(indxsurv2);
       }
     }
-    if(multN_srv1(i)>0) {
-      //effN_srv1(i) = sum(Esrvp1(isrv_acyrs1(i))*(1-Esrvp1(isrv_acyrs1(i))))/sum(square(srvp1(i)-Esrvp1(isrv_acyrs1(i))));
-    }
-    loglik(4) += llsrvp1(i);
-  }
-  // //length composition
-  llsrvlenp1.setZero();
-  // loglik(5)=0;
-  // for (i=0;i<nyrslen_srv1;i++) {
-  //   llsrvlenp1(i) = 0;
-  //   for (j=0;j<nbins3;j++) {
-  //     llsrvlenp1(i) += multNlen_srv1(i)*(srvlenp1(i,j)+o)*log((Esrvlenp1(isrv_lenyrs1(i),j)+o)/(srvlenp1(i,j)+o));
-  //   }
-  //   loglik(5) += llsrvlenp1(i);
-  // }
-
-  // Survey 2 likelihoods
-  //Total biomass    
-  loglik(6) =0;
-  for (i=0;i<nyrs_srv2;i++){
-    loglik(6)+=-.5*square((log(indxsurv2(i))-log(Eindxsurv2(isrvyrs2(i)))+square(indxsurv_log_sd2(i))/2.)/indxsurv_log_sd2(i));
-  }
-  RMSE_srv2=0;
-  // if(!isretro)
-  //   RMSE_srv2= sqrt(norm2(log(indxsurv2)-log(Eindxsurv2(srvyrs2))+square(indxsurv_log_sd2)/2.)/nyrs_srv2);
-   
-  // Age composition
-  loglik(7)=0;
-  for (i=0;i<nyrsac_srv2;i++) {
-    llsrvp2(i) = 0;
-    for (j=a0;j<=a1;j++) {
-      llsrvp2(i) += multN_srv2(i)*(srvp2(i,j)+o)*log((Esrvp2(isrv_acyrs2(i),j)+o)/(srvp2(i,j)+o));
-      res_srv2(i,j)=srvp2(i,j);
-      res_srv2(i,a1-a0+j+1)=Esrvp2(isrv_acyrs2(i),j);
-      if(multN_srv2(i)>0) {
-	pearson_srv2(i,j)=(srvp2(i,j)-Esrvp2(isrv_acyrs2(i),j))/sqrt((Esrvp2(isrv_acyrs2(i),j)*(1.-Esrvp2(isrv_acyrs2(i),j)))/multN_srv2(i));	
-      }  
-    }
-    if(multN_srv2(i)>0) {	
-      //effN_srv2(i) = sum(Esrvp2(isrv_acyrs2(i))*(1-Esrvp2(isrv_acyrs2(i))))/sum(square(srvp2(i)-Esrvp2(isrv_acyrs2(i))));
-    }
-    loglik(7) += llsrvp2(i);
-  }
-  // length composition
-  loglik(8)=0;
-  for (i=0;i<nyrslen_srv2;i++) {
-    llsrvlenp2(i) = 0;
-    for (j=0;j<nbins2;j++) {
-      llsrvlenp2(i) += multNlen_srv2(i)*(srvlenp2(i,j)+o)*log((Esrvlenp2(isrv_lenyrs2(i),j)+o)/(srvlenp2(i,j)+o));
-    }
-    loglik(8) += llsrvlenp2(i);
-  }
-  loglik(9) = 0;
-
-  // Survey 3 likelihoods
-  //Total biomass
-  loglik(10)=0;
-  for(i=0; i<nyrs_srv3;i++){
-    loglik(10) += -.5*square((log(indxsurv3(i))-log(Eindxsurv3(isrvyrs3(i)))+square(indxsurv_log_sd3(i))/2.)/indxsurv_log_sd3(i));
-  }
-  RMSE_srv3=0;
-  // if(!isretro)
-  //   RMSE_srv3= sqrt(norm2(log(indxsurv3)-log(Eindxsurv3(srvyrs3))+square(indxsurv_log_sd3)/2.)/nyrs_srv3);
-
-  // age composition
-  loglik(11)=0;
-  for (i=0;i<nyrsac_srv3;i++) {
-    llsrvp3(i) = 0;
-    for (j=a0;j<=a1;j++) {
-      llsrvp3(i) += multN_srv3(i)*(srvp3(i,j)+o)*log((Esrvp3(isrv_acyrs3(i),j)+o)/(srvp3(i,j)+o));
-      res_srv3(i,j)=srvp3(i,j);
-      res_srv3(i,a1-a0+j+1)=Esrvp3(isrv_acyrs3(i),j);
-      if(multN_srv3(i)>0) {
-	pearson_srv3(i,j)=(srvp3(i,j)-Esrvp3(isrv_acyrs3(i),j))/sqrt((Esrvp3(isrv_acyrs3(i),j)*(1.-Esrvp3(isrv_acyrs3(i),j)))/multN_srv3(i));	
+    RMSE_srv2=0;
+    // Age compositions
+    llsrvp2.setZero();
+    for (i=0;i<nyrsac_srv2;i++) {
+      if(multN_srv2(i)>0) { // this allows turning off contribution easily from dat file
+	// Not sure why I have to do this in two steps.
+	vector<Type> otmp=srvp2.row(i);
+	vector<Type> etmp=Esrvp2.row(isrv_acyrs2(i));
+	otmp+=o; otmp*=multN_srv2(i);
+	etmp+=o;
+	llsrvp2(i) = dmultinom(otmp, etmp, true);
+	SIMULATE {
+	  otmp=rmultinom(multN_srv2(i), etmp);
+	  srvp2.row(i)=otmp/otmp.sum();
+	}
+	//Residuals and outputs which get used by R functions 
+	for (j=a0;j<=a1;j++) {
+	  res_srv2(i,j)=srvp2(i,j); res_srv2(i,a1-a0+j+1)=Esrvp2(isrv_acyrs2(i),j);
+	  pearson_srv2(i,j)=(srvp2(i,j)-Esrvp2(isrv_acyrs2(i),j))/sqrt((Esrvp2(isrv_acyrs2(i),j)*(1.-Esrvp2(isrv_acyrs2(i),j)))/multN_srv2(i));	
+	}
+      } else {
+	// otherwise simulated data have original data left in there
+	SIMULATE srvp2.row(i).setZero();
       }
     }
-    if(multN_srv3(i)>0) {		
-      //effN_srv3(i) = sum(Esrvp3(isrv_acyrs3(i))*(1-Esrvp3(isrv_acyrs3(i))))/sum(square(srvp3(i)-Esrvp3(isrv_acyrs3(i))));	
-    }
-    loglik(11) += llsrvp3(i);
-  }
-
-  res_srv3len.setZero();
-  // length composition
-  // loglik(12)=0;
-  // for (i=0;i<nyrslen_srv3;i++) {
-  //   llsrvlenp3(i) = 0;
-  //   for (j=0;j<nbins2;j++) {
-  //     llsrvlenp3(i) += multNlen_srv3(i)*(srvlenp3(i,j)+o)*log((Esrvlenp3(isrv_lenyrs3(i),j)+o)/(srvlenp3(i,j)+o));
-  //     res_srv3len(i,j)=srvlenp3(i,j);
-  //     res_srv3len(i,nbins2+j)=Esrvlenp3(srv_lenyrs3(i),j);
-  //     if(multNlen_srv3(i)>0) {
-  // 	pearson_srv3len(i,j)=(srvlenp3(i,j)-Esrvlenp3(srv_lenyrs3(i),j))/sqrt((Esrvlenp3(srv_lenyrs3(i),j)*(1.-Esrvlenp3(srv_lenyrs3(i),j)))/multNlen_srv3(i));	
-  //     }
-  //   }
-  //   loglik(12) += llsrvlenp3(i);
-  // }
-
-  // Survey 4 and 5 likelihoods
-  for(i=0; i<nyrs_srv4;i++){ 	// assuming srv4 and srv5 have identical structure
-    loglik(13) += -.5*square((log(indxsurv4(i))-log(Eindxsurv4(isrvyrs4(i)))+square(indxsurv_log_sd4(i))/2.)/indxsurv_log_sd4(i));
-    loglik(14) += -.5*square((log(indxsurv5(i))-log(Eindxsurv5(isrvyrs5(i)))+square(indxsurv_log_sd5(i))/2.)/indxsurv_log_sd5(i));
-  }
-  RMSE_srv5=0;
-  // if(!isretro)
-  //   RMSE_srv5= sqrt(norm2(log(indxsurv5)-log(Eindxsurv5(srvyrs5))+square(indxsurv_log_sd5)/2.)/nyrs_srv5);
-  RMSE_srv4=0;
-  // if(!isretro)
-  //   RMSE_srv4= sqrt(norm2(log(indxsurv4)-log(Eindxsurv4(srvyrs4))+square(indxsurv_log_sd4)/2.)/nyrs_srv4);
-
-  // Survey 6 likelihoods
-  //Total biomass    
-  loglik(15)=0;
-  for(i=0;i<nyrs_srv6;i++){
-    if(indxsurv_log_sd6(i)>0) // dummy values to make retros work when no data
-      loglik(15)+=-.5*square((log(indxsurv6(i))-log(Eindxsurv6(isrvyrs6(i)))+square(indxsurv_log_sd6(i))/2.)/indxsurv_log_sd6(i));
-  }
-  RMSE_srv6=0;
-  // if(!isretro)
-  //   RMSE_srv6= sqrt(norm2(log(indxsurv6)-log(Eindxsurv6(srvyrs6))+square(indxsurv_log_sd6)/2.)/nyrs_srv6);
-   
-  // Age composition
-  loglik(16)=0;
-  llsrvp6.setZero();
-  for (i=0;i<nyrsac_srv6;i++) {
-    if(multN_srv6(i)>0) {
-      for (j=a0;j<=a1;j++) {
-	llsrvp6(i) += multN_srv6(i)*(srvp6(i,j)+o)*log((Esrvp6(isrv_acyrs6(i),j)+o)/(srvp6(i,j)+o));
-	res_srv6(i,j)=srvp6(i,j);
-	res_srv6(i,a1-a0+j+1)=Esrvp6(isrv_acyrs6(i),j);
-	  pearson_srv6(i,j)=(srvp6(i,j)-Esrvp6(isrv_acyrs6(i),j))/sqrt((Esrvp6(isrv_acyrs6(i),j)*(1.-Esrvp6(isrv_acyrs6(i),j)))/multN_srv6(i));	
+    REPORT(srvp2);
+    loglik(7)=llsrvp2.sum();
+    llsrvlenp2.setZero();
+    for (i=0;i<nyrslen_srv2;i++) {
+      if(multNlen_srv2(i)>0) { // this allows turning off contribution easily from dat file
+	// Not sure why I have to do this in two steps.
+	vector<Type> otmp=srvlenp2.row(i);
+	vector<Type> etmp=Esrvlenp2.row(isrv_lenyrs2(i));
+	otmp+=o; otmp*=multNlen_srv2(i);
+	etmp+=o;
+	llsrvlenp2(i) = dmultinom(otmp, etmp, true);
+	SIMULATE {
+	  otmp=rmultinom(multNlen_srv2(i), etmp);
+	  srvlenp2.row(i)=otmp/otmp.sum();
+	}
+      } else {
+	// otherwise simulated data have original data left in there
+	SIMULATE srvlenp2.row(i).setZero();
       }
-      //  effN_srv6(i) = sum(Esrvp6(isrv_acyrs6(i))*(1-Esrvp6(isrv_acyrs6(i))))/sum(square(srvp6(i)-Esrvp6(isrv_acyrs6(i))));
-      loglik(16) +=llsrvp6(i);
     }
-  }
-  // length composition
-  llsrvlenp6.setZero();
-  for (i=0;i<nyrslen_srv6;i++) {
-    if(multNlen_srv6(i)>0) {
-      for (j=0;j<nbins2;j++) {
-	llsrvlenp6(i) += multNlen_srv6(i)*(srvlenp6(i,j)+o)*log((Esrvlenp6(isrv_lenyrs6(i),j)+o)/(srvlenp6(i,j)+o));
+    REPORT(srvlenp2);
+    loglik(8)=llsrvlenp2.sum();
+
+
+    // Survey 3 likelihoods
+    // Total biomass  
+    loglik(10)=0;
+    for(i=0; i<nyrs_srv3;i++){
+      // Add bias correction on
+      Type Eindxsurv3_tmp=log(Eindxsurv3(isrvyrs3(i)));
+      Eindxsurv3_tmp -= square(indxsurv_log_sd3(i))/2.;
+      loglik(10)+= dnorm(log(indxsurv3(i)), Eindxsurv3_tmp, indxsurv_log_sd3(i), true);
+      SIMULATE {
+	indxsurv3(i)=exp(rnorm(Eindxsurv3_tmp, indxsurv_log_sd3(i)));
+	REPORT(indxsurv3);
       }
-      loglik(16) += llsrvlenp6(i);
     }
-  }
-
-  // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
-  //loglik(17) += dnorm(dev_log_recruit, Type(0.0), sigmaR, true).sum();
-  loglik(17 )+=-0.5*norm2(dev_log_recruit)/square(sigmaR);
-
-  // Normal process error on selectivity deviations. Note
-  // rwlk_sd(y0,y1-1) b/c if using retro they will be too
-  // long since read in as data with the original y1 value
-  // loglik(18)  = -0.5*norm2(elem_div(first_difference(slp1_fsh_dev),rwlk_sd(y0,y1-1))); 
-  // loglik(18) += -0.5*norm2(elem_div(first_difference(inf1_fsh_dev),4.0*rwlk_sd(y0,y1-1)));
-  // loglik(18) += -0.5*norm2(elem_div(first_difference(slp2_fsh_dev),rwlk_sd(y0,y1-1)));
-  // loglik(18) += -0.5*norm2(elem_div(first_difference(inf2_fsh_dev),rwlk_sd(y0,y1-1)));
- 
-  // // Recruitment in projection mode, but skip it if doing retro
-  // // peels b/c it makes no sense and breaks this code
-  // /// fixme
-  // //  if(last_phase()) {
-  // //   loglik(19) =  -(1/(2.0*sigmasq_recr))*norm2(log_recr_proj - log_mean_recr_proj);
-  // //} else {
-  // loglik(19)=0;
-  // //}
-  // // Normal process error on catchability deviations. Note
-  // // rwlk_sd(y0,y1-1) b/c if using retro they will be too
-  // // long since read in as data with the original y1 value
-  // // loglik(20)  = -0.5*norm2(elem_div(first_difference(log_q1_dev),q1_rwlk_sd(y0,y1-1))); 
-  // // loglik(20)  += -0.5*norm2(elem_div(first_difference(log_q2_dev),q2_rwlk_sd(y0,y1-1))); 
-  // // loglik(20)  += -0.5*norm2(elem_div(first_difference(log_q3_dev),q3_rwlk_sd(y0,y1-1))); 
-  // loglik(21)= 0;
-
-  for(i=y0+1;i<=y1;i++){
-    loglik(18) += -0.5*square( (slp1_fsh_dev(i)-slp1_fsh_dev(i-1))/rwlk_sd(i-1));
-    loglik(18) += -0.5*square( (inf1_fsh_dev(i)-inf1_fsh_dev(i-1))/(4*rwlk_sd(i-1))); 
-    loglik(18) += -0.5*square( (slp2_fsh_dev(i)-slp2_fsh_dev(i-1))/rwlk_sd(i-1));
-    loglik(18) += -0.5*square( (inf2_fsh_dev(i)-inf2_fsh_dev(i-1))/rwlk_sd(i-1));
-    loglik(20) += -0.5*square( (log_q1_dev(i)-log_q1_dev(i-1))/q1_rwlk_sd(i-1));
-    //  loglik(20) += -0.5*square( (log_q2_dev(i)-log_q2_dev(i-1))/q2_rwlk_sd(i-1));
-    loglik(20) += -0.5*square( (log_q3_dev(i)-log_q3_dev(i-1))/q3_rwlk_sd(i-1));
-  }
+    RMSE_srv3=0;
+    // Age compositions
+    llsrvp3.setZero();
+    for (i=0;i<nyrsac_srv3;i++) {
+      if(multN_srv3(i)>0) { // this allows turning off contribution easily from dat file
+	// Not sure why I have to do this in two steps.
+	vector<Type> otmp=srvp3.row(i);
+	vector<Type> etmp=Esrvp3.row(isrv_acyrs3(i));
+	otmp+=o; otmp*=multN_srv3(i);
+	etmp+=o;
+	llsrvp3(i) = dmultinom(otmp, etmp, true);
+	SIMULATE {
+	  otmp=rmultinom(multN_srv3(i), etmp);
+	  srvp3.row(i)=otmp/otmp.sum();
+	}
+	//Residuals and outputs which get used by R functions 
+	for (j=a0;j<=a1;j++) {
+	  res_srv3(i,j)=srvp3(i,j); res_srv3(i,a1-a0+j+1)=Esrvp3(isrv_acyrs3(i),j);
+	  pearson_srv3(i,j)=(srvp3(i,j)-Esrvp3(isrv_acyrs3(i),j))/sqrt((Esrvp3(isrv_acyrs3(i),j)*(1.-Esrvp3(isrv_acyrs3(i),j)))/multN_srv3(i));	
+	}
+      } else {
+	// otherwise simulated data have original data left in there
+	SIMULATE srvp3.row(i).setZero();
+      }
+    }
+    REPORT(srvp3);
+    loglik(11)=llsrvp3.sum();
     
-  // // Prior on trawl catchability       
-  loglik(22) = -.5*square((log_q2_mean-log(0.85))/0.1);
-  // these broad priors stabilize estimation, particularly for
-  // retros, and imply uniform 1 selex for this survey
-  loglik(23) += dnorm(log_slp2_srv6, Type(0.0),Type(2.0), true);
-  loglik(23) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
-  objfun = -sum(loglik);
+    
+    // Survey 4 and 5 likelihoods
+    for(i=0; i<nyrs_srv4;i++){
+      // Add bias correction on
+      Type Eindxsurv4_tmp=log(Eindxsurv4(isrvyrs4(i)));
+      Eindxsurv4_tmp -= square(indxsurv_log_sd4(i))/2.;
+      Type Eindxsurv5_tmp=log(Eindxsurv5(isrvyrs5(i)));
+      Eindxsurv5_tmp -= square(indxsurv_log_sd5(i))/2.;
+      loglik(13)+= dnorm(log(indxsurv4(i)), Eindxsurv4_tmp, indxsurv_log_sd4(i), true);
+      loglik(14)+= dnorm(log(indxsurv5(i)), Eindxsurv5_tmp, indxsurv_log_sd5(i), true);
+      SIMULATE {
+	indxsurv4(i)=exp(rnorm(Eindxsurv4_tmp, indxsurv_log_sd4(i)));
+	indxsurv5(i)=exp(rnorm(Eindxsurv5_tmp, indxsurv_log_sd5(i)));
+	REPORT(indxsurv3);
+      }
+    }
+  RMSE_srv5=0;
+  RMSE_srv4=0;
+
+ 
+
+      // Survey 6 likelihoods
+    // Total biomass  
+    for(i=0; i<nyrs_srv6;i++){
+      // Add bias correction on
+      Type Eindxsurv6_tmp=log(Eindxsurv6(isrvyrs6(i)));
+      Eindxsurv6_tmp -= square(indxsurv_log_sd6(i))/2.;
+      loglik(15)+= dnorm(log(indxsurv6(i)), Eindxsurv6_tmp, indxsurv_log_sd6(i), true);
+      SIMULATE {
+	indxsurv6(i)=exp(rnorm(Eindxsurv6_tmp, indxsurv_log_sd6(i)));
+	REPORT(indxsurv6);
+      }
+    }
+    RMSE_srv6=0;
+    // Age compositions
+    llsrvp6.setZero();
+    for (i=0;i<nyrsac_srv6;i++) {
+      if(multN_srv6(i)>0) { // this allows turning off contribution easily from dat file
+	// Not sure why I have to do this in two steps.
+	vector<Type> otmp=srvp6.row(i);
+	vector<Type> etmp=Esrvp6.row(isrv_acyrs6(i));
+	otmp+=o; otmp*=multN_srv6(i);
+	etmp+=o;
+	llsrvp6(i) = dmultinom(otmp, etmp, true);
+	SIMULATE {
+	  otmp=rmultinom(multN_srv6(i), etmp);
+	  srvp6.row(i)=otmp/otmp.sum();
+	}
+	//Residuals and outputs which get used by R functions 
+	for (j=a0;j<=a1;j++) {
+	  res_srv6(i,j)=srvp6(i,j); res_srv6(i,a1-a0+j+1)=Esrvp6(isrv_acyrs6(i),j);
+	  pearson_srv6(i,j)=(srvp6(i,j)-Esrvp6(isrv_acyrs6(i),j))/sqrt((Esrvp6(isrv_acyrs6(i),j)*(1.-Esrvp6(isrv_acyrs6(i),j)))/multN_srv6(i));	
+	}
+      } else {
+	// otherwise simulated data have original data left in there
+	SIMULATE srvp6.row(i).setZero();
+      }
+    }
+    REPORT(srvp6);
+    loglik(16)=llsrvp6.sum();
+    llsrvlenp6.setZero();
+    for (i=0;i<nyrslen_srv6;i++) {
+      if(multNlen_srv6(i)>0) { // this allows turning off contribution easily from dat file
+	// Not sure why I have to do this in two steps.
+	vector<Type> otmp=srvlenp6.row(i);
+	vector<Type> etmp=Esrvlenp6.row(isrv_lenyrs6(i));
+	otmp+=o; otmp*=multNlen_srv6(i);
+	etmp+=o;
+	llsrvlenp6(i) = dmultinom(otmp, etmp, true);
+	SIMULATE {
+	  otmp=rmultinom(multNlen_srv6(i), etmp);
+	  srvlenp6.row(i)=otmp/otmp.sum();
+	}
+      } else {
+	// otherwise simulated data have original data left in there
+	SIMULATE srvlenp6.row(i).setZero();
+      }
+    }
+    REPORT(srvlenp6);
+    // need to move this to its own slot
+    loglik(16)+=llsrvlenp6.sum();
+
+    // End of data likelihoods
+    // ------------------------------------------------------------
+       
+    // ------------------------------------------------------------
+    // Priors and random effect penalties
+    // TODO: move this above data and build in RE simulation
+
+    // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
+    loglik(17) += dnorm(dev_log_recruit, Type(0.0), sigmaR, true).sum();
+    
+
+    for(i=y0+1;i<=y1;i++){
+      loglik(18) += dnorm(slp1_fsh_dev(i)-slp1_fsh_dev(i-1), Type(0.0), rwlk_sd(i-1), true);
+      loglik(18) += dnorm(inf1_fsh_dev(i)-inf1_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true); 
+      loglik(18) += dnorm(slp2_fsh_dev(i)-slp2_fsh_dev(i-1), Type(0.0), rwlk_sd(i-1), true);
+      loglik(18) += dnorm(inf2_fsh_dev(i)-inf2_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true); 
+      loglik(20) += dnorm(log_q1_dev(i)-log_q1_dev(i-1), Type(0.0), q1_rwlk_sd(i-1), true);
+      loglik(20) += dnorm(log_q2_dev(i)-log_q2_dev(i-1), Type(0.0), q2_rwlk_sd(i-1), true);
+      loglik(20) += dnorm(log_q3_dev(i)-log_q3_dev(i-1), Type(0.0), q3_rwlk_sd(i-1), true);
+    }
+    
+    // // Prior on trawl catchability       
+    loglik(22) = dnorm(log_q2_mean, log(Type(0.85)), Type(0.1), true);
+    // these broad priors stabilize estimation, particularly for
+    // retros, and imply uniform 1 selex for this survey
+    loglik(23) += dnorm(log_slp2_srv6, Type(0.0),Type(2.0), true);
+    loglik(23) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
+    objfun = -sum(loglik);
 
   REPORT(objfun);
   REPORT(styr);
