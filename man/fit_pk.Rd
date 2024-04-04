@@ -25,7 +25,7 @@ fit_pk(
 \item{do.fit}{Optimize or return obj? Used for testing.}
 
 \item{use_bounds}{Whether to use bounds, slows optimization
-down but may be necessary. See \link{\code{get_bounds}}
+down but may be necessary. See \code{\link{get_bounds}}
 which is called internally.}
 
 \item{save.sdrep}{Whether to return the sdreport object in the

@@ -53,7 +53,7 @@ get_rep <- function(fits, slot=NULL) {
 #' @param getsd Calculate and return sdreport?
 #' @param do.fit Optimize or return obj? Used for testing.
 #' @param use_bounds Whether to use bounds, slows optimization
-#'   down but may be necessary. See \link{\code{get_bounds}}
+#'   down but may be necessary. See \code{\link{get_bounds}}
 #'   which is called internally.
 #' @param save.sdrep Whether to return the sdreport object in the
 #'   fitted model. This is rarely used and large so turned off by
