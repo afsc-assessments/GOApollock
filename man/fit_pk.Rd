@@ -11,7 +11,8 @@ fit_pk(
   control = NULL,
   do.fit = TRUE,
   use_bounds = FALSE,
-  save.sdrep = FALSE
+  save.sdrep = FALSE,
+  filename = "fit.RDS"
 )
 }
 \arguments{
@@ -30,7 +31,12 @@ which is called internally.}
 
 \item{save.sdrep}{Whether to return the sdreport object in the
 fitted model. This is rarely used and large so turned off by
-default.}
+default.
+@param filename Character string giving a file name to save
+the fitted object as an RDS object. Defaults to 'fit.RDS',
+and a value of NULL indicates not to save it. If specified,
+it must end in .RDS. The file is written to folder given by
+\code{input$path}.}
 }
 \value{
 A list object of class 'pkfit' which contains a
@@ -43,5 +49,6 @@ the obj.
 Fit a GOA pollock model (BETA)
 }
 \details{
-This function is beta still.
+This function is beta still and subject to change
+without warning.
 }

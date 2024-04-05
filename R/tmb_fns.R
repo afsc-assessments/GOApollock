@@ -58,17 +58,23 @@ get_rep <- function(fits, slot=NULL) {
 #' @param save.sdrep Whether to return the sdreport object in the
 #'   fitted model. This is rarely used and large so turned off by
 #'   default.
+#'   @param filename Character string giving a file name to save
+#'   the fitted object as an RDS object. Defaults to 'fit.RDS',
+#'   and a value of NULL indicates not to save it. If specified,
+#'   it must end in .RDS. The file is written to folder given by
+#'   \code{input$path}.
 #' @return A list object of class 'pkfit' which contains a
 #'   "version" model name, rep, opt as returned by
 #'   \code{TMBHelper::fit_tmb} but without the SD slot, std
 #'   (formatted data frame) and sdrep if \code{getsd=TRUE}, and
 #'   the obj.
-#' @details This function is beta still.
+#' @details This function is beta still and subject to change
+#'   without warning.
 #' @export
 fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                    control=NULL, do.fit=TRUE,
-                   use_bounds=FALSE, save.sdrep=FALSE){
-
+                   use_bounds=FALSE, save.sdrep=FALSE,
+                   filename='fit.RDS'){
   cpp <- paste0(file.path(input$path, input$modfile),'.cpp')
   if(!file.exists(cpp)) stop("file does not exist: ", cpp)
   tryCatch(dyn.unload(dynlib(file.path(input$path, input$modfile))), error=function(e) 'error')
@@ -114,7 +120,9 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
   if(save.sdrep) fit <- c(fit,sdrep=sdrep)
   class(fit) <- c('pkfit', 'list')
   print(fit)
-  saveRDS(fit, file=paste0(input$path,'/fit.RDS'))
+  if(!is.null(filename)) {
+    saveRDS(fit, file=paste0(input$path,'/', filename))
+  }
   return(fit)
 }
 
