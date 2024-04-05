@@ -15,7 +15,7 @@ data set}
 
 \item{parallel}{Whether to run peels in parallel or not (default).}
 
-\item{...}{Additional arguments to pass to \link{\code{fit_pk}}}
+\item{...}{Additional arguments to pass to \code{\link{fit_pk}}}
 
 \item{obj}{A fitted model from \code{fit_pk}.}
 }

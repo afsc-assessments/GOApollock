@@ -57,8 +57,8 @@ get_rep <- function(fits, slot=NULL) {
 #'   which is called internally.
 #' @param save.sdrep Whether to return the sdreport object in the
 #'   fitted model. This is rarely used and large so turned off by
-#'   default.
-#'   @param filename Character string giving a file name to save
+#'   default. When returned it is named `sdrep`.
+#' @param filename Character string giving a file name to save
 #'   the fitted object as an RDS object. Defaults to 'fit.RDS',
 #'   and a value of NULL indicates not to save it. If specified,
 #'   it must end in .RDS. The file is written to folder given by
@@ -138,7 +138,7 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
 #' @param modfile Model name assumed to be 'goa_pk_tmb' unless
 #'   specified
 #' @return A list with the version, dat, pars, map and random
-#'   which are used to build a TMB 'obj' in \link{\code{fit_pk}}.
+#'   which are used to build a TMB 'obj' in \code{\link{fit_pk}}.
 #' @export
 prepare_pk_input <- function(path, datfile, version='none',
                              random=NULL, modfile='goa_pk_tmb'){

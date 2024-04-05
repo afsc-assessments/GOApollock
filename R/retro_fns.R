@@ -7,7 +7,7 @@
 #'   data set
 #' @param getsd Whether to run sdreport
 #' @param parallel Whether to run peels in parallel or not (default).
-#' @param ... Additional arguments to pass to \link{\code{fit_pk}}
+#' @param ... Additional arguments to pass to \code{\link{fit_pk}}
 #' @return A list of model fits of class 'pkfit'
 #' @details This function fits a series of models to peels based
 #'   off an original fit. The data, parameter, and map lists are

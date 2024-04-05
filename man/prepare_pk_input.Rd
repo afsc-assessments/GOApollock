@@ -30,7 +30,7 @@ specified}
 }
 \value{
 A list with the version, dat, pars, map and random
-which are used to build a TMB 'obj' in \link{\code{fit_pk}}.
+which are used to build a TMB 'obj' in \code{\link{fit_pk}}.
 }
 \description{
 Prepare inputs for the TMB GOA pollock model.

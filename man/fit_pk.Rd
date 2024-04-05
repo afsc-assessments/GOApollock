@@ -31,8 +31,9 @@ which is called internally.}
 
 \item{save.sdrep}{Whether to return the sdreport object in the
 fitted model. This is rarely used and large so turned off by
-default.
-@param filename Character string giving a file name to save
+default. When returned it is named \code{sdrep}.}
+
+\item{filename}{Character string giving a file name to save
 the fitted object as an RDS object. Defaults to 'fit.RDS',
 and a value of NULL indicates not to save it. If specified,
 it must end in .RDS. The file is written to folder given by
