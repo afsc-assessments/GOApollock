@@ -80,3 +80,69 @@ print.pkfit <- function(fit, ...){
       sprintf("%.3g", fit$opt$max_gradient), "\n")
   cat("Marginal NLL=",  round(fit$opt$objective,5), "\n")
 }
+
+
+#' Run Francis weighting on a fitted model
+#'
+#' @param fit A fitted object returned by \code{fit_pk}
+#' @param iter The number of iterations to do, defaults to 10
+#' @param print.check Whether to print a plot showing the weights
+#'   by iteration for each survey
+#' @return A fitted object using from the last iteration
+#' @details Implements Francis weighting for age composition data
+#'   except for survey 3 which needs to be fixed still.
+#' @export
+run_francis_weighting <- function(fit, iter=10, print.check=TRUE){
+  if(class(fit)[1]!='pkfit') stop("fit is not the correct type of object")
+  calc_francis_weight <- function(obsexp, N0){
+    o <- obsexp[,1:10]
+    e <- obsexp[,11:20]
+    ages <- 1:10
+    n <- length(N0)
+    resids <- numeric(n)
+    for(i in 1:n){
+      meano <- sum(o[i,] *ages)
+      meane <- sum(e[i,] *ages)
+      diff <- meano-meane
+      x1 <- sum(ages^2*e[i,])-meane^2
+      resids[i] <- diff/(sqrt(x1/N0[i]))
+    }
+    return(1/var(resids))
+  }
+  get_francis_weights <- function(ri, r0, iteration){
+    wfsh <- calc_francis_weight(ri$res_fish, r0$multN_fsh)
+    wsrv1 <- calc_francis_weight(ri$res_srv1, r0$multN_srv1)
+    wsrv2 <- calc_francis_weight(ri$res_srv2, r0$multN_srv2)
+    wsrv3 <- calc_francis_weight(ri$res_srv3, r0$multN_srv3)
+    wsrv6 <- calc_francis_weight(ri$res_srv6, r0$multN_srv6)
+    data.frame(iteration=iteration, fsh=wfsh, srv1=wsrv1,
+               srv2=wsrv2, srv3=wsrv3, srv6=wsrv6)
+  }
+  input0 <- fit$input
+  input0$pars <- fit$parList            # start from MLE of last run
+  r0 <- fit$rep
+  w0 <- wnew <- get_francis_weights(r0,r0, 0)
+  weights <- w0
+  ## Modify the original dat file with the latest estiamtes of weights
+  for(ii in 1:iter){
+    inputnew <- input0
+    inputnew$dat$multN_fsh  <- wnew$fsh*inputnew$dat$multN_fsh
+    inputnew$dat$multN_srv1 <- wnew$srv1*inputnew$dat$multN_srv1
+    inputnew$dat$multN_srv2 <- wnew$srv2*inputnew$dat$multN_srv2
+    ## inputnew$dat$multN_srv3 <- wnew$srv3*inputnew$dat$multN_srv3
+    inputnew$dat$multN_srv6 <- wnew$srv6*inputnew$dat$multN_srv6
+    if(ii==iter){
+      fitnew <- fit_pk(inputnew)
+    } else {
+      fitnew <- fit_pk(inputnew, newtonsteps=0, getsd=FALSE, control=list(trace=0))
+    }
+    wnew <- get_francis_weights(fitnew$rep,r0, ii)
+    weights <- rbind( weights, wnew)
+  }
+  ## check it converged
+  check <- pivot_longer(weights, -iteration) %>%
+    ggplot(aes(iteration, value, color=name)) + geom_line() +
+    geom_point() + ylim(0,NA)
+  if(print.check) print(check)
+  return(fitnew)
+}
