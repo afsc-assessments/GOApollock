@@ -68,6 +68,7 @@ plot_osa_comps <- function(res, years, Neff, ind=1, survey,
 #'   \code{fit_pk}. Not currently implemented for the ADMB model.
 #' @return A data.frame of SDNR for all surveys with a column for
 #'   version
+#' @export
 #' @details SDNR=standard deviation of normalized residuals sd((o-e)/std)
 get_sdnr <- function(fit){
   calc_sdnr <- function(obs,exp,CV) sd((obs-exp)/sqrt(log(CV^2+1)))

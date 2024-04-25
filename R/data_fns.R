@@ -404,6 +404,7 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
     tmp <- si(ind=ind, n = 2)
     d$rcrage <- tmp[1]; d$trmage <- tmp[2]
   }
+  maxage <- d$trmage
   if(writedat){
     d$nbins1 <- si(ind,n=1)
     d$nbins2 <- si(ind,n=1)
@@ -423,9 +424,9 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   d$fshlenyrs <- sn( ind=ind, n = d$nyrslen_fsh)
   d$multNlen_fsh <- sn( ind=ind, n = d$nyrslen_fsh)
   d$rwlk_sd <- sn( ind=ind, n = nyrs2)
-  d$catp <- sn( ind=ind, n = d$nyrs_fsh*10, nrow=d$nyrs_fsh, ncol=10)
+  d$catp <- sn( ind=ind, n = d$nyrs_fsh*maxage, nrow=d$nyrs_fsh, ncol=maxage)
   d$lenp <- sn( ind=ind, n = d$nyrslen_fsh*d$nbins1, nrow=d$nyrslen_fsh, ncol=d$nbins1)
-  d$wt_fsh <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
+  d$wt_fsh <- sn( ind=ind, n = nyrs*maxage, nrow=nyrs, ncol=maxage)
   ## The used survey 1
   d$nyrs_srv1 <- si(ind=ind, n =1)
   d$srvyrs1 <- si(ind=ind, n =d$nyrs_srv1)
@@ -441,11 +442,11 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   d$nyrslen_srv1 <- si(ind=ind, n =1)
   d$srv_lenyrs1 <- sn( ind=ind, n = d$nyrslen_srv1)
   d$multNlen_srv1 <- sn( ind=ind, n =d$nyrslen_srv1)
-  d$srvp1 <- sn(ind=ind, n =d$nyrsac_srv1*10,
-                nrow=d$nyrsac_srv1, ncol=10)
+  d$srvp1 <- sn(ind=ind, n =d$nyrsac_srv1*maxage,
+                nrow=d$nyrsac_srv1, ncol=maxage)
   d$srvlenp1 <- sn(ind=ind, n =d$nyrslen_srv1*d$nbins3,
                    nrow=d$nyrslen_srv1, ncol=d$nbins3)
-  d$wt_srv1 <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
+  d$wt_srv1 <- sn( ind=ind, n = nyrs*maxage, nrow=nyrs, ncol=maxage)
   ## Survey 2
   d$nyrs_srv2 <- si(ind=ind, n =1)
   d$srvyrs2 <- si(ind=ind, n =d$nyrs_srv2)
@@ -461,11 +462,11 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   d$nyrslen_srv2 <- si(ind=ind, n =1)
   d$srv_lenyrs2 <- sn( ind=ind, n = d$nyrslen_srv2)
   d$multNlen_srv2 <- sn( ind=ind, n =d$nyrslen_srv2)
-  d$srvp2 <- sn(ind=ind, n =d$nyrsac_srv2*10,
-                nrow=d$nyrsac_srv2, ncol=10)
+  d$srvp2 <- sn(ind=ind, n =d$nyrsac_srv2*maxage,
+                nrow=d$nyrsac_srv2, ncol=maxage)
   d$srvlenp2 <- sn(ind=ind, n =d$nyrslen_srv2*d$nbins3,
                    nrow=d$nyrslen_srv2, ncol=d$nbins3)
-  d$wt_srv2 <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
+  d$wt_srv2 <- sn( ind=ind, n = nyrs*maxage, nrow=nyrs, ncol=maxage)
   ## Survey 3
   d$nyrs_srv3 <- si(ind=ind, n =1)
   d$srvyrs3 <- si(ind=ind, n =d$nyrs_srv3)
@@ -481,9 +482,9 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   d$nyrslen_srv3 <- si(ind=ind, n =1)
   d$srv_lenyrs3 <- sn( ind=ind, n = d$nyrslen_srv3)
   d$multNlen_srv3 <- sn( ind=ind, n =d$nyrslen_srv3)
-  d$srvp3 <- sn(ind=ind, n =d$nyrsac_srv3*10, nrow=d$nyrsac_srv3, ncol=10)
+  d$srvp3 <- sn(ind=ind, n =d$nyrsac_srv3*maxage, nrow=d$nyrsac_srv3, ncol=maxage)
   d$srvlenp3 <- sn(ind=ind, n =d$nyrslen_srv3*d$nbins3, nrow=d$nyrslen_srv3, ncol=d$nbins3)
-  d$wt_srv3 <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
+  d$wt_srv3 <- sn( ind=ind, n = nyrs*maxage, nrow=nyrs, ncol=maxage)
   ## survey 4
   d$nyrs_srv4 <- si(ind=ind, n =1)
   d$srvyrs4 <- si(ind=ind, n =d$nyrs_srv4)
@@ -509,17 +510,17 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   d$nyrslen_srv6 <- si(ind=ind, n =1)
   d$srv_lenyrs6 <- sn( ind=ind, n = d$nyrslen_srv6)
   d$multNlen_srv6 <- sn( ind=ind, n =d$nyrslen_srv6)
-  d$srvp6 <- sn(ind=ind, n =d$nyrsac_srv6*10,
-                nrow=d$nyrsac_srv6, ncol=10)
+  d$srvp6 <- sn(ind=ind, n =d$nyrsac_srv6*maxage,
+                nrow=d$nyrsac_srv6, ncol=maxage)
   d$srvlenp6 <- sn(ind=ind, n =d$nyrslen_srv6*d$nbins2,
                    nrow=d$nyrslen_srv6, ncol=d$nbins2)
-  d$wt_srv6 <- sn( ind=ind, n = nyrs*10, nrow=nyrs, ncol=10)
-  d$age_trans <- sn( ind=ind, n = 10*10, nrow=10, ncol=10)
-  d$len_trans1 <- sn( ind=ind, n = d$nbins1*10, nrow=10, ncol=d$nbins1)
-  d$len_trans2 <- sn( ind=ind, n = d$nbins2*10, nrow=10, ncol=d$nbins2)
-  d$len_trans3 <- sn( ind=ind, n = d$nbins3*10, nrow=10, ncol=d$nbins3)
+  d$wt_srv6 <- sn( ind=ind, n = nyrs*maxage, nrow=nyrs, ncol=maxage)
+  d$age_trans <- sn( ind=ind, n = maxage*maxage, nrow=maxage, ncol=maxage)
+  d$len_trans1 <- sn( ind=ind, n = d$nbins1*maxage, nrow=maxage, ncol=d$nbins1)
+  d$len_trans2 <- sn( ind=ind, n = d$nbins2*maxage, nrow=maxage, ncol=d$nbins2)
+  d$len_trans3 <- sn( ind=ind, n = d$nbins3*maxage, nrow=maxage, ncol=d$nbins3)
   ## the projection module inputs
-  d$mat <- sn( ind=ind, n =10)
+  d$mat <- sn( ind=ind, n =maxage)
   d$Ftarget <- sn( ind=ind, n =5)
   d$B40 <- sn( ind=ind, n =1)
   d$log_mean_recr_proj <- sn( ind=ind, n =1)

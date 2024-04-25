@@ -2,11 +2,15 @@
 #' Extract sdreport data.frames from fitted models
 #' @param fits A single model or list of models as returned by
 #'   \code{\link{fit_pk}}
+#' @param slot A variable to filter on, if NULL will return all
+#'   variables
+#' @param year.scale A scalar to get year2 right for offsetting
+#'   plots downstream
 #' @return A cleanly formatted data frame of sdreport objects,
 #'   with columns 'name', 'est', 'se', 'year', 'lwr', 'upr', and
 #'   'version'
 #' @export
-get_std <- function(fits) {
+get_std <- function(fits, slot=NULL, year.scale=1) {
   ## single fit
   if(class(fits[[1]])[1]!='pkfit'){
     out <- fits$sd
@@ -17,6 +21,14 @@ get_std <- function(fits) {
     ## preserve order in labels for downstream plots
     out$version <- factor(out$version, levels=labs)
   }
+  if(!is.null(slot)) {
+    out <- filter(out, name==slot)
+    if(NROW(out)==0)
+      stop("No rows found in sdreport for variable ", slot)
+  }
+  fs <- as.numeric(out$version)
+  fs <- (fs-mean(fs))/length(unique(fs))
+  out <- mutate(out, year2=year+fs/year.scale)
   return(out)
 }
 
@@ -64,10 +76,10 @@ get_rep <- function(fits, slot=NULL) {
 #'   it must end in .RDS. The file is written to folder given by
 #'   \code{input$path}.
 #' @return A list object of class 'pkfit' which contains a
-#'   "version" model name, rep, opt as returned by
-#'   \code{TMBHelper::fit_tmb} but without the SD slot, std
-#'   (formatted data frame) and sdrep if \code{getsd=TRUE}, and
-#'   the obj.
+#'   "version" model name, rep, parList (MLE in list format), opt
+#'   as returned by \code{TMBHelper::fit_tmb} but without the SD
+#'   slot, std (formatted data frame) and sdrep if
+#'   \code{getsd=TRUE}, and the obj.
 #' @details This function is beta still and subject to change
 #'   without warning.
 #' @export
@@ -114,9 +126,10 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
       ungroup
     message("Finished sdreport")
   }
+  parList <- obj$env$parList()
   fit <- list(version=input$version, path=input$path,
               modfile=input$modfile, rep=rep, opt=opt, sd=std,
-              obj=obj, input=input)
+              obj=obj, parList=parList, input=input)
   if(save.sdrep) fit <- c(fit,sdrep=sdrep)
   class(fit) <- c('pkfit', 'list')
   print(fit)
