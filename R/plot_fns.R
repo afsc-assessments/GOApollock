@@ -279,3 +279,64 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL, minage=NULL){
     labs(x="Age") + ggtitle(title)
   g
 }
+
+#' Plot cohort contribution to SSB as a stacked ribbon plot
+#'
+#' @param fit A model fit as produced by \link{\code{fit_tmb}}
+#' @param type The type of biomass to plot, options are 'ssb',
+#'   'total', or 'summary' which are spawning, total, and age 2+,
+#'   respectively. Default is SSB.
+#' @param plot Whether to create a plot and invisibly return the
+#'   ggplot object,  or return a data.frame of the data.
+#'
+#' @details The plus group breaks the idea of a cohort a little
+#'   bit. Here it assumes that the cohort dies when hitting the
+#'   plus group.
+#'
+#' @return A ggplot or data frame depending on \code{plot}.
+plot_cohort_biomass <- function(fit, type=c('ssb', 'total', 'summary'),
+                            plot=TRUE, print=FALSE){
+  stopifnot(is.pkfit(fit))
+  type <- match.arg(type)
+  naa <- fit$rep$N
+  swaa <- fit$input$dat$wt_srv1
+  mat <- fit$input$dat$mat
+  ssb <- t(apply(naa,1, function(x) x*mat))*swaa/2
+  dimnames(ssb) <- dimnames(naa) <- list(year=fit$rep$years, age=1:ncol(naa))
+  totb <- naa*fit$input$dat$wt_srv2
+  sumb <- totb; sumb[,1] <- 0
+  mat2longdf <- function(x){
+    x <- as.data.frame(x)
+    x$year <- row.names(x)
+    y <- pivot_longer(x, -year) %>%
+      mutate(age=as.numeric(name), year=as.numeric(year),
+             cohort=year-age) %>% select(-name)
+    ## need to merge on empty values for cohorts in each year
+    z <- expand.grid(year=unique(y$year), cohort=unique(y$cohort), value2=0)
+    tmp <- merge(y,z, all.y=TRUE) %>%
+      mutate(value=ifelse(is.na(value),0,value), ssb=value+value2) %>%
+      arrange(year,cohort) %>% group_by(year) %>%
+      mutate(pct.ssb=ssb/sum(ssb)) %>% ungroup() %>%
+      select(year, ssb, pct.ssb, cohort)
+    tmp %>% pivot_longer(-c(year,cohort))
+  }
+
+  if(type=='ssb'){
+    x <- mat2longdf(ssb)
+    labs <- c('Spawning biomass (M t)', '% Spawning biomass')
+  } else if(type=='total') {
+    x <- mat2longdf(totb)
+    labs <- c('Total biomass (M t)', '% Total biomass')
+  } else {
+    x <- mat2longdf(sumb)
+    labs <- c('Summar biomass (M t)', '% Summary biomass')
+  }
+  x <- mutate(x, name=factor(name, levels=c('ssb', 'pct.ssb'),
+                         labels=labs), version=fit$version)
+  g <- ggplot(x, aes(x=year, y=value, group=factor(cohort))) +
+    geom_area(color=1, linewidth=.25, fill='white') +
+    facet_wrap('name', ncol=1, scales='free_y') +
+    labs(x=NULL,y=NULL)
+  if(plot) return(g)
+  return(x)
+}
