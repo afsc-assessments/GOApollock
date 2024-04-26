@@ -72,7 +72,7 @@ plot_data_overview <- function(datlist){
 
 
 #' Plot survey selectivities with +/- 1 SE
-#' @param x A list of data frames as read in from
+#' @param fits A list of data frames as read in from
 #'   \link{\code{read_pk_std}}
 #'
 #' @param add_uncertainty Whether to add +/- SE
@@ -85,25 +85,31 @@ plot_data_overview <- function(datlist){
 #' depending on \code{plot} argument.
 #' @export
 #'
-plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
+plot_pk_selex <- function(fits, add_uncertainty=TRUE, add_fishery=TRUE,
                           plot_logit=FALSE, plot=TRUE){
-  x <-  bind_rows(x)
+  if(is.pkfit(fits)){
+    nmods <- 1
+    labs <- fits$version
+  } else {
+    nmods <- length(fits)
+    labs <- sapply(fits, function(x) x$version[1])
+  }
+  sel <- get_std(fits) %>% filter(grepl('_logit',name)) %>%
   ## redefine these to clear up plot
-  x <- mutate(x, lwr=est-se, upr=est+se)
-  ## TMB verison doesn't have i column used for age below
-  if(is.null(as.data.frame(x)$i)) ## cast to DF to avoid warning
-    x <- group_by(x, name) %>% mutate(i=1:n()) %>% ungroup
-  svys <- x %>%
-    filter(name!='slctfsh_logit' & grepl('_logit',name)) %>%
+    mutate(lwr=est-se, upr=est+se) %>%
+    group_by(version, name) %>%
+    mutate(age=1:n()) %>% ungroup
+  svys <- sel %>%
+    filter(name!='slctfsh_logit') %>%
     mutate(survey=gsub("slctsrv","Survey ", name),
            survey=gsub('_logit', '',survey)) %>%
     filter(is.finite(est))
   if(nrow(svys)==0)
     stop("No survey selex found, maybe from old model version?")
   if(add_fishery){
-    thisyear <- max(x$year)
-    fsh <- filter(x, name=='slctfsh_logit' & is.finite(est)) %>%
-      mutate(survey=paste0('Fishery (',thisyear-1,')'), i=1:10)
+    thisyear <- fits[[1]]$rep$endyr
+    fsh <- filter(sel, name=='slctfsh_logit' & is.finite(est)) %>%
+      mutate(survey=paste0('Fishery (',thisyear-1,')'))
     if(nrow(fsh)==0)
       stop("No fishery selex found, maybe from old model version?")
     x <- bind_rows(svys,fsh)
@@ -119,9 +125,9 @@ plot_pk_selex <- function(x, add_uncertainty=TRUE, add_fishery=TRUE,
   alpha2 <- 1 # for lines
   ylab <- ifelse(plot_logit, 'logit selectivity','Selectivity')
   if(add_uncertainty) ylab <- paste(ylab, '(+/- 1 SE)')
-  g <- ggplot(x, aes(i,est, ymin=lwr, ymax=upr, color=survey, fill=survey))+
+  g <- ggplot(x, aes(age,est, ymin=lwr, ymax=upr, color=survey, fill=survey))+
     geom_line(alpha=alpha2, lwd=1) + geom_point(alpha=alpha2)+
-    facet_wrap('version')+   scale_x_continuous(breaks=1:10)+
+    facet_wrap('version')+   #scale_x_continuous(breaks=1:10)+
     labs(fill=NULL, color=NULL, x='Age', y=ylab)
   if(add_uncertainty) g <-  g+ geom_ribbon(alpha=alpha1, color=NA)
   if(plot)  {print(g); g}  else  return(x)
