@@ -58,6 +58,7 @@ get_rep <- function(fits, slot=NULL) {
   return(out)
 }
 
+
 #' Fit a GOA pollock model (BETA)
 #' @param input Input list as returned by
 #'   \code{prepare_pk_input}.
@@ -75,23 +76,25 @@ get_rep <- function(fits, slot=NULL) {
 #'   and a value of NULL indicates not to save it. If specified,
 #'   it must end in .RDS. The file is written to folder given by
 #'   \code{input$path}.
+#' @param verbose Whether to print output (default) or suppress
+#'   as much as possible.
 #' @return A list object of class 'pkfit' which contains a
 #'   "version" model name, rep, parList (MLE in list format), opt
 #'   as returned by \code{TMBHelper::fit_tmb} but without the SD
 #'   slot, std (formatted data frame) and sdrep if
 #'   \code{getsd=TRUE}, and the obj.
-#' @details This function is beta still and subject to change
+#' @details This function is a beta version still and subject to change
 #'   without warning.
 #' @export
 fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                    control=NULL, do.fit=TRUE,
                    use_bounds=FALSE, save.sdrep=FALSE,
-                   filename='fit.RDS'){
+                   filename='fit.RDS', verbose=TRUE){
   cpp <- paste0(file.path(input$path, input$modfile),'.cpp')
   if(!file.exists(cpp)) stop("file does not exist: ", cpp)
   tryCatch(dyn.unload(dynlib(file.path(input$path, input$modfile))), error=function(e) 'error')
-  suppressMessages(compile(cpp))
-  suppressMessages(dyn.load(dynlib(file.path(input$path, input$modfile))))
+  suppressWarnings(suppressMessages(compile(cpp)))
+  suppressWarnings(suppressMessages(dyn.load(dynlib(file.path(input$path, input$modfile)))))
   obj <- MakeADFun(data=input$dat, parameters=input$pars,
                    map=input$map, random=input$random,
                    DLL=input$modfile, silent=TRUE)
@@ -104,16 +107,24 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
   }
   if(is.null(control))
     control <- list(eval.max=10000, iter.max=10000, trace=100)
+  if(!verbose) control$trace <- 0
   ## optimize and compare
   if(!require(TMBhelper)){
     stop('TMBhelper package required to fit models, install using:\ndevtools::install_github("kaskr/TMB_contrib_R/TMBhelper")')
   }
-  opt <- TMBhelper::fit_tmb(obj, control=control,
-                            newtonsteps=newtonsteps, getsd=FALSE,
-                            lower=lwr, upper=upr)
+  if(verbose){
+    opt <- TMBhelper::fit_tmb(obj, control=control,
+                              newtonsteps=newtonsteps, getsd=FALSE,
+                              lower=lwr, upper=upr)
+  } else {
+    suppressWarnings(suppressMessages(opt <- TMBhelper::fit_tmb(obj, control=control,
+                              newtonsteps=newtonsteps, getsd=FALSE,
+                              lower=lwr, upper=upr)))
+  }
+
   rep <- c(version=input$version, obj$report())
   sdrep <- std <- NULL
-  message("Finished optimization")
+  if(verbose) message("Finished optimization")
   if(getsd){
     sdrep <- sdreport(obj)
     std <- summary(sdrep)
@@ -124,7 +135,7 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
       mutate(year=1969+1:n(), lwr=est-1.96*se,
              upr=est+1.96*se, version=input$version) %>%
       ungroup
-    message("Finished sdreport")
+    if(verbose) message("Finished sdreport")
   }
   parList <- obj$env$parList()
   fit <- list(version=input$version, path=input$path,
@@ -132,11 +143,12 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
               obj=obj, parList=parList, input=input)
   if(save.sdrep) fit <- c(fit,sdrep=sdrep)
   class(fit) <- c('pkfit', 'list')
-  print(fit)
+  if(verbose) print(fit)
   if(!is.null(filename)) {
     saveRDS(fit, file=paste0(input$path,'/', filename))
   }
-  return(fit)
+  if(verbose)   return(fit)
+  return(invisible(fit))
 }
 
 #' Prepare inputs for the TMB GOA pollock model.
