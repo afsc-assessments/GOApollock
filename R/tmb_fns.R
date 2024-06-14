@@ -14,6 +14,7 @@ get_std <- function(fits, slot=NULL, year.scale=1) {
   ## single fit
   if(class(fits[[1]])[1]!='pkfit'){
     out <- fits$sd
+    out$version <- factor(out$version)
   } else {
     ## list of fits
     labs <- lapply(fits, function(x) x$version)
@@ -56,7 +57,6 @@ get_rep <- function(fits, slot=NULL) {
   }
   return(out)
 }
-
 
 #' Fit a GOA pollock model (BETA)
 #' @param input Input list as returned by
@@ -172,8 +172,10 @@ prepare_par <- function(dat){
   ## build a default starting list, based off MLE in 2022 but
   ## truncated a bit
   nyrs <- length(dat$styr:dat$endyr)
+  nages <- length(dat$rcrage:dat$trmage)
   stopifnot(nyrs>30)
-  pars <- list(dev_log_initN = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+  stopifnot(nages>9)
+  pars <- list(dev_log_initN = rep(0,nages),
                mean_log_recruit = 1.10,
                dev_log_recruit = rep(0,nyrs),
                sigmaR = 1.3,
@@ -286,4 +288,43 @@ get_bounds <- function(obj){
   upr <- upr[names(upr ) %in% names(obj$par)]
   ## TODO need to ensure order is right here I think
   return(list(lwr=lwr, upr=upr))
+}
+
+#' Run a jitter analysis from a fitted model
+#' @param fit
+#' @param njitter
+#'
+run_jitter <- function(fit, njitter, scalar=.1, parallel=TRUE){
+  obj <- fit$obj
+  input <- fit$input
+  par0 <- fit$obj$par# fit$opt$par
+  fit_jitter <- function(i){
+    set.seed(i)
+    dyn.load(dynlib(file.path(input$path, input$modfile))  )
+    obj <- MakeADFun(data=input$dat, parameters=input$pars,
+                     map=input$map, random=input$random,
+                     DLL=input$modfile, silent=TRUE)
+    parnew <- par0*runif(n=length(par0), min=1-scalar, max=1+scalar)
+    fit <- TMBhelper::fit_tmb(obj, startpar=parnew, loopnum=3, newtonsteps=1)
+    ssb <- tail(obj$rep()$Espawnbio,1)
+    fit <- c(fit, jitter=i, ssb=ssb)
+    return(fit)
+  }
+  if(parallel){
+    library(snowfall)
+    cores <- parallel::detectCores()-1
+    sfInit(cpus=10,parallel=TRUE)
+    sfLibrary(TMB)
+    sfExportAll()
+    message('starting fits in parallel...')
+    jitterfits <- sfLapply(1:njitter, fit_jitter)
+  } else {
+    jitterfits <- lapply(1:njitter, fit_jitter)
+  }
+  pars <- lapply(jitterfits, function(x)
+    data.frame(jitter=x$jitter, nll=as.numeric(x$objective),
+               log_maxgrad=log10(x$max_gradient), ssb=x$ssb,
+               parnum=1:length(par0), parname=paste0(1:length(par0),"_",names(x$par)), value=x$par)) %>%
+    bind_rows %>% as_tibble
+  pars
 }
