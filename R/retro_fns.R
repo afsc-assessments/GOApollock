@@ -36,17 +36,27 @@ fit_pk_retros <- function(fit, peels=0:7, getsd=TRUE, parallel=FALSE,...){
 peel_pars <- function(pars, dat,  peel){
   p <- pars
   stopifnot(peel>=0)
-  if(any(sapply(p, function(x) !is.null(dim(x))))) stop("matrix or arrays break retro code")
+ ## if(any(sapply(p, function(x) !is.null(dim(x))))) stop("matrix
+  ## or arrays break retro code")
   endyr <- dat$endyr-peel
   yrs <- dat$styr:endyr
   nyrs <- length(p$dev_log_recruit)
+  nages <- length(dat$mat)
   ind <- 1:(nyrs-peel)
   x <- c("dev_log_recruit", "slp1_fsh_dev", "inf1_fsh_dev",
          "slp2_fsh_dev", "inf2_fsh_dev", "dev_log_F", "log_q1_dev",
-         "log_q2_dev", "log_q3_dev")
-  for(i in x) p[[i]] <- p[[i]][ind]
-  if(any(sapply(p, NROW)>length(ind)))
-    stop("Some pars too long in peel ",peel)
+         "log_q2_dev", "log_q3_dev", 'Ecov_exp')
+  for(i in x){
+    if(!is.null(p[[i]])) p[[i]] <- p[[i]][ind]
+  }
+  x <- 'selpars_re'
+  for(i in x){
+    if(!is.null(p[[i]])) p[[i]] <- p[[i]][ind,]
+  }
+  trash <- sapply(1:length(p), function(i) NROW(p[[i]]))
+  trash <- which(trash >length(ind))
+  if(length(trash)>0)
+    stop("Some pars too long in peel ",names(p)[trash])
   if(peel==0) stopifnot(all.equal(p,pars))
   return(p)
 }
@@ -87,6 +97,7 @@ peel_data <- function(dat, peel){
   d$endyr <- endyr
   d$cattot <- d$cattot[i0]
   d$cattot_log_sd <- d$cattot_log_sd[i0]
+  if(!is.null(d$Ecov_obs)) d$Ecov_obs <- d$Ecov_obs[i0]
   i1 <- which(d$fshyrs<=endyr)
   d$fshyrs <- d$fshyrs[i1]                # age comp yrs
   d$nyrs_fsh <- length(i1)
@@ -173,7 +184,7 @@ peel_data <- function(dat, peel){
     d$multN_srv6 <- 0
     d$srvp6 <- d$srvp6[1,,drop=FALSE]
     d$ac_yng_srv6 <- 1
-    d$ac_old_srv6 <- 10
+    d$ac_old_srv6 <- d$trmage
   } else {
     d$srvyrs6 <- d$srvyrs6[i3]
     d$nyrs_srv6 <- length(d$srvyrs6)
@@ -248,7 +259,7 @@ fit_peel <- function(fit, peel, getsd=TRUE, ...){
   }
   input2 <- list(version=paste0('peel',peel), path=fit$path,
                  modfile=fit$modfile,
-                 dat=dat2, pars=pars2, map=map2, random=fit$obj$env$random)
+                dat=dat2, pars=pars2, map=map2, random=fit$input$random)
   message("Starting optimization for peel=",peel)
   fit <- fit_pk(input=input2, getsd=getsd, control=control, ...)
   return(fit)

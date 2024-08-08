@@ -101,15 +101,16 @@ plot_pk_selex <- function(fits, add_uncertainty=TRUE, add_fishery=TRUE,
     mutate(age=1:n()) %>% ungroup
   svys <- sel %>%
     filter(name!='slctfsh_logit') %>%
-    mutate(survey=gsub("slctsrv","Survey ", name),
-           survey=gsub('_logit', '',survey)) %>%
+    mutate(survey=gsub("slctsrv","", name),
+           survey=gsub('_logit', '',survey),
+           surveyf=surveyf(as.numeric(survey))) %>%
     filter(is.finite(est))
   if(nrow(svys)==0)
     stop("No survey selex found, maybe from old model version?")
   if(add_fishery){
-    thisyear <- fits[[1]]$rep$endyr
+    thisyear <- max(get_rep(fits, 'endyr')$value)
     fsh <- filter(sel, name=='slctfsh_logit' & is.finite(est)) %>%
-      mutate(survey=paste0('Fishery (',thisyear-1,')'))
+      mutate(surveyf=paste0('Fishery (',thisyear-1,')'))
     if(nrow(fsh)==0)
       stop("No fishery selex found, maybe from old model version?")
     x <- bind_rows(svys,fsh)
@@ -125,7 +126,7 @@ plot_pk_selex <- function(fits, add_uncertainty=TRUE, add_fishery=TRUE,
   alpha2 <- 1 # for lines
   ylab <- ifelse(plot_logit, 'logit selectivity','Selectivity')
   if(add_uncertainty) ylab <- paste(ylab, '(+/- 1 SE)')
-  g <- ggplot(x, aes(age,est, ymin=lwr, ymax=upr, color=survey, fill=survey))+
+  g <- ggplot(x, aes(age,est, ymin=lwr, ymax=upr, color=surveyf, fill=surveyf))+
     geom_line(alpha=alpha2, lwd=1) + geom_point(alpha=alpha2)+
     facet_wrap('version')+   #scale_x_continuous(breaks=1:10)+
     labs(fill=NULL, color=NULL, x='Age', y=ylab)
@@ -243,11 +244,13 @@ plot_resids <- function(mat, years, minyr=NULL){
 #' @param minage Optional minimum age to plot
 #' @return Prints a ggplot
 #' @export
-plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL, minage=NULL){
+plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL,
+                         minage=NULL){
+  maxage <- ncol(mat)/2
   get_pos <- function(x) x %>% group_by(year) %>% summarize(x=9, maxp=max(proportion))
   melt_obs_exp <- function(mat, years){
     x <- mat %>% data.frame() %>%
-      setNames(c(paste0('obs', 1:10), paste0('exp', 1:10))) %>%
+      setNames(c(paste0('obs', 1:maxage), paste0('exp', 1:maxage))) %>%
       cbind(year=years)
     x <- x %>% pivot_longer(-year, names_to=c('type'), values_to='proportion') %>%
       mutate(age=as.numeric(stringr::str_sub(type,4,5)),
@@ -264,7 +267,7 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL, minage=NULL){
     geom_line(lwd=.8)+
     geom_point(cex=1) +
     facet_wrap("year", dir='v',ncol=ncol, scales='free_y') +
-    scale_x_continuous(breaks=1:10) +
+    scale_x_continuous(breaks=1:maxage) +
     geom_text(data=pos, size=2.5, aes(x=x, lty=NULL,y=maxp), vjust = 1, color='black') +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
@@ -292,7 +295,7 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL, minage=NULL){
 #' @details The plus group breaks the idea of a cohort a little
 #'   bit. Here it assumes that the cohort dies when hitting the
 #'   plus group.
-#'
+#' @export
 #' @return A ggplot or data frame depending on \code{plot}.
 plot_cohort_biomass <- function(fit, type=c('ssb', 'total', 'summary'),
                             plot=TRUE, print=FALSE){
@@ -339,4 +342,51 @@ plot_cohort_biomass <- function(fit, type=c('ssb', 'total', 'summary'),
     labs(x=NULL,y=NULL)
   if(plot) return(g)
   return(x)
+}
+
+#' Plot retrospective peels against the base model with CI
+#' @param retros A list of pkfits
+#' @param type The metric to use: 'ssb', 'F', 'recruit'
+#'
+plot_retros <- function(retros, type=c('ssb', 'F', 'recruit'), title=NULL){
+  type <- match.arg(type)
+  version <- retros[[1]]$version
+  thisyear <- retros[[1]]$rep$endyr
+  if(type=='ssb'){
+    x <- get_rep(retros, 'Espawnbio')
+    y <- get_std(retros, 'Espawnbio')
+    lab <- 'Spawning biomass (Mt)'
+  } else if(type=='F'){
+    x <- get_rep(retros, 'F')
+    y <- get_std(retros, 'F')
+    lab <- 'Fishing Effort (F)'
+  } else if(type=='recruit'){
+    x <- get_rep(retros, 'recruit')
+    y <- get_std(retros, 'recruit')
+    lab <- 'Recruitment (billions)'
+  } else { stop('something wrong with type=',type)}
+  y <- mutate(y, lwr=pmax(lwr,0)) %>% filter(version=='peel0')
+  stopifnot(nrow(x)>0)
+  stopifnot(nrow(y)>0)
+  rho <- calculate_rho(retros,type=type)
+  rho.lab <- paste0("Mohn's rho= ", round(rho,3))
+  ## Do some heavy processing to plot quickly
+  x <- x %>%
+    mutate(version=as.numeric(gsub('peel','', version))) %>%
+    rename(peel=version) %>% group_by(year) %>%
+    mutate(Pct_Diff=100*(value-value[peel==0])/value[peel==0]) %>%
+    ungroup()
+  ## Plot it
+  g1 <- ggplot(y, aes(year, est, group=NULL, fill=NULL, color=NULL,
+                      ymin=lwr, ymax=upr)) + geom_ribbon(alpha=.25)
+  g1 <- g1+geom_line(data=x, aes(year, value, group=peel, ymax=NULL,
+                                 ymin=NULL, fill=NULL, color=factor(peel)))
+  x2 <- filter(x, thisyear-peel==year)
+  g1 <- g1 +
+    geom_point(data=x2, aes(y=value, color=factor(peel), ymin=NULL,ymax=NULL), size=2) +
+    theme(legend.position='none') +
+    annotate('label', x=2010,y=max(y$upr), label=rho.lab) +
+    labs(x=NULL, y=lab, title=title)
+  if(type=='recruit') g1 <- g1+scale_y_log10()
+  g1
 }

@@ -13,11 +13,20 @@
 #'   'ind'
 #' @param plot Whether to plot or return the data instead
 #' @param minyear Filter out years before this
+#' @param model Currently supports 'multinomial' and
+#'   'Dirichlet-multinomial', when using hte latter the parameter
+#'   theta must be passed to recalculate the "alpha" term
+#'   internally.
+#' @param theta A scalar parameter estimated as exp(log_DM_pars)
+#'   corresponding to this survey
 #' @return A ggplot object if plot is TRUE or the melted data if
 #'   FALSE
 #' @export
 plot_osa_comps <- function(res, years, Neff, ind=1, survey,
-                           drop=NULL, plot=TRUE, minyear=NULL){
+                           drop=NULL, plot=TRUE, minyear=NULL,
+                           model=c('multinomial','Dirichlet-multinomial'),
+                           theta){
+  model <- match.arg(model)
   obs <- res[,1:10]
   exp <- res[,11:20]
   index <- 1:10
@@ -39,9 +48,18 @@ plot_osa_comps <- function(res, years, Neff, ind=1, survey,
   Neff2 <- apply(o,1, sum);
   if(any(Neff2==0)) warning("Some Neff were rounded to 0")
   index2 <- index[-ind]                 #move one to drop to end
-  o2 <- cbind(o[,-ind], o[,ind])
-  p2 <- cbind(p[,-ind], p[,ind])
-  resid <- compResidual::resMulti(t(o2), t(p2))
+  if(model=='Dirichlet-multinomial'){
+    ## recreate the alpha matrix, must match the cpp side, here
+    ## it is linear form
+    alpha <- rowSums(o)*p*theta
+    o2 <- cbind(o[,-ind], o[,ind])
+    alpha <- cbind(alpha[,-ind], alpha[,ind])
+    resid <- compResidual::resDirM(t(o2), t(alpha))
+  } else {
+    o2 <- cbind(o[,-ind], o[,ind])
+    p2 <- cbind(p[,-ind], p[,ind])
+    resid <- compResidual::resMulti(t(o2), t(p2))
+  }
   ## not sure why these fail sometimes?
   if(!all(is.finite(resid))) {warning('failed when ind=',ind)}
   mat <- t(matrix(resid, nrow=nrow(resid), ncol=ncol(resid)))
@@ -53,12 +71,15 @@ plot_osa_comps <- function(res, years, Neff, ind=1, survey,
     ggtitle(paste0('OSA Residuals for the ', survey, ' w/o age=', index[ind])) +
     labs(y='Age', x=NULL) + scale_y_continuous(breaks=1:10,
                                                limits=c(1,10)) +
-    scale_size(range=c(0,3))
+    scale_size_continuous(##range  = c(0, 3),
+      ## limits = c(0, 4),
+                          breaks = c(0, 1,2,3))
+    ##scale_size_area(max_size=2)
   if(plot){
     print(g)
     return(invisible(g))
   } else {
-    return(reslong)
+    return(cbind(reslong, survey=survey))
   }
 }
 
@@ -81,8 +102,9 @@ get_sdnr <- function(fit){
       exp <- rep[[paste0('Eindxsurv',i)]][yrs %in% dat[[paste0('srvyrs',i)]]]
       CV <- dat[[paste0('indxsurv_log_sd',i)]]
       stopifnot(all.equal(length(obs), length(exp), length(CV)))
+      df <- length(obs)-1
       data.frame(survey=i, sdnr=calc_sdnr(obs, exp,CV),
-                 version=fit$version)
+                 version=fit$version, upper=sqrt(qchisq(.95, df)/df))
     }
     ) %>% do.call(rbind,.)
   } else {
@@ -94,38 +116,50 @@ get_sdnr <- function(fit){
 
 
 #' Calculate Mohn's rho
-#' @param reps A list of replists for each peel as returned by
-#'   \code{read_pk_rep}
+#' @param fits A list of pkfits for each peel as returned by
+#'   \code{fit_pk_retro}.
+#' @param type Which metric to calculate: 'ssb', 'F' or 'recruit'
 #' @param max_peels Optional numeric to control the max number of
 #'   peels to use in the calculation. E.g. can calculate rho with
 #'   4,5,6, etc. peels and compare
 #' @return The rho value rounded to 3 decimal places, and prints
 #'   to console
 #' @export
-calculate_rho <- function(reps, max_peels=NULL){
-  if(is.null(reps[[1]]$Expected_spawning_biomass)){
-    ssb <- mymelt(reps, 'Espawnbio')
-  } else {
-    ssb <- mymelt(reps, 'Expected_spawning_biomass')
-  }
-  ssb <- ssb %>%
-    mutate(peel=as.numeric(gsub('peel','', model))) %>%
-    rename(SSB=value) %>%
+calculate_rho <- function(fits, type=c('ssb', 'F', 'recruit'),
+                          max_peels=NULL){
+  ## if(is.null(reps[[1]]$Expected_spawning_biomass)){
+  ##   ssb <- mymelt(reps, 'Espawnbio')
+  ## } else {
+  ##   ssb <- mymelt(reps, 'Expected_spawning_biomass')
+  ## }
+  stopifnot(all(sapply(fits, is.pkfit)))
+  stopifnot(length(fits)>5)
+  type <- match.arg(type)
+  if(type=='ssb'){
+    x <- get_rep(fits, 'Espawnbio')
+  } else if(type=='F'){
+    x <- get_rep(fits, 'F')
+  } else if(type=='recruit'){
+    x <- get_rep(fits, 'recruit')
+  } else { stop('something wrong with type=',type)}
+  stopifnot(nrow(x)>0)
+  x <- x %>%
+    mutate(peel=as.numeric(gsub('peel','', version))) %>%
     group_by(year) %>%
-    mutate(SSB_Pct_Diff=100*(SSB-SSB[peel==0])/SSB[peel==0]) %>%
+    mutate(Pct_Diff=100*(value-value[peel==0])/value[peel==0]) %>%
     ungroup()
-  if(!is.null(max_peels)) ssb <- filter(ssb, peel<=max_peels)
+  if(!is.null(max_peels)) x <- filter(x, peel<=max_peels)
   ## Calculate Mohn's rho. For each terminal point in the peel SSB,
   ## compare to that same year in the full run and calculate
   ## relative differences. Already did this above so just grab the
   ## right years to average
-  rho <- ssb%>% filter(max(year)-peel==year & year!=max(year)) %>%
-    pull(SSB_Pct_Diff)
+  rho <- x %>% filter(max(year)-peel==year & year!=max(year)) %>%
+    pull(Pct_Diff)
   message("Percentage range of annual differences:",round(min(rho),1)," to ", round(max(rho),1))
   message("Median absolute error of rho:",round(median(abs(rho))))
   rho <- mean(rho)/100
-  rho.lab <- paste0("Mohn's rho= ", round(rho,3))
-  print(rho.lab)
+  rho.lab <- paste0("Mohn's rho= ", round(rho,3)," for ", type)
+  message(rho.lab)
   return(round(rho,3))
 }
 

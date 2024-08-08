@@ -1,3 +1,18 @@
+#' Create factor from numeric survey vector. Useful for
+#' informative plots and tables
+#' @param x Vector of survey numbers, 1,2, etc. which are
+#' transformed into a named factor
+#' @return Vector of named surveys
+#' @export
+surveyf <- function(x){
+  factor(x, levels=1:6,
+         labels=c('Shelikof', 'NMFS BT',
+                  'ADF&G BT',
+                  'Shelikof age 1',
+                  'Shelikof age 2',
+                  'Summer AT'))
+}
+
 #' Calculate ADSB (avg diff in SSB) for use in determining model
 #' names. If ADSB>0.1 then it's considered a major version.
 #'
@@ -141,6 +156,7 @@ run_francis_weighting <- function(fit, iter=10, print.check=TRUE){
   }
   ## check it converged
   check <- pivot_longer(weights, -iteration) %>%
+    filter(!is.na(resid)) %>%
     ggplot(aes(iteration, value, color=name)) + geom_line() +
     geom_point() + ylim(0,NA)
   if(print.check) print(check)
