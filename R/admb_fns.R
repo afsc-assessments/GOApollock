@@ -1,4 +1,64 @@
 
+#' Clean temporary files from a directory containing a model run
+#'
+#' @param path Path to directory to clean
+#' @param full Whether to delete everything except .dat and .tpl files
+#' @return Nothing
+#' @export
+clean_pk_dir <- function(path=getwd(), full=FALSE){
+  stopifnot(is.logical(full))
+  if(full){
+    r <- list.files(path)
+    r <- r[-grep(pattern='.tpl|.dat', r)]
+    if(length(r)>0) trash <- file.remove(r)
+  } else {
+    r <- list.files(path, pattern='r0|b0|p0')
+    r <- c(r,list.files(path, pattern='\\.cpp|\\.obj|\\.log|\\.eva|\\.bar|\\.htp|\\.dep'))
+    r <- r[-grep('tmb',r)]
+    if(length(r)>0) trash <- file.remove(file.path(path, r))
+    s <- file.size(r <- file.path(path, 'mceval.dat'))
+    if(!is.na(s)){
+      if(s<.0001){
+        trash <- file.remove(r)
+      } else {
+        message("Not removing mceval.dat becuase it appears to have results")
+      }
+    }
+    r <- list.files(path, '\\.psv')
+    s <- file.size(file.path(path,r))
+    if(length(s)>0){
+      if(s<.0001){
+        trash <- file.remove(r)
+      } else {
+        message("Not removing .psv file becuase it appears to have results")
+      }
+    }
+  }
+}
+
+
+#' Copy and build ADMB source from package
+#'
+#' @param path Path to folder
+#' @param name Executable name (default goa_pk)
+#' @param compile Whether to compile (default is TRUE)
+#' @export
+setup_exe <- function(path=getwd(), name='goa_pk', compile=TRUE){
+  tpl <- 'C:/Users/cole.monnahan/GOApollock/source/goa_pk.tpl'
+  stopifnot( file.exists(tpl))
+  dir.exists(path)
+  test <- file.copy(from=tpl, to=file.path(path,paste0(name, '.tpl')), overwrite=TRUE)
+  if(!test) warning("Failed to copy file")
+  if(compile){
+    message("Compiling model..")
+    old.wd <- getwd(); on.exit(setwd(old.wd))
+    setwd(path)
+    system(paste('admb', name))
+  }
+}
+
+
+
 #' Simulate a data set from a given rep file and input data
 #'
 #' @param datlist A data list as returned by
@@ -530,3 +590,146 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
   return(d)
 }
 
+
+#' Read the GOA pollock model output report
+#' @param model model name
+#' @param path path to folder
+#' @param endyr,styr The start and end years in the model
+#' @param version A version name which is added, e.g., 'change_selex'
+#' @return A list of outputs
+#' @export
+read_pk_rep <- function(model='goa_pk', path=getwd(), version='none', endyr,
+                       styr=1970){
+  ## named vectors
+  fyrs <- styr:endyr
+  fages <- 1:10
+  add.names <- function(x){
+    if(is.matrix(x)){
+      if(nrow(x)==length(fyrs) & ncol(x)==length(fages))
+        dimnames(x) <- list(year=fyrs, age=fages)
+    } else {
+      #if(length(x)==length(fyrs)) names(x) <- list('year'=fyrs)
+      #if(length(x)==length(fages)) names(x) <- fages
+    }
+    x
+  }
+
+  file <- file.path(path,model)
+  if(length(grep('.rep', file))==0) file <- paste0(file,'.rep')
+  if(!file.exists(file)) stop("File not found=", file)
+
+  x <- scan(file, what="", sep="\n")
+  ## drop initial spaces
+  y <- unname(sapply(x, trimws))
+  ## Separate elements by one or more whitepace
+  z <- strsplit(y, "[[:space:]]+")
+  ## Drop empty lines
+  z <- purrr::discard(lapply(z, function(x) if(length(x)>0) x), is.null)
+  ind <-  suppressWarnings(which(is.na(as.numeric(sapply(z, `[[`, 1)))))
+  k <- 1; dummy <- NULL
+  mynames <- NA
+  myvals <- list()
+  for(i in 1:(length(ind)-1)){
+    if(i==64) next # ragged shape, need to fix
+    if(ind[i]==ind[i+1]-1){
+      ## two chars in a row
+      dummy <- z[ind[i]]
+      next
+    } else { dummy <- NULL }
+    tmp <- z[ind[i]:(ind[i+1]-1)]
+    name <- paste(c(dummy, tmp[[1]]), collapse='_')
+    ## special case
+    if(tmp[[1]][1]=='Ftarget'){
+      next
+      ## myvals[[k]] <- list(Ftarget=as.numeric(tmp[[2]]),
+      ##                     B40=as.numeric(tmp[[3]]))
+      ## k <- k+1
+    }
+    if(length(tmp)==2){
+      vals <- tmp[[-1]]
+      val <- strsplit(vals, "[[:space:]]+")
+      if(length(val)==1){
+        ## scalar
+        val <- as.numeric(val[[1]])
+      } else {
+        ## vector
+        val <- as.numeric(unlist(val))
+      }
+    } else {
+      ## matrix of some sort
+      vals <- tmp[-1]
+      val <- lapply(vals, function(x) strsplit(x, "[[:space:]]"))
+      if(length(val[[1]])==1){
+        ## column vector
+        val <- as.numeric(unlist(val))
+      } else {
+        ## matrices
+        val <- do.call(rbind, lapply(val, as.numeric))
+        stopifnot(length(vals)==nrow(val))
+      }
+    }
+    val <- add.names(val)
+    myvals[[k]] <- val
+    ##  names(mylist[[k]]) <- name
+    mynames[k] <- name
+    k <- k+1
+  }
+  names(myvals) <- mynames
+  myvals <- c( version=version, ages=list(fages), years=list(fyrs),  myvals)
+  return(myvals)
+}
+
+
+## ## tests that it works on all the data types I want
+## x1 <- read_pk_rep('model_runs/m01_2020_final_original/pk20_8.rep',
+##                   version='pk20_8', endyr=2020)
+## x2 <- x1; x2$model <- 'dummy'
+## replists <- list(x1,x2)
+
+## mymelt(x1, 'Expected_spawning_biomass') %>% str
+## mymelt(x1, 'Numbers_at_age') %>% str
+## mymelt(x1, 'Natural_mortality') %>% str
+## mymelt(replists, 'Expected_spawning_biomass') %>% str
+## mymelt(replists, 'Numbers_at_age') %>% str
+## mymelt(replists, 'Natural_mortality') %>% str
+
+
+#' Read correlation file
+#' @param model model name
+#' @param path path to folder
+#' @param version,endyr,styr see rep function
+#' @export
+read_pk_cor <- function(model='goa_pk', path=getwd(), version='none', endyr, styr=1970){
+  if(!file.exists(ff <- file.path(path, paste0(model, '.cor'))))
+    stop("file does not exists: ",ff)
+  yrs <- styr:endyr
+  oldwd <- getwd(); on.exit(setwd(oldwd))
+  setwd(path)
+  sdrep <- suppressWarnings(R2admb:::read_admb(model))
+  ## Parse these out into scalars and vectors
+  xx <- strsplit(names(sdrep$coefficients), '\\.') %>% sapply(function(x) x[1])
+  df <- data.frame(version=version, name=xx, est=as.numeric(sdrep$coefficients),
+    se=as.numeric(sdrep$se)) %>%
+    group_by(name) %>% mutate(i=1:n(), year=yrs[1:n()]) %>% ungroup() %>%
+    mutate(lwr=est-1.96*se, upr=est+1.96*se)
+  df                                       # }
+}
+
+
+#' Read standard deviation file
+#' @param model model name
+#' @param path path to folder
+#' @param version,endyr,styr see rep function
+#' @export
+read_pk_std <- function(model='goa_pk', path=getwd(), version='none', endyr, styr=1970){
+  yrs <- styr:endyr
+  ff <- file.path(path, paste0(model,'.std'))
+  if(!file.exists(ff))
+    stop("file ",ff, " does not exist")
+  df <- read.table(ff, header=TRUE) %>% cbind(version=version) %>%
+    rename(se=std.dev, est=value) %>% select(-index) %>%
+    group_by(name) %>%
+    mutate(year=yrs[1:n()], i=1:n()) %>% ungroup %>%
+    mutate(lwr=est-1.96*se, upr=est+1.96*se)
+  df
+}
