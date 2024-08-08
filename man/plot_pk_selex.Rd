@@ -5,7 +5,7 @@
 \title{Plot survey selectivities with +/- 1 SE}
 \usage{
 plot_pk_selex(
-  x,
+  fits,
   add_uncertainty = TRUE,
   add_fishery = TRUE,
   plot_logit = FALSE,
@@ -13,7 +13,7 @@ plot_pk_selex(
 )
 }
 \arguments{
-\item{x}{A list of data frames as read in from
+\item{fits}{A list of data frames as read in from
 \link{\code{read_pk_std}}}
 
 \item{add_uncertainty}{Whether to add +/- SE

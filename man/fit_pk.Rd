@@ -12,7 +12,8 @@ fit_pk(
   do.fit = TRUE,
   use_bounds = FALSE,
   save.sdrep = FALSE,
-  filename = "fit.RDS"
+  filename = "fit.RDS",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -38,18 +39,21 @@ the fitted object as an RDS object. Defaults to 'fit.RDS',
 and a value of NULL indicates not to save it. If specified,
 it must end in .RDS. The file is written to folder given by
 \code{input$path}.}
+
+\item{verbose}{Whether to print output (default) or suppress
+as much as possible.}
 }
 \value{
 A list object of class 'pkfit' which contains a
-"version" model name, rep, opt as returned by
-\code{TMBHelper::fit_tmb} but without the SD slot, std
-(formatted data frame) and sdrep if \code{getsd=TRUE}, and
-the obj.
+"version" model name, rep, parList (MLE in list format), opt
+as returned by \code{TMBHelper::fit_tmb} but without the SD
+slot, std (formatted data frame) and sdrep if
+\code{getsd=TRUE}, and the obj.
 }
 \description{
 Fit a GOA pollock model (BETA)
 }
 \details{
-This function is beta still and subject to change
+This function is a beta version still and subject to change
 without warning.
 }

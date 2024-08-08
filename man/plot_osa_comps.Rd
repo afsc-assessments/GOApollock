@@ -13,7 +13,9 @@ plot_osa_comps(
   survey,
   drop = NULL,
   plot = TRUE,
-  minyear = NULL
+  minyear = NULL,
+  model = c("multinomial", "Dirichlet-multinomial"),
+  theta
 )
 
 plot_osa_comps(
@@ -24,7 +26,9 @@ plot_osa_comps(
   survey,
   drop = NULL,
   plot = TRUE,
-  minyear = NULL
+  minyear = NULL,
+  model = c("multinomial", "Dirichlet-multinomial"),
+  theta
 )
 }
 \arguments{
@@ -48,13 +52,19 @@ used.}
 
 \item{minyear}{Filter out years before this}
 
+\item{model}{Currently supports 'multinomial' and
+'Dirichlet-multinomial', when using hte latter the parameter
+theta must be passed to recalculate the "alpha" term
+internally.}
+
+\item{theta}{A scalar parameter estimated as exp(log_DM_pars)
+corresponding to this survey}
+
 \item{obs, exp, pearson}{the observed, expected and Pearson
 residual matrices with rows as years and columns as ages (or
 lengths)}
 
 \item{ages, years}{vectors giving the ages and years}
-
-\item{model}{Character for model version}
 }
 \value{
 returns nothing but creates a PDF file in the working

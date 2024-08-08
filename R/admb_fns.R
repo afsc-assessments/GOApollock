@@ -4,7 +4,6 @@
 #' @param path Path to directory to clean
 #' @param full Whether to delete everything except .dat and .tpl files
 #' @return Nothing
-#' @export
 clean_pk_dir <- function(path=getwd(), full=FALSE){
   stopifnot(is.logical(full))
   if(full){
@@ -42,7 +41,6 @@ clean_pk_dir <- function(path=getwd(), full=FALSE){
 #' @param path Path to folder
 #' @param name Executable name (default goa_pk)
 #' @param compile Whether to compile (default is TRUE)
-#' @export
 setup_exe <- function(path=getwd(), name='goa_pk', compile=TRUE){
   tpl <- 'C:/Users/cole.monnahan/GOApollock/source/goa_pk.tpl'
   stopifnot( file.exists(tpl))
@@ -74,7 +72,6 @@ setup_exe <- function(path=getwd(), name='goa_pk', compile=TRUE){
 #' @return An invisible list is returned, and optionally a file
 #'   written. The age compositions are returned as proportions
 #'   because the model assumes this.
-#' @export
 #'
 #' @details The expected values from either the dat or report
 #'   file are used as the "truth" depending on \code{type}. The
@@ -374,7 +371,6 @@ sim_dat <- function(datlist, replist, fileout=NULL, path=NULL,
 #' @param datlist An object as read in by \link{read_dat}
 #' @param fileout The new filename to be written
 #' @param path Optional path if not in the working directory
-#' @export
 #' @return Nothing, new file written to disk
 write_dat <- function(datlist, fileout, path=NULL){
   if(!is.null(path)){
@@ -401,7 +397,6 @@ write_dat <- function(datlist, fileout, path=NULL){
 #'
 #' @param filename The filename to be read in
 #' @param path Path to the file if not in working directory
-#' @export
 read_dat <- function(filename,path=NULL){
   .Deprecated('read_pk_dat')
   read_pk_dat(filename,path)
@@ -413,7 +408,6 @@ read_dat <- function(filename,path=NULL){
 #'
 #' @param filename The filename to be read in
 #' @param path Path to the file if not in working directory
-#' @export
 #' @return A named list of all elements with corresponding names
 #'   to the ADMB model
 read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
@@ -597,7 +591,6 @@ read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
 #' @param endyr,styr The start and end years in the model
 #' @param version A version name which is added, e.g., 'change_selex'
 #' @return A list of outputs
-#' @export
 read_pk_rep <- function(model='goa_pk', path=getwd(), version='none', endyr,
                        styr=1970){
   ## named vectors
@@ -698,7 +691,6 @@ read_pk_rep <- function(model='goa_pk', path=getwd(), version='none', endyr,
 #' @param model model name
 #' @param path path to folder
 #' @param version,endyr,styr see rep function
-#' @export
 read_pk_cor <- function(model='goa_pk', path=getwd(), version='none', endyr, styr=1970){
   if(!file.exists(ff <- file.path(path, paste0(model, '.cor'))))
     stop("file does not exists: ",ff)
@@ -720,7 +712,6 @@ read_pk_cor <- function(model='goa_pk', path=getwd(), version='none', endyr, sty
 #' @param model model name
 #' @param path path to folder
 #' @param version,endyr,styr see rep function
-#' @export
 read_pk_std <- function(model='goa_pk', path=getwd(), version='none', endyr, styr=1970){
   yrs <- styr:endyr
   ff <- file.path(path, paste0(model,'.std'))

@@ -4,11 +4,13 @@
 \alias{calculate_rho}
 \title{Calculate Mohn's rho}
 \usage{
-calculate_rho(reps, max_peels = NULL)
+calculate_rho(fits, type = c("ssb", "F", "recruit"), max_peels = NULL)
 }
 \arguments{
-\item{reps}{A list of replists for each peel as returned by
-\code{read_pk_rep}}
+\item{fits}{A list of pkfits for each peel as returned by
+\code{fit_pk_retro}.}
+
+\item{type}{Which metric to calculate: 'ssb', 'F' or 'recruit'}
 
 \item{max_peels}{Optional numeric to control the max number of
 peels to use in the calculation. E.g. can calculate rho with

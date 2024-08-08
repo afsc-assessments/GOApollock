@@ -4,11 +4,17 @@
 \alias{get_std}
 \title{Extract sdreport data.frames from fitted models}
 \usage{
-get_std(fits)
+get_std(fits, slot = NULL, year.scale = 1)
 }
 \arguments{
 \item{fits}{A single model or list of models as returned by
 \code{\link{fit_pk}}}
+
+\item{slot}{A variable to filter on, if NULL will return all
+variables}
+
+\item{year.scale}{A scalar to get year2 right for offsetting
+plots downstream}
 }
 \value{
 A cleanly formatted data frame of sdreport objects,
