@@ -62,4 +62,7 @@ plot_pk_ssb(fits[[1]])
 jitters <- run_jitter(tmb, njitter=3, parallel=FALSE)
 jitters <- run_jitter(tmb, njitter=10, parallel=TRUE)
 jitters <- run_jitter(tmb, njitter=10, parallel=TRUE, scalar=.5, type='mle')
+jitters <- run_jitter(tmb1, njitter=3, parallel=FALSE)
+jitters <- run_jitter(tmb1, njitter=10, parallel=TRUE)
+jitters <- run_jitter(tmb1, njitter=10, parallel=TRUE, scalar=.5, type='mle')
 

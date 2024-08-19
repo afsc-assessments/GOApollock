@@ -355,5 +355,6 @@ run_jitter <- function(fit, njitter=20, scalar=.1, parallel=TRUE, type='par'){
   } else {
     warning("No jitter=0 found so RE calculations not done")
   }
+  message(paste("Max absolute gradient=", sprintf("%.3g", max(10^pars$log_maxgrad))))
   return(pars)
 }
