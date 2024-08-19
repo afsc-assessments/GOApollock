@@ -363,4 +363,43 @@ run_jitter <- function(fit, njitter=20, scalar=.1, parallel=TRUE, type='par'){
   return(pars)
 }
 
-
+#' Perform a self-test estimation for a fitted model.
+#'
+#' @param fit A fitted object
+#' @param reps A vector of integers of reps to run
+#' @param parallel Whether to run in parallel (default)
+#'
+#' @export
+#' @return A data.frame containing parameter true, estimates,  absolute and relative errors, and maxgrad.
+fit_self_test <- function(fit, reps, parallel=TRUE){
+  fit_test <- function(fit, rep){
+    set.seed(rep)
+    siminput <- fit$input
+    dyn.load(dynlib(file.path(input$path, input$modfile))  )
+    obj <- MakeADFun(data=input$dat, parameters=fit$parList,
+                     map=input$map, random=input$random,
+                     DLL=input$modfile, silent=TRUE)
+    siminput$dat <- obj$simulate(complete = TRUE)
+    attributes(siminput$dat)$check.passed <- NULL
+    siminput$dat$catp[1,] <- 0
+    tmp <- fit_pk(siminput, newtonsteps = 0, getsd=FALSE, do.fit = TRUE, verbose=FALSE)
+    data.frame(rep=rep, true=tmb$opt$par, est=tmp$opt$par, par=tmp$parnames, max_gradient=tmp$opt$max_gradient)
+  }
+  if(parallel){
+    message("Preparing parallel session..")
+    if(!require(snowfall))
+      stop("snowfall package required for parallel execution")
+    library(snowfall)
+    cores <- parallel::detectCores()-1
+    sfInit(cpus=cores, parallel=TRUE)
+    sfLibrary(TMB)
+    sfLibrary(GOApollock)
+    sfExportAll()
+    message('Starting self-test runs in parallel...')
+    out <- sfLapply(reps, function(i) fit_test(fit, i))
+  } else {
+    out <- lapply(reps, function(i) fit_test(fit, i))
+  }
+  out <- do.call(rbind, out)
+  out <- with(out, cbind(out, relerror=(est-true)/true, abserror=est-true))
+}
