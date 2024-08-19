@@ -66,10 +66,22 @@ pkfit <- function(x){
   x
 }
 
-#' Check object of class pkfit
+#' Check if an object is of class pkfit
 #' @param x Returned list from \code{\link{fit_tmb}}
 #' @export
 is.pkfit <- function(x) inherits(x, "pkfit")
+
+#' Check if an object is a list of pkfit objects
+#' @param x List of fits returned from \code{\link{fit_tmb}}
+#' @export
+is.pkfits <- function(x){
+  if(!is.list(x)) {
+    warning("Object passed to is.pkfits is not a list -- something went wrong")
+    return(FALSE)
+  }
+  all(sapply(x, function(i) inherits(i, "pkfit")))
+}
+
 
 
 #' Print summary of pkfit object
