@@ -121,7 +121,6 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                               newtonsteps=newtonsteps, getsd=FALSE,
                               lower=lwr, upper=upr)))
   }
-
   rep <- c(version=input$version, obj$report())
   sdrep <- std <- NULL
   if(verbose) message("Finished optimization")
@@ -138,10 +137,15 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
     if(verbose) message("Finished sdreport")
   }
   parList <- obj$env$parList()
+  parnames <- names(obj$par)
+  parnames <- as.vector((unlist(sapply(unique(parnames), function(x){
+    temp <- parnames[parnames==x]
+    if(length(temp)>1) paste0(temp,'[',1:length(temp),']') else temp
+  }))))
   fit <- list(version=input$version, path=input$path,
               modfile=input$modfile, rep=rep, opt=opt, sd=std,
-              obj=obj, parList=parList, input=input)
-  if(save.sdrep) fit <- c(fit,sdrep=sdrep)
+              obj=obj, parList=parList, input=input, parnames=parnames)
+    if(save.sdrep) fit <- c(fit,sdrep=sdrep)
   class(fit) <- c('pkfit', 'list')
   if(verbose) print(fit)
   if(!is.null(filename)) {
@@ -358,3 +362,5 @@ run_jitter <- function(fit, njitter=20, scalar=.1, parallel=TRUE, type='par'){
   message(paste("Max absolute gradient=", sprintf("%.3g", max(10^pars$log_maxgrad))))
   return(pars)
 }
+
+
