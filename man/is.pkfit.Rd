@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is.pkfit}
 \alias{is.pkfit}
-\title{Check object of class pkfit}
+\title{Check if an object is of class pkfit}
 \usage{
 is.pkfit(x)
 }
@@ -10,5 +10,5 @@ is.pkfit(x)
 \item{x}{Returned list from \code{\link{fit_tmb}}}
 }
 \description{
-Check object of class pkfit
+Check if an object is of class pkfit
 }
