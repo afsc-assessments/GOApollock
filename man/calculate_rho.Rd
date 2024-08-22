@@ -8,7 +8,7 @@ calculate_rho(fits, type = c("ssb", "F", "recruit"), max_peels = NULL)
 }
 \arguments{
 \item{fits}{A list of pkfits for each peel as returned by
-\code{fit_pk_retro}.}
+\code{fit_retro}.}
 
 \item{type}{Which metric to calculate: 'ssb', 'F' or 'recruit'}
 

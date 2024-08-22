@@ -7,7 +7,7 @@
 plot_data_overview(datlist)
 }
 \arguments{
-\item{datlist}{Datlist as returned by \code{read_pk_dat}.}
+\item{datlist}{Datlist as returned by \code{read_dat}.}
 }
 \value{
 Makes plot and invisibly returns the processed tidy

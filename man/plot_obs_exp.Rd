@@ -8,7 +8,7 @@ plot_obs_exp(mat, years, ncol = 5, title, minyr = NULL, minage = NULL)
 }
 \arguments{
 \item{mat}{Matrix of observed and expected compositions as
-returned by \code{read_pk_rep}}
+returned by \code{read_rep}}
 
 \item{years}{Vector of years with data}
 

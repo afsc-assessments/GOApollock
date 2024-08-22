@@ -12,7 +12,7 @@ plot_cohort_biomass(
 )
 }
 \arguments{
-\item{fit}{A model fit as produced by \link{\code{fit_tmb}}}
+\item{fit}{A model fit as produced by \code{fit_tmb}}
 
 \item{type}{The type of biomass to plot, options are 'ssb',
 'total', or 'summary' which are spawning, total, and age 2+,

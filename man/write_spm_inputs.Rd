@@ -8,7 +8,7 @@ slightly from the old projection module.}
 write_spm_inputs(replist, datlist, path = getwd())
 }
 \arguments{
-\item{replist}{A list as read in by \link{read_pk_rep}}
+\item{replist}{A list as read in by \link{read_rep}}
 
 \item{datlist}{A list as read in by \link{read_dat}}
 

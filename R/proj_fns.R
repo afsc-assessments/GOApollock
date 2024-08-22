@@ -1,6 +1,6 @@
 
 #' Get table from projection output
-#' @param replist A list as read in by \link{read_pk_rep}
+#' @param replist A list as read in by \link{read_rep}
 #' @param bigfile A data frame of full projection scenario
 #'   outputs
 #' @export
@@ -47,7 +47,7 @@ format_exec_table <- function(tab){
 #' Write input files for the 'spm' projection module. Differs
 #' slightly from the old projection module.
 #'
-#' @param replist A list as read in by \link{read_pk_rep}
+#' @param replist A list as read in by \link{read_rep}
 #' @param datlist A list as read in by \link{read_dat}
 #' @param path Directory to write in
 #'
@@ -166,7 +166,7 @@ write_spm_setup <- function(ayr, path, catch){
 
 #' Write input files for the Projection module
 #'
-#' @param replist A list as read in by \link{read_pk_rep}
+#' @param replist A list as read in by \link{read_rep}
 #' @param datlist A list as read in by \link{read_dat}
 #' @param path Directory to write in
 #'

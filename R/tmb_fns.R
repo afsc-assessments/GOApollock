@@ -4,7 +4,7 @@
 #' @param path Path to the file if not in working directory
 #' @return A named list of all elements with corresponding names
 #'   to the ADMB model
-read_pk_dat <- function(filename, path=NULL, writedat=FALSE){
+read_dat <- function(filename, path=NULL, writedat=FALSE){
   if(!is.null(path)){
     oldwd <- getwd()
     on.exit(setwd(oldwd))
@@ -351,7 +351,7 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
 prepare_pk_input <- function(path, datfile, version='none',
                              random=NULL, modfile='goa_pk'){
   if(!dir.exists(path)) stop("directory does not exist: ",path)
-  dat <- read_pk_dat(filename=datfile, path=path)
+  dat <- read_dat(filename=datfile, path=path)
   ## Prepare the parameter list based on the data
   pars <- prepare_par(dat)
   map <- prepare_map(pars)

@@ -7,7 +7,7 @@
 get_exec_table(replist, bigfile, maxABCratio = 1)
 }
 \arguments{
-\item{replist}{A list as read in by \link{read_pk_rep}}
+\item{replist}{A list as read in by \link{read_rep}}
 
 \item{bigfile}{A data frame of full projection scenario
 outputs}

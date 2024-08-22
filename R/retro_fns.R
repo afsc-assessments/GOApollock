@@ -15,7 +15,7 @@
 #'   are preserved so that it runs faster. Pass an unfitted obj
 #'   if this is undesired behavior.
 #' @export
-fit_pk_retros <- function(fit, peels=0:7, getsd=TRUE, parallel=FALSE,...){
+fit_retros <- function(fit, peels=0:7, getsd=TRUE, parallel=FALSE,...){
   if(class(fit)[1]!='pkfit')
     stop("fit argument is not a fitted model")
   if(parallel){

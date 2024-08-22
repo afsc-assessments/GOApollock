@@ -117,7 +117,7 @@ get_sdnr <- function(fit){
 
 #' Calculate Mohn's rho
 #' @param fits A list of pkfits for each peel as returned by
-#'   \code{fit_pk_retro}.
+#'   \code{fit_retro}.
 #' @param type Which metric to calculate: 'ssb', 'F' or 'recruit'
 #' @param max_peels Optional numeric to control the max number of
 #'   peels to use in the calculation. E.g. can calculate rho with
@@ -186,7 +186,7 @@ mymelt <- function(replist, slot){
     if(NROW(y)==0) stop("Slot '", slot, "' not found in report")
     if(is.matrix(y)){
       ## onlyh need this for TMB output since doens't have
-      ## dimnames set by read_pk_rep
+      ## dimnames set by read_rep
       if(nrow(y)==length(replist$years) & ncol(y)==length(replist$ages))
         dimnames(y) <- list(year=replist$years, age=replist$ages)
       temp <- data.frame(version=replist$version, reshape2::melt(y))

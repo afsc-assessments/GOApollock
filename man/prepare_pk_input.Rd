@@ -9,7 +9,7 @@ prepare_pk_input(
   datfile,
   version = "none",
   random = NULL,
-  modfile = "goa_pk_tmb"
+  modfile = "goa_pk"
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ plotting downstream}
 vectors to be integrated. Defaults to NULL (fully penalized
 ML)}
 
-\item{modfile}{Model name assumed to be 'goa_pk_tmb' unless
+\item{modfile}{Model name assumed to be 'goa_pk' unless
 specified}
 }
 \value{

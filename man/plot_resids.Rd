@@ -8,7 +8,7 @@ plot_resids(mat, years, minyr = NULL)
 }
 \arguments{
 \item{mat}{Matrix of Pearson residuals (years by ages) as
-returned by \code{read_pk_rep}}
+returned by \code{read_rep}}
 
 \item{years}{Vector of years of observations}
 }

@@ -1,7 +1,7 @@
 
 #' Plot overview of data sources
 #'
-#' @param datlist Datlist as returned by \code{read_pk_dat}.
+#' @param datlist Datlist as returned by \code{read_dat}.
 #' @return Makes plot and invisibly returns the processed tidy
 #'   data frame
 #' @details This works well with png(..., width=7, height=5,
@@ -73,7 +73,7 @@ plot_data_overview <- function(datlist){
 
 #' Plot survey selectivities with +/- 1 SE
 #' @param fits A list of data frames as read in from
-#'   \link{\code{read_pk_std}}
+#'   \code{read_std}
 #'
 #' @param add_uncertainty Whether to add +/- SE
 #'   intervals. These are calculated in logit space.
@@ -85,7 +85,7 @@ plot_data_overview <- function(datlist){
 #' depending on \code{plot} argument.
 #' @export
 #'
-plot_pk_selex <- function(fits, add_uncertainty=TRUE, add_fishery=TRUE,
+plot_selex <- function(fits, add_uncertainty=TRUE, add_fishery=TRUE,
                           plot_logit=FALSE, plot=TRUE){
   if(is.pkfit(fits)){
     nmods <- 1
@@ -137,7 +137,7 @@ plot_pk_selex <- function(fits, add_uncertainty=TRUE, add_fishery=TRUE,
 #' Plot spawning biomass
 #'
 #' @param fits A model fit or list of model fits as produced by
-#'   \link{\code{fit_tmb}}
+#'   \code{fit_tmb}.
 #' @param add_uncertainty Whether to add 95% confidence
 #'   intervals. These are calculated in log space depending on
 #'   \code{uselog}.
@@ -152,7 +152,7 @@ plot_pk_selex <- function(fits, add_uncertainty=TRUE, add_fishery=TRUE,
 #' depending on \code{plot} argument.
 #' @export
 #'
-plot_pk_ssb <- function(fits, add_uncertainty=TRUE, plotlog=FALSE,
+plot_ssb <- function(fits, add_uncertainty=TRUE, plotlog=FALSE,
                         uselog=FALSE, addproj=FALSE,
                         plot=TRUE, alpha1=.5, alpha2=.8){
   if(is.pkfit(fits)){
@@ -208,7 +208,7 @@ plot_pk_ssb <- function(fits, add_uncertainty=TRUE, plotlog=FALSE,
 #' Plot Pearson residual matrix
 #'
 #' @param mat Matrix of Pearson residuals (years by ages) as
-#'   returned by \code{read_pk_rep}
+#'   returned by \code{read_rep}
 #' @param years Vector of years of observations
 #'
 #' @return A long data frame ready for ggplot
@@ -236,7 +236,7 @@ plot_resids <- function(mat, years, minyr=NULL){
 #' Plot observed vs expected compositions as lines
 #'
 #' @param mat Matrix of observed and expected compositions as
-#'   returned by \code{read_pk_rep}
+#'   returned by \code{read_rep}
 #' @param years Vector of years with data
 #' @param ncol Number of columns for faceting
 #' @param title Plot title
@@ -285,7 +285,7 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL,
 
 #' Plot cohort contribution to SSB as a stacked ribbon plot
 #'
-#' @param fit A model fit as produced by \link{\code{fit_tmb}}
+#' @param fit A model fit as produced by \code{fit_tmb}
 #' @param type The type of biomass to plot, options are 'ssb',
 #'   'total', or 'summary' which are spawning, total, and age 2+,
 #'   respectively. Default is SSB.
