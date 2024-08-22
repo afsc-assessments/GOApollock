@@ -2,13 +2,13 @@
 // Martin Dorn (NFMS AFSC), taken over by Cole Monnahan (NMFS,
 // AFSC) in 2021 (pk20_8 renamed to goa_pk).
 
-// One fishery, three surveys: acoustic, bottom trawl, ADFG crab/groundfish  
+// One fishery, three surveys: acoustic, bottom trawl, ADFG crab/groundfish
 // Double logistic selectivity for fishery
 // Random walks in selectivity
 // Logistic or double logistic for surveys
 // Five year projection
 // Shelikof Strait EIT split into three catchability periods
-// Biosonics MillerFreeman and OscarDyson 
+// Biosonics MillerFreeman and OscarDyson
 // Implements 2 corrections to coding errors noticed by Teresa in Spring 2014
 // Namely: Uses 20 iterations rather than 10 to get the correct spawning biomass in the HCR, AND implements the bias corrected log likelihood for survey biomass correctly.
 
@@ -153,13 +153,13 @@ Type objective_function<Type>::operator() ()
   DATA_IVECTOR(srvyrs4);	// Years in which surveys occured
   DATA_VECTOR(indxsurv4);	// Survey index
   DATA_VECTOR(indxsurv_log_sd4); // Survey index (cv) = sdev of log(indxsurv)
- 
+
   // Survey 5 (Age 2 acoustic)
   // DATA_INTEGER(nyrs_srv5);	    // Number of surveys
   DATA_IVECTOR(srvyrs5);	// Years in which surveys occured
   DATA_VECTOR(indxsurv5);	// Survey index
   DATA_VECTOR(indxsurv_log_sd5); // Survey index (cv) = sdev of log(indxsurv)
- 
+
   // Survey 6 (Summer acoustic)
    DATA_INTEGER(nyrs_srv6);	    // Number of surveys
   DATA_IVECTOR(srvyrs6);	// Years in which surveys occured
@@ -177,14 +177,14 @@ Type objective_function<Type>::operator() ()
   DATA_MATRIX(srvp6);		// Survey proportions at age
   DATA_MATRIX(srvlenp6);	// Survey proportions at length
   DATA_MATRIX(wt_srv6);	// Survey weights at age
-  
+
   // Ageing error transition matrix
   DATA_MATRIX(age_trans);
 
   // Age to length transition matrix, to calculate expected length comps
   DATA_MATRIX(len_trans1);
   DATA_MATRIX(len_trans2);
-  DATA_MATRIX(len_trans3);	
+  DATA_MATRIX(len_trans3);
 
   int nyrs=endyr-styr+1;
   int nages=trmage-rcrage+1;
@@ -192,7 +192,7 @@ Type objective_function<Type>::operator() ()
   vector<int> years(nyrs);
   for(int i=0;i<nages;i++) ages(i)=i+1;
   for(int i=0;i<nyrs;i++) years(i)=1970+i;
-  
+
   // Population vectors
   matrix<Type> wt_pop(nyrs,nages);   // Population weight at age
   matrix<Type> wt_spawn(nyrs,nages); // Population weight at age at spawning (April 15)
@@ -203,7 +203,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(Ftarget);		// determines length of projections
   int nyears_proj = Ftarget.size();
 
-  
+
   DATA_SCALAR(B40); // mean log recruitment
   // DATA_SCALAR(log_mean_recr_proj);
   DATA_SCALAR(sigmasq_recr);                       // Variance for log recr, recruitment indices
@@ -213,7 +213,7 @@ Type objective_function<Type>::operator() ()
   int i;                                          // Index for year
   int j;                                          // Index for age
   //int loop=0;
-  
+
   Type o=0.00001;                                       // A small number
 
    // Projection parameters
@@ -221,7 +221,7 @@ Type objective_function<Type>::operator() ()
   vector<Type> wt_spawn_proj(nages);
   vector<Type> wt_fsh_proj(nages);
   vector<Type> wt_srv_proj(nages);
- 
+
   // for projections take averages of WAA only from recent survey years with data
   wt_pop_proj.setZero();
   wt_spawn_proj.setZero();
@@ -234,7 +234,7 @@ Type objective_function<Type>::operator() ()
   // for(int i=nyrsac_srv1; i>=1; i--){
   //   if(srv_acyrs1(i) <= endyr){
   //     counter++;
-  //     for(int a=rcrage;a<=trmage;a++) wt_spawn_proj(a)+=wt_srv1(srv_acyrs1(i),a)/5; 
+  //     for(int a=rcrage;a<=trmage;a++) wt_spawn_proj(a)+=wt_srv1(srv_acyrs1(i),a)/5;
   //     if(counter==5) break;
   //   }
   // }
@@ -242,7 +242,7 @@ Type objective_function<Type>::operator() ()
   // for(int i=nyrsac_srv2; i>=1; i--){
   //   if(srv_acyrs2(i) <= endyr){
   //     counter++;
-  //     for(int a=rcrage;a<=trmage;a++) wt_pop_proj(a)+=wt_srv2(srv_acyrs2(i),a)/3; 
+  //     for(int a=rcrage;a<=trmage;a++) wt_pop_proj(a)+=wt_srv2(srv_acyrs2(i),a)/3;
   //     if(counter==3) break;
   //   }
   // }
@@ -254,7 +254,7 @@ Type objective_function<Type>::operator() ()
   //  init_bounded_number M(0.1,0.5,-1)
   // PARAMETER_VECTOR(M);
   // PARAMETER(mean_log_initN);
-  PARAMETER_VECTOR(dev_log_initN); 
+  PARAMETER_VECTOR(dev_log_initN);
   vector<Type> initN(nages-1); // goes from 2 to 10
   PARAMETER(mean_log_recruit);
   PARAMETER_VECTOR(dev_log_recruit);
@@ -271,7 +271,7 @@ Type objective_function<Type>::operator() ()
   matrix<Type> C_proj(nyears_proj,nages);
   matrix<Type> Nsrv_proj(nyears_proj,nages);
   vector<Type> slctfsh_proj(nages);
-  vector<Type> Ecattot_proj(nyears_proj);  
+  vector<Type> Ecattot_proj(nyears_proj);
   vector<Type> Esumbio_proj(nyears_proj);
   vector<Type> Espawnbio_proj(nyears_proj);
   vector<Type> Esrv_proj(nyears_proj);
@@ -284,8 +284,8 @@ Type objective_function<Type>::operator() ()
   PARAMETER(inf1_fsh_mean);
   PARAMETER(log_slp2_fsh_mean);
   PARAMETER(inf2_fsh_mean);
-  //    PARAMETER(log_slp2_fsh_mean);	  
-  //    PARAMETER(inf2_fsh_mean);	  
+  //    PARAMETER(log_slp2_fsh_mean);
+  //    PARAMETER(inf2_fsh_mean);
   PARAMETER_VECTOR(slp1_fsh_dev);
   PARAMETER_VECTOR(inf1_fsh_dev);
   //    PARAMETER_VECTOR(slp2_fsh_dev);
@@ -327,20 +327,20 @@ Type objective_function<Type>::operator() ()
   PARAMETER_VECTOR(dev_log_F);
   vector<Type> F(nyrs);
   PARAMETER(log_q1_mean);
-  PARAMETER_VECTOR(log_q1_dev);; 
+  PARAMETER_VECTOR(log_q1_dev);;
   //  PARAMETER(log_q2);
   PARAMETER(log_q2_mean);
-  PARAMETER_VECTOR(log_q2_dev);;  
+  PARAMETER_VECTOR(log_q2_dev);;
   PARAMETER(log_q3_mean);
-  PARAMETER_VECTOR(log_q3_dev);; 
+  PARAMETER_VECTOR(log_q3_dev);;
   PARAMETER(log_q4);
   //  PARAMETER(q4_pow);
   PARAMETER(q4_pow);
   PARAMETER(log_q5);
-  //  PARAMETER(q5_pow);;  
+  //  PARAMETER(q5_pow);;
   PARAMETER(q5_pow);
   PARAMETER(log_q6);
-  // This scales M vector below so that M={M}*natMscalar. If 1 does nothing. 
+  // This scales M vector below so that M={M}*natMscalar. If 1 does nothing.
   PARAMETER(natMscalar);
 
   // Dependent parameters
@@ -388,8 +388,8 @@ Type objective_function<Type>::operator() ()
   vector<Type> Eindxsurv3(nyrs);
   matrix<Type> Esrvp3(nyrs,nages);
   matrix<Type> Esrvlenp3(nyrs,nbins2);
-  vector<Type> Eindxsurv4(nyrs); 
-  vector<Type> Eindxsurv5(nyrs); 
+  vector<Type> Eindxsurv4(nyrs);
+  vector<Type> Eindxsurv5(nyrs);
   vector<Type> Eindxsurv6(nyrs);
   matrix<Type> Esrvp6(nyrs,nages);
   matrix<Type> Esrvlenp6(nyrs,nbins2);
@@ -412,7 +412,7 @@ Type objective_function<Type>::operator() ()
   vector<Type> llsrvlenp3(nyrslen_srv3);
   vector<Type> llsrvp6(nyrsac_srv6);
   vector<Type> llsrvlenp6(nyrslen_srv6);
- 
+
 
   //residual output matrices
   matrix<Type> res_fish(nyrs_fsh,2*nages);
@@ -429,17 +429,17 @@ Type objective_function<Type>::operator() ()
   matrix<Type> pearson_srv6(nyrsac_srv6,nages);
   pearson_fish.setZero();
   pearson_srv1.setZero();
-  pearson_srv2.setZero(); 
-  pearson_srv3.setZero(); 
+  pearson_srv2.setZero();
+  pearson_srv3.setZero();
   pearson_srv3len.setZero();
   pearson_srv6.setZero();
   res_fish.setZero();
   res_srv1.setZero();
-  res_srv2.setZero(); 
-  res_srv3.setZero(); 
+  res_srv2.setZero();
+  res_srv3.setZero();
   res_srv3len.setZero();
   res_srv6.setZero();
-  
+
   // These are old, probably used for Francis tuning but not
   // anymore. Left blank for now but consider taking out later
   vector<Type> effN_fsh(nyrs_fsh);
@@ -452,7 +452,7 @@ Type objective_function<Type>::operator() ()
   effN_srv2.setZero();
   effN_srv3.setZero();
   effN_srv6.setZero();
- 
+
   Type RMSE_srv1;
   Type RMSE_srv2;
   Type RMSE_srv3;
@@ -464,7 +464,7 @@ Type objective_function<Type>::operator() ()
   //likeprof_number var_prof;
   Type objfun=0.0;
 
- 
+
   // PROCEDURE_SECTION
 
   //   Convert_log_parameters();
@@ -476,12 +476,12 @@ Type objective_function<Type>::operator() ()
   //   if(last_phase())
   //   {
   //     Projections();
-  //   } 
+  //   }
   //   Objective_function();
   //   MCMC_output();
 
   // Make some new vectors to help simplify indexing from 0
-  int y0=0;			
+  int y0=0;
   int y1=nyrs-1;
   int a0=0;
   int a1=nages-1;
@@ -518,29 +518,29 @@ Type objective_function<Type>::operator() ()
       wt_spawn_proj(a)+=wt_srv1(isrv_acyrs1(nyrsac_srv1-i-1),a)/5;
       // for predicting what the survey will see next year, Shelikof for now
       wt_srv_proj(a)+=wt_srv1(isrv_acyrs1(nyrsac_srv1-i-1),a)/5;
-    }	  
+    }
   }
   wt_fsh_proj=wt_fsh.row(y1);
-  
+
   vector<Type> M(nages);
   M(0)=1.39; M(1)=0.69; M(2)=0.48; M(3)=0.37; M(4)=0.34;
   M(5)=0.30; M(6)=0.30; M(7)=0.29; M(8)=0.28; M(9)=0.29;
   for(j=a0;j<=a1;j++) M(j)*=natMscalar;
 
-  
+
   // Assume close to equilibrium at f=0 at the start Use the
   // initial recruitment dev to fill out the initial age
   // composition. Need to be really careful with indexing here
   // since initN is of length 9 and represents ages 2 to 10 but
   // has limits (0,8) unlike the other vectors
   initN.setZero();
-    initN(0) = exp(mean_log_recruit +  dev_log_recruit(y0) - M(a0)); // age 2 
+    initN(0) = exp(mean_log_recruit +  dev_log_recruit(y0) - M(a0)); // age 2
   for (j=1;j<=8;j++) {
     // j is a different age between initN and M
     initN(j) = initN(j-1)*exp(-M(j+1));
   }
-  initN(8) /= (1.0 - exp(-M(a1))); 
-  //devs for initN are turned off 
+  initN(8) /= (1.0 - exp(-M(a1)));
+  //devs for initN are turned off
   for (j=0;j<=8;j++) {
     initN(j) = initN(j)*exp(dev_log_initN(j));
   }
@@ -551,7 +551,7 @@ Type objective_function<Type>::operator() ()
   for (i=y0;i<=y1;i++) {
     log_q1(i)=log_q1_mean+log_q1_dev(i);
     log_q2(i)=log_q2_mean+log_q2_dev(i);
-    log_q3(i)=log_q3_mean+log_q3_dev(i); 
+    log_q3(i)=log_q3_mean+log_q3_dev(i);
     q1(i)=exp(log_q1(i));
     q2(i)=exp(log_q2(i));
     q3(i)=exp(log_q3(i));
@@ -560,7 +560,7 @@ Type objective_function<Type>::operator() ()
   q4 = exp(log_q4);
   q5 = exp(log_q5);
   q6 = exp(log_q6);
- 
+
 
   // Fishery selectivity
   for (i=y0;i<=y1;i++) {
@@ -583,8 +583,8 @@ Type objective_function<Type>::operator() ()
   }
   slctsrv1=slctsrv1/slctsrv1(2);
   slctsrv1(a0)=0;
-  slctsrv1(a0+1)=0;	
- 
+  slctsrv1(a0+1)=0;
+
   //Survey 2 selectivity
   for (j=a0;j<=a1;j++) {
     slctsrv2(j) = (1/(1+exp(-exp(log_slp1_srv2)*(double(j+1)-inf1_srv2))))
@@ -620,8 +620,8 @@ Type objective_function<Type>::operator() ()
     for (j=a0;j<=a1;j++) {
       Z(i,j)=(F(i)*slctfsh(i,j))+M(j);
     }
-  }  
- 
+  }
+
   N.setZero();
   for(j=a0+1;j<=a1;j++) N(y0,j)=initN(j-1); // ages 2 to 10 only
   for (i=y0;i<=y1;i++) {
@@ -630,7 +630,7 @@ Type objective_function<Type>::operator() ()
   for (i=y0;i<y1;i++) {
     for (j=a0;j<a1;j++) {
       N(i+1,j+1)=N(i,j)*exp(-Z(i,j));
-    }  
+    }
     N(i+1,a1)+=N(i,a1)*exp(-Z(i,a1));
   }
   endN=N.row(y1);
@@ -680,13 +680,13 @@ Type objective_function<Type>::operator() ()
     Esrvp3.row(i) = (Nsrv3.row(i)/Nsrv3.row(i).sum())*age_trans;
     Esrvlenp3.row(i) = Esrvp3.row(i) * len_trans2;
     Eindxsurv4(i)= q4*pow(N(i,0),(q4_pow+1));
-    Eindxsurv5(i)= q5*pow(N(i,1),(q5_pow+1));	
+    Eindxsurv5(i)= q5*pow(N(i,1),(q5_pow+1));
     Esrvp6.row(i) = (Nsrv6.row(i)/Nsrv6.row(i).sum())*age_trans;
     Esrvlenp6.row(i) = Esrvp6.row(i) * len_trans2;
   }
   Espawnbio_log=log(Espawnbio);
   Esumbio_log=log(Esumbio);
- 
+
 
    // ------------------------------------------------------------
    // Projections
@@ -702,7 +702,7 @@ Type objective_function<Type>::operator() ()
      }
    }
    slctfsh_proj=slctfsh_proj/max(slctfsh_proj);
- 
+
   N_proj.setZero();
   recruit_proj.setZero();
   Z_proj.setZero();
@@ -737,23 +737,23 @@ Type objective_function<Type>::operator() ()
       for (j=a0;j<=a1;j++) {
 	Z_proj(i,j)=F_proj(i)*slctfsh_proj(j)+M(j);
 	sbio += N_proj(i,j)*exp(-0.21*Z_proj(i,j))*wt_spawn_proj(j)*0.5*mat(j);
-      }  
+      }
       //  Set the fishing mortality rate, adjusting by the harvest control rule
       F_proj(i)=Ftarget(i);
       if (sbio < B40) 	F_proj(i)=Ftarget(i)*(((sbio/B40)-0.05)/(1-0.05));
     } // end tuning loop so F_proj is right
-      
+
     // Finalize total mortality
     for (j=a0;j<=a1;j++) Z_proj(i,j)=F_proj(i)*slctfsh_proj(j) + M(j);
     //  Calculate numbers at age given F
     if(i<nyears_proj-1) {
       for (j=a0;j<a1;j++) N_proj(i+1,j+1)=N_proj(i,j)*exp(-Z_proj(i,j));
-               N_proj(i+1,a1)+=N_proj(i,a1)*exp(-Z_proj(i,a1)); 
+               N_proj(i+1,a1)+=N_proj(i,a1)*exp(-Z_proj(i,a1));
     }
     // Calculate all derived quantities given F and N
     for (j=a0;j<=a1;j++) {
       C_proj(i,j)=N_proj(i,j)*((F_proj(i)*slctfsh_proj(j))/Z_proj(i,j))*(1-exp(-Z_proj(i,j)));
-      Nsrv_proj(i,j)=N_proj(i,j)*exp(-yrfrct_srv6(y1)*Z_proj(i,j));  
+      Nsrv_proj(i,j)=N_proj(i,j)*exp(-yrfrct_srv6(y1)*Z_proj(i,j));
       Esrv_proj(i)  += q1(y1)*N_proj(i,j)*exp(-yrfrct_srv1(y1)*Z_proj(i,j))*slctsrv1(j)*wt_srv_proj(j);
       Ecattot_proj(i) += 1000000*C_proj(i,j)*wt_fsh_proj(j);
       if(j>=2) Esumbio_proj(i) += N_proj(i,j)*wt_pop_proj(j);
@@ -772,7 +772,7 @@ Type objective_function<Type>::operator() ()
 	catp(i,j) = 0;
       }
     }
-  } 
+  }
     for (i=0;i<nyrs_srv1;i++) {
      for (j=a0;j<=a1;j++) {
       if(j<iac_yng_srv1(i)) {
@@ -782,7 +782,7 @@ Type objective_function<Type>::operator() ()
 	srvp1(i,j) = 0;
       }
     }
-  } 
+  }
 
     loglik.setZero();
     // ------------------------------------------------------------
@@ -795,7 +795,7 @@ Type objective_function<Type>::operator() ()
       cattot=exp(rnorm(log(Ecattot), cattot_log_sd));
       REPORT(cattot);
     }
-  
+
     //Age composition
     res_fish.setZero();
     pearson_fish.setZero();
@@ -813,10 +813,10 @@ Type objective_function<Type>::operator() ()
 	  otmp=rmultinom(multN_fsh(i), etmp);
 	  catp.row(i).segment(iac_yng_fsh(i), nagestmp)=otmp/otmp.sum();
 	}
-	// Residuals and outputs which get used by R functions 
+	// Residuals and outputs which get used by R functions
 	for (j=iac_yng_fsh(i);j<=iac_old_fsh(i);j++) {
 	  res_fish(i,j)=catp(i,j); res_fish(i,a1-a0+j+1)=Ecatp(ifshyrs(i),j);
-	  pearson_fish(i,j)=(catp(i,j)-Ecatp(ifshyrs(i),j))/sqrt((Ecatp(ifshyrs(i),j)*(1.-Ecatp(ifshyrs(i),j)))/multN_fsh(i));	
+	  pearson_fish(i,j)=(catp(i,j)-Ecatp(ifshyrs(i),j))/sqrt((Ecatp(ifshyrs(i),j)*(1.-Ecatp(ifshyrs(i),j)))/multN_fsh(i));
 	}
       } else {
 	// otherwise simulated data have original data left in there
@@ -858,10 +858,10 @@ Type objective_function<Type>::operator() ()
 	  otmp=rmultinom(multN_srv1(i), etmp);
 	  srvp1.row(i).segment(iac_yng_srv1(i), nagestmp)=otmp/otmp.sum();
 	}
-	//Residuals and outputs which get used by R functions 
+	//Residuals and outputs which get used by R functions
 	for (j=iac_yng_srv1(i);j<=iac_old_srv1(i);j++) {
 	  res_srv1(i,j)=srvp1(i,j); res_srv1(i,a1-a0+j+1)=Esrvp1(isrv_acyrs1(i),j);
-	  pearson_srv1(i,j)=(srvp1(i,j)-Esrvp1(isrv_acyrs1(i),j))/sqrt((Esrvp1(isrv_acyrs1(i),j)*(1.-Esrvp1(isrv_acyrs1(i),j)))/multN_srv1(i));	
+	  pearson_srv1(i,j)=(srvp1(i,j)-Esrvp1(isrv_acyrs1(i),j))/sqrt((Esrvp1(isrv_acyrs1(i),j)*(1.-Esrvp1(isrv_acyrs1(i),j)))/multN_srv1(i));
 	}
       } else {
 	// otherwise simulated data have original data left in there
@@ -870,10 +870,10 @@ Type objective_function<Type>::operator() ()
     }
     REPORT(srvp1);
     loglik(4)=llsrvp1.sum();
-  
+
 
     // Survey 2 likelihoods
-    // Total biomass  
+    // Total biomass
     loglik(6)=0;
     for(i=0; i<nyrs_srv2;i++){
       // Add bias correction on
@@ -900,10 +900,10 @@ Type objective_function<Type>::operator() ()
 	  otmp=rmultinom(multN_srv2(i), etmp);
 	  srvp2.row(i)=otmp/otmp.sum();
 	}
-	//Residuals and outputs which get used by R functions 
+	//Residuals and outputs which get used by R functions
 	for (j=a0;j<=a1;j++) {
 	  res_srv2(i,j)=srvp2(i,j); res_srv2(i,a1-a0+j+1)=Esrvp2(isrv_acyrs2(i),j);
-	  pearson_srv2(i,j)=(srvp2(i,j)-Esrvp2(isrv_acyrs2(i),j))/sqrt((Esrvp2(isrv_acyrs2(i),j)*(1.-Esrvp2(isrv_acyrs2(i),j)))/multN_srv2(i));	
+	  pearson_srv2(i,j)=(srvp2(i,j)-Esrvp2(isrv_acyrs2(i),j))/sqrt((Esrvp2(isrv_acyrs2(i),j)*(1.-Esrvp2(isrv_acyrs2(i),j)))/multN_srv2(i));
 	}
       } else {
 	// otherwise simulated data have original data left in there
@@ -935,7 +935,7 @@ Type objective_function<Type>::operator() ()
 
 
     // Survey 3 likelihoods
-    // Total biomass  
+    // Total biomass
     loglik(10)=0;
     for(i=0; i<nyrs_srv3;i++){
       // Add bias correction on
@@ -962,10 +962,10 @@ Type objective_function<Type>::operator() ()
 	  otmp=rmultinom(multN_srv3(i), etmp);
 	  srvp3.row(i)=otmp/otmp.sum();
 	}
-	//Residuals and outputs which get used by R functions 
+	//Residuals and outputs which get used by R functions
 	for (j=a0;j<=a1;j++) {
 	  res_srv3(i,j)=srvp3(i,j); res_srv3(i,a1-a0+j+1)=Esrvp3(isrv_acyrs3(i),j);
-	  pearson_srv3(i,j)=(srvp3(i,j)-Esrvp3(isrv_acyrs3(i),j))/sqrt((Esrvp3(isrv_acyrs3(i),j)*(1.-Esrvp3(isrv_acyrs3(i),j)))/multN_srv3(i));	
+	  pearson_srv3(i,j)=(srvp3(i,j)-Esrvp3(isrv_acyrs3(i),j))/sqrt((Esrvp3(isrv_acyrs3(i),j)*(1.-Esrvp3(isrv_acyrs3(i),j)))/multN_srv3(i));
 	}
       } else {
 	// otherwise simulated data have original data left in there
@@ -974,8 +974,8 @@ Type objective_function<Type>::operator() ()
     }
     REPORT(srvp3);
     loglik(11)=llsrvp3.sum();
-    
-    
+
+
     // Survey 4 and 5 likelihoods
     for(i=0; i<nyrs_srv4;i++){
       // Add bias correction on
@@ -994,10 +994,10 @@ Type objective_function<Type>::operator() ()
   RMSE_srv5=0;
   RMSE_srv4=0;
 
- 
+
 
       // Survey 6 likelihoods
-    // Total biomass  
+    // Total biomass
     for(i=0; i<nyrs_srv6;i++){
       // Add bias correction on
       Type Eindxsurv6_tmp=log(Eindxsurv6(isrvyrs6(i)));
@@ -1023,10 +1023,10 @@ Type objective_function<Type>::operator() ()
 	  otmp=rmultinom(multN_srv6(i), etmp);
 	  srvp6.row(i)=otmp/otmp.sum();
 	}
-	//Residuals and outputs which get used by R functions 
+	//Residuals and outputs which get used by R functions
 	for (j=a0;j<=a1;j++) {
 	  res_srv6(i,j)=srvp6(i,j); res_srv6(i,a1-a0+j+1)=Esrvp6(isrv_acyrs6(i),j);
-	  pearson_srv6(i,j)=(srvp6(i,j)-Esrvp6(isrv_acyrs6(i),j))/sqrt((Esrvp6(isrv_acyrs6(i),j)*(1.-Esrvp6(isrv_acyrs6(i),j)))/multN_srv6(i));	
+	  pearson_srv6(i,j)=(srvp6(i,j)-Esrvp6(isrv_acyrs6(i),j))/sqrt((Esrvp6(isrv_acyrs6(i),j)*(1.-Esrvp6(isrv_acyrs6(i),j)))/multN_srv6(i));
 	}
       } else {
 	// otherwise simulated data have original data left in there
@@ -1059,32 +1059,50 @@ Type objective_function<Type>::operator() ()
 
     // End of data likelihoods
     // ------------------------------------------------------------
-       
+
     // ------------------------------------------------------------
     // Priors and random effect penalties
     // TODO: move this above data and build in RE simulation
 
     // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
     loglik(17) += dnorm(dev_log_recruit, Type(0.0), sigmaR, true).sum();
-    
+
 
     for(i=y0+1;i<=y1;i++){
       loglik(18) += dnorm(slp1_fsh_dev(i)-slp1_fsh_dev(i-1), Type(0.0), rwlk_sd(i-1), true);
-      loglik(18) += dnorm(inf1_fsh_dev(i)-inf1_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true); 
+      loglik(18) += dnorm(inf1_fsh_dev(i)-inf1_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true);
       loglik(18) += dnorm(slp2_fsh_dev(i)-slp2_fsh_dev(i-1), Type(0.0), rwlk_sd(i-1), true);
-      loglik(18) += dnorm(inf2_fsh_dev(i)-inf2_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true); 
+      loglik(18) += dnorm(inf2_fsh_dev(i)-inf2_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true);
       loglik(20) += dnorm(log_q1_dev(i)-log_q1_dev(i-1), Type(0.0), q1_rwlk_sd(i-1), true);
       loglik(20) += dnorm(log_q2_dev(i)-log_q2_dev(i-1), Type(0.0), q2_rwlk_sd(i-1), true);
       loglik(20) += dnorm(log_q3_dev(i)-log_q3_dev(i-1), Type(0.0), q3_rwlk_sd(i-1), true);
     }
-    
-    // // Prior on trawl catchability       
+
+    // // Prior on trawl catchability
     loglik(22) = dnorm(log_q2_mean, log(Type(0.85)), Type(0.1), true);
-    // these broad priors stabilize estimation, particularly for
-    // retros, and imply uniform 1 selex for this survey
-    loglik(23) += dnorm(log_slp2_srv6, Type(0.0),Type(2.0), true);
+
+    // these broad priors on selex stabilize estimation and were
+    // determined using prior pushforward checks. Any log_slp >10
+    // or < .01 is too flat to be differentiated with data so
+    // used as thresholds here.
+    
+    // loglik(23) += dnorm(log_slp1_srv1, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(log_slp2_srv1, Type(-1.0),Type(1.5), true);
+    // loglik(23) += dnorm(inf1_srv1, Type(0.0),Type(3.0), true);
+    loglik(23) += dnorm(inf2_srv1, Type(10.0),Type(3.0), true);
+    loglik(23) += dnorm(log_slp1_srv2, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(log_slp2_srv2, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(inf1_srv2, Type(0.0),Type(3.0), true);
+    loglik(23) += dnorm(inf2_srv2, Type(10.0),Type(3.0), true);
+    loglik(23) += dnorm(log_slp1_srv3, Type(-1.0),Type(1.5), true);
+    // loglik(23) += dnorm(log_slp2_srv3, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(inf1_srv3, Type(0.0),Type(3.0), true);
+    // loglik(23) += dnorm(inf2_srv3, Type(10.0),Type(3.0), true);
+    loglik(23) += dnorm(log_slp1_srv6, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(log_slp2_srv6, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(inf1_srv6, Type(0.0),Type(3.0), true);
     loglik(23) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
-    objfun = -sum(loglik);
+  objfun = -sum(loglik);
 
   REPORT(objfun);
   REPORT(styr);
@@ -1092,41 +1110,41 @@ Type objective_function<Type>::operator() ()
   REPORT(ages);
   REPORT(years);
   REPORT(loglik);
-  REPORT(recruit); 
+  REPORT(recruit);
   REPORT(Espawnbio);
   REPORT(Etotalbio);
   REPORT(Esumbio);
   REPORT(Espawnbio_2plus);
   REPORT(F);
-  REPORT(Eecocon); 
-  REPORT(initN); 
-  REPORT(cattot);  
-  REPORT(Ecattot);  
-  REPORT(M); 
+  REPORT(Eecocon);
+  REPORT(initN);
+  REPORT(cattot);
+  REPORT(Ecattot);
+  REPORT(M);
   REPORT(N);
-  REPORT(inf2_fsh_mean); 
-  REPORT(slp1_fsh_dev); 
-  REPORT(inf1_fsh_dev); 
-  REPORT(slp2_fsh_dev); 
-  REPORT(inf2_fsh_dev); 
-  REPORT(slp1_fsh); 
-  REPORT(inf1_fsh); 
-  REPORT(slp2_fsh); 
-  REPORT(inf2_fsh); 
+  REPORT(inf2_fsh_mean);
+  REPORT(slp1_fsh_dev);
+  REPORT(inf1_fsh_dev);
+  REPORT(slp2_fsh_dev);
+  REPORT(inf2_fsh_dev);
+  REPORT(slp1_fsh);
+  REPORT(inf1_fsh);
+  REPORT(slp2_fsh);
+  REPORT(inf2_fsh);
   REPORT(slctfsh);
   REPORT(llcatp);
   REPORT(catp);
   REPORT(Ecatp);
   REPORT(res_fish);
-  REPORT(pearson_fish); 
-  REPORT(multN_fsh);  
-  REPORT(effN_fsh);   
+  REPORT(pearson_fish);
+  REPORT(multN_fsh);
+  REPORT(effN_fsh);
   REPORT(lllenp);
   REPORT(lenp);
   REPORT(Elenp);
   REPORT(q1);
   REPORT(log_slp2_srv1);
-  REPORT(inf2_srv1); 
+  REPORT(inf2_srv1);
   REPORT(slctsrv1);
   REPORT(Eindxsurv1);
   REPORT(RMSE_srv1);
@@ -1134,9 +1152,9 @@ Type objective_function<Type>::operator() ()
   REPORT(srvp1);
   REPORT(Esrvp1);
   REPORT(res_srv1);
-  REPORT(pearson_srv1); 
-  REPORT(multN_srv1);  
-  REPORT(effN_srv1);   
+  REPORT(pearson_srv1);
+  REPORT(multN_srv1);
+  REPORT(effN_srv1);
   REPORT(llsrvlenp1);
   REPORT(srvlenp1);
   REPORT(Esrvlenp1);
@@ -1144,7 +1162,7 @@ Type objective_function<Type>::operator() ()
   REPORT(log_slp1_srv2);
   REPORT(inf1_srv2);
   REPORT(log_slp2_srv2);
-  REPORT(inf2_srv2); 
+  REPORT(inf2_srv2);
   REPORT(slctsrv2);
   REPORT(Eindxsurv2);
   REPORT(RMSE_srv2);
@@ -1152,15 +1170,15 @@ Type objective_function<Type>::operator() ()
   REPORT(srvp2);
   REPORT(Esrvp2);
   REPORT(res_srv2);
-  REPORT(pearson_srv2);  
-  REPORT(multN_srv2);  
-  REPORT(effN_srv2);   
+  REPORT(pearson_srv2);
+  REPORT(multN_srv2);
+  REPORT(effN_srv2);
   REPORT(llsrvlenp2);
   REPORT(srvlenp2);
   REPORT(Esrvlenp2);
   REPORT(q3);
   REPORT(log_slp1_srv3);
-  REPORT(inf1_srv3); 
+  REPORT(inf1_srv3);
   REPORT(slctsrv3);
   REPORT(Eindxsurv3);
   REPORT(RMSE_srv3);
@@ -1168,20 +1186,20 @@ Type objective_function<Type>::operator() ()
   REPORT(srvp3);
   REPORT(Esrvp3);
   REPORT(res_srv3);
-  REPORT(pearson_srv3); 
+  REPORT(pearson_srv3);
   REPORT(multN_srv3);
-  REPORT(effN_srv3);   
+  REPORT(effN_srv3);
   REPORT(llsrvlenp3);
   REPORT(srvlenp3);
   REPORT(Esrvlenp3);
   REPORT(res_srv3len);
   REPORT(pearson_srv3len);
   REPORT(q4);
-  REPORT(q4_pow); 
+  REPORT(q4_pow);
   REPORT(Eindxsurv4);
   REPORT(RMSE_srv4);
   REPORT(q5);
-  REPORT(q5_pow); 
+  REPORT(q5_pow);
   REPORT(Eindxsurv5);
   REPORT(RMSE_srv5);
   REPORT(q6);
@@ -1196,9 +1214,9 @@ Type objective_function<Type>::operator() ()
   REPORT(srvp6);
   REPORT(Esrvp6);
   REPORT(res_srv6);
-  REPORT(pearson_srv6);  
-  REPORT(multN_srv6);  
-  REPORT(effN_srv6);   
+  REPORT(pearson_srv6);
+  REPORT(multN_srv6);
+  REPORT(effN_srv6);
   REPORT(llsrvlenp6);
   REPORT(srvlenp6);
   REPORT(Esrvlenp6);
@@ -1207,26 +1225,26 @@ Type objective_function<Type>::operator() ()
   REPORT(log_recr_proj);
   REPORT(sigmasq_recr);
   REPORT(N_proj);
-  REPORT(C_proj); 
+  REPORT(C_proj);
   REPORT(Nsrv_proj);
-  REPORT(wt_pop_proj);  
-  REPORT(wt_spawn_proj);  
-  REPORT(wt_fsh_proj); 
-  REPORT(slctfsh_proj); 
-  REPORT(Ecattot_proj);  
-  REPORT(Esumbio_proj);  
-  REPORT(Espawnbio_proj);  
-  REPORT(Esrv_proj);  
+  REPORT(wt_pop_proj);
+  REPORT(wt_spawn_proj);
+  REPORT(wt_fsh_proj);
+  REPORT(slctfsh_proj);
+  REPORT(Ecattot_proj);
+  REPORT(Esumbio_proj);
+  REPORT(Espawnbio_proj);
+  REPORT(Esrv_proj);
   REPORT(Ftarget);
-  REPORT(B40);  
-  REPORT(F_proj);  
+  REPORT(B40);
+  REPORT(F_proj);
   REPORT(Z_proj);
   ADREPORT(recruit);
   ADREPORT(log_recruit);
-  ADREPORT(recruit_proj);  
-  ADREPORT(Esumbio_proj);  
-  ADREPORT(Espawnbio_proj); 
-  ADREPORT(Esrv_proj); 
+  ADREPORT(recruit_proj);
+  ADREPORT(Esumbio_proj);
+  ADREPORT(Espawnbio_proj);
+  ADREPORT(Esrv_proj);
   ADREPORT(Exrate_proj);
   ADREPORT(log_q1);
   ADREPORT(log_q2);
@@ -1234,7 +1252,7 @@ Type objective_function<Type>::operator() ()
   ADREPORT(log_q4);
   ADREPORT(log_q5);
   ADREPORT(log_q6);
-  ADREPORT(endN);  
+  ADREPORT(endN);
   ADREPORT(slctsrv1);
   ADREPORT(slctsrv2);
   ADREPORT(slctsrv3);
