@@ -5,8 +5,8 @@
 #' @return Vector of named surveys
 #' @export
 surveyf <- function(x){
-  factor(x, levels=1:6,
-         labels=c('Shelikof', 'NMFS BT',
+  factor(x, levels=0:6,
+         labels=c('Fishery', 'Shelikof', 'NMFS BT',
                   'ADF&G BT',
                   'Shelikof age 1',
                   'Shelikof age 2',
