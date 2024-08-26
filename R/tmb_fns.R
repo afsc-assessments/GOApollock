@@ -31,8 +31,10 @@ read_dat <- function(filename, path=NULL, writedat=FALSE){
     return(matrix(s, nrow=nrow, ncol=ncol, byrow=TRUE))
   }
   sn <- function(ind, n, nrow=NULL, ncol=NULL){
-    s <- scan(filename, quiet = T, what = numeric(), comment.char="#",
-              skip=dat.start[ind <<- ind+1], n=n)
+    s <- tryCatch(scan(filename, quiet = T, what = numeric(), comment.char="#",
+              skip=dat.start[ind <<- ind+1], n=n),
+     error=function(e) 'error')
+    if(is.character(s)) stop("Error reading in line", ind, "of length", n, ". List=", d)
     if(is.null(nrow)) return(s)
     return(matrix(s, nrow=nrow, ncol=ncol, byrow=TRUE))
   }
