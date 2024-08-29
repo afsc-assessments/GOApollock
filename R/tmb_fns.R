@@ -26,7 +26,7 @@ read_dat <- function(filename, path=NULL, writedat=FALSE){
     s <- tryCatch(scan(filename, quiet = T, what = integer(), comment.char="#",
                        skip=dat.start[ind <<- ind+1], n=n),
                   error=function(e) 'error')
-    if(is.character(s)) {print(d); stop("failed to read integer")}
+    if(is.character(s)) stop("Error reading integer on line ", ind, " of length ", n, ".\nList=", d)
     if(is.null(nrow)) return(s)
     return(matrix(s, nrow=nrow, ncol=ncol, byrow=TRUE))
   }
@@ -34,7 +34,7 @@ read_dat <- function(filename, path=NULL, writedat=FALSE){
     s <- tryCatch(scan(filename, quiet = T, what = numeric(), comment.char="#",
               skip=dat.start[ind <<- ind+1], n=n),
      error=function(e) 'error')
-    if(is.character(s)) stop("Error reading in line", ind, "of length", n, ". List=", d)
+    if(is.character(s)) stop("Error reading numeric on line ", ind, " of length ", n, ".\nList=", d)
     if(is.null(nrow)) return(s)
     return(matrix(s, nrow=nrow, ncol=ncol, byrow=TRUE))
   }
@@ -556,7 +556,7 @@ run_jitter <- function(fit, njitter=20, scalar=.1, parallel=TRUE, type='par'){
 fit_self_test <- function(fit, reps, parallel=TRUE){
   fit_test <- function(fit, rep){
     set.seed(rep)
-    siminput <- fit$input
+    input <- siminput <- fit$input
     dyn.load(dynlib(file.path(input$path, input$modfile))  )
     obj <- MakeADFun(data=input$dat, parameters=fit$parList,
                      map=input$map, random=input$random,
@@ -565,7 +565,7 @@ fit_self_test <- function(fit, reps, parallel=TRUE){
     attributes(siminput$dat)$check.passed <- NULL
     siminput$dat$catp[1,] <- 0
     tmp <- fit_pk(siminput, newtonsteps = 0, getsd=FALSE, do.fit = TRUE, verbose=FALSE)
-    data.frame(rep=rep, true=tmb$opt$par, est=tmp$opt$par, par=tmp$parnames, max_gradient=tmp$opt$max_gradient)
+    data.frame(rep=rep, true=fit$opt$par, est=tmp$opt$par, par=tmp$parnames, max_gradient=tmp$opt$max_gradient)
   }
   if(parallel){
     message("Preparing parallel session..")

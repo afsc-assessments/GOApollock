@@ -197,7 +197,7 @@ plot_ssb <- function(fits, add_uncertainty=TRUE, plotlog=FALSE,
   }
   g <- ggplot(ssb, aes(year, est, ymin=lwr, ymax=upr, color=version, fill=version)) +
     geom_line(alpha=alpha2, lwd=1) +
-    theme_bw()+ labs(x=NULL,y='Spawning biomass (M mt)')
+    theme_bw()+ labs(x=NULL,y='Spawning biomass (Mt)')
   if(plotlog) g <- g+ scale_y_log10()
   if(!plotlog) g <- g+ylim(0,NA)
   if(addproj) g <-  g+geom_vline(xintercept=maxyear)
