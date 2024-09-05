@@ -9,7 +9,8 @@ prepare_pk_input(
   datfile,
   version = "none",
   random = NULL,
-  modfile = "goa_pk"
+  modfile = "goa_pk",
+  maxage = NULL
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ ML)}
 
 \item{modfile}{Model name assumed to be 'goa_pk' unless
 specified}
+
+\item{maxage}{Specify a lower maximum age than in the input dat file if desired.}
 }
 \value{
 A list with the version, dat, pars, map and random
