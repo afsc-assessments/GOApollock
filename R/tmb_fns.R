@@ -288,7 +288,7 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
     lwr <- -Inf; upr <- Inf
   }
   if(is.null(control))
-    control <- list(eval.max=10000, iter.max=10000, trace=100)
+    control <- list(eval.max=10000, iter.max=10000, trace=0)
   if(!verbose) control$trace <- 0
   ## optimize and compare
   if(!require(TMBhelper)){
@@ -616,9 +616,15 @@ fit_self_test <- function(fit, reps, parallel=TRUE){
     siminput$dat <- obj$simulate(complete = TRUE)
     attributes(siminput$dat)$check.passed <- NULL
     siminput$dat$catp[1,] <- 0
-    tmp <- fit_pk(siminput, newtonsteps = 0, getsd=FALSE, do.fit = TRUE, verbose=FALSE)
-    data.frame(rep=rep, true=fit$opt$par, est=tmp$opt$par, par=tmp$parnames, max_gradient=tmp$opt$max_gradient)
-  }
+    tmp <- fit_pk(siminput, newtonsteps = 0, getsd=FALSE, do.fit = TRUE, verbose=FALSE, filename=FALSE)
+    pars <- data.frame(rep=rep, year=NA, true=fit$opt$par, est=tmp$opt$par,
+                       par=tmp$parnames, max_gradient=tmp$opt$max_gradient)
+    ssb <- data.frame(rep=rep, year=fit$rep$years, true=fit$rep$Espawnbio, est=tmp$rep$Espawnbio,
+                       par='ssb', max_gradient=tmp$opt$max_gradient)
+    rec <- data.frame(rep=rep, year=fit$rep$years, true=fit$rep$recruit, est=tmp$rep$recruit,
+                      par='recruit', max_gradient=tmp$opt$max_gradient)
+    return(bind_rows(pars,ssb,rec))
+      }
   if(parallel){
     message("Preparing parallel session..")
     if(!require(snowfall))
@@ -634,8 +640,8 @@ fit_self_test <- function(fit, reps, parallel=TRUE){
   } else {
     out <- lapply(reps, function(i) fit_test(fit, i))
   }
-  out <- do.call(rbind, out)
-  out <- with(out, cbind(out, relerror=(est-true)/true, abserror=est-true))
+  out <- do.call(rbind, out) %>%
+    mutate(version=fit$version, relerror=(est-true)/true, abserror=est-true)
 }
 
 
@@ -664,7 +670,7 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
   par <- match.arg(par)
   isM <- isq2 <- FALSE
   if(par=='M'){
-    xlab <- 'M at age 4'
+    xlab <- 'M at age 6'
     isM <- TRUE
   } else if(par=='q2') {
     xlab <- 'Catchability (q) for NMFS BT'
@@ -679,7 +685,7 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
           "Recruit Penalties", "TV Selex Penalties", "Proj Recruits",
           "TV Q penalties", "Unused", "Priors",
           "Unused", 'Ecov_exp', 'Ecov_obs')
-  components <- data.frame(component=1:26, name=xx, ctype=ctype, csurv=csurv, name2=paste(csurv, ctype))
+  components <- data.frame(component=1:26, name=xx)#, ctype=ctype, csurv=csurv, name2=paste(csurv, ctype))
 
   tmp <- list()
   for(jj in 1:nmods){
