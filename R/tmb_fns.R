@@ -671,6 +671,15 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
     xseq <- log(xseq)
     isq2 <- TRUE
   }
+  xx <- c("Total Catch", "Fishery Ages", "Fishery Lengths", "Shelikof 3+ Index",
+          "Shelikof 3+ Ages", "Shelikof Lengths", "NMFS BT Index",
+          "NMFS BT Ages", "NMFS BT Lengths", "Unused", "ADF&G Index",
+          "ADF&G Ages", "ADF&G Lengths", "Shelikof Age 1",
+          "Shelikof Age 2", "Summer AT Index", "Summer AT Ages",
+          "Recruit Penalties", "TV Selex Penalties", "Proj Recruits",
+          "TV Q penalties", "Unused", "Priors",
+          "Unused", 'Ecov_exp', 'Ecov_obs')
+  components <- data.frame(component=1:26, name=xx, ctype=ctype, csurv=csurv, name2=paste(csurv, ctype))
 
   tmp <- list()
   for(jj in 1:nmods){
@@ -722,3 +731,83 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
   if(return.fits) return(tmpfit)
 }
 
+#' Turn off data components one at a time to see the effect
+#' @param fits A fitted object. Currently does not support a list of fits.
+#' @param plot Whether to plot it
+#' @param Nmult How much to multiply the ISS by (<1 to downweight it)
+#' @param CVmult How much to multiple the index CVs by (>1 to downweight it)
+#' @param return.fits Whether to return the fits, if FALSE it returns the ggplot
+#' @param ... Further arguments passed to \code{plot_ssb}.
+#' @return Either a ggplot object of a list of fits.
+#' @details Needs to be updated when the model accepts CVs and multN of zero for all surveys.
+#' @export
+fit_drop_surveys <- function(fits, plot=TRUE, Nmult=0, CVmult=10, return.fits=FALSE, ...){
+
+  if(is.pkfits(fits)){
+    stop("this actually doesn't make sense since version is overwritten, do them individually")
+    fitsout <- sapply(fits, function(fit)
+      run_drop_surveys(fit, plot=FALSE, return.fits=TRUE, Nmult=Nmult, CVmult=CVmult ))
+  } else {
+    stopifnot(is.pkfit(fits))
+    fit <- fits
+    fit$input$pars <- fit$parList
+    mapoff <- function(x, slots) {
+      for(slot in slots){
+        if(length(x$pars[[slot]])==0){
+          warning("slot ", slot, " not found in pars")
+        } else {
+          x$map[[slot]] <- factor(x$pars[[slot]]*NA)
+        }
+      }
+      return(x)
+    }
+
+    x <- fit$input
+    isDM <- length(x$pars$log_DM_pars)>0
+    x$version <- 'Drop Shelikof'
+    x$dat$multN_srv1 <- x$dat$multN_srv1*Nmult
+    x$dat$multNlen_srv1 <- x$dat$multNlen_srv1*0
+    x$dat$indxsurv_log_sd1 <- x$dat$indxsurv_log_sd1*CVmult
+    x$dat$indxsurv_log_sd4 <- x$dat$indxsurv_log_sd4*CVmult
+    x$dat$indxsurv_log_sd5 <- x$dat$indxsurv_log_sd5*CVmult
+    x <- mapoff(x, c('log_q1_dev', 'log_q4', 'log_q5', 'log_q1_mean'))
+    x <- mapoff(x, c('Ecov_beta'))
+    y <- 1:5; y[2] <- NA
+    if(isDM) x$map$log_DM_pars <- factor(y)
+    drop1 <- fit_pk(x, filename=NULL, verbose=FALSE)
+
+    x <- fit$input
+    x$version <- 'Drop NMFS BT'
+    x$dat$multN_srv2 <- x$dat$multN_srv2*Nmult
+    x$dat$multNlen_srv2 <- x$dat$multNlen_srv2*0
+    x$dat$indxsurv_log_sd2 <- x$dat$indxsurv_log_sd2*CVmult
+    x <- mapoff(x, 'log_q2_mean')
+    y <- 1:5; y[3] <- NA
+    if(isDM) x$map$log_DM_pars <- factor(y)
+    drop2 <- fit_pk(x, filename=NULL, verbose=FALSE)
+
+    x <- fit$input
+    x$version <- 'Drop ADF&G'
+    x$dat$multN_srv3 <- x$dat$multN_srv3*Nmult
+    x$dat$multNlen_srv3 <- x$dat$multNlen_srv3*0
+    x$dat$indxsurv_log_sd3 <- x$dat$indxsurv_log_sd3*CVmult
+    x <- mapoff(x, c('log_q3_mean', 'log_q3_dev'))
+    y <- 1:5; y[4] <- NA
+    if(isDM) x$map$log_DM_pars <- factor(y)
+    drop3 <- fit_pk(x, filename=NULL, verbose=FALSE)
+
+    x <- fit$input
+    x$version <- 'Drop Summer AT'
+    x$dat$multN_srv6 <- x$dat$multN_srv6*Nmult
+    x$dat$multNlen_srv6 <- x$dat$multNlen_srv6*0
+    x$dat$indxsurv_log_sd6 <- x$dat$indxsurv_log_sd6*CVmult
+    x <- mapoff(x, 'log_q6')
+    y <- 1:5; y[5] <- NA
+    if(isDM) x$map$log_DM_pars <- factor(y)
+    drop6 <- fit_pk(x, filename=NULL, verbose=FALSE)
+
+    fitsout <- list(fit, drop1, drop2, drop3, drop6)
+  }
+  if(return.fits) return(fitsout)
+  if(plot) plot_ssb(fitsout, ...)
+}
