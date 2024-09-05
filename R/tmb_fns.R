@@ -638,3 +638,87 @@ fit_self_test <- function(fit, reps, parallel=TRUE){
   out <- with(out, cbind(out, relerror=(est-true)/true, abserror=est-true))
 }
 
+
+
+#' Run and plot likelihood profiles
+#'
+#' @param fits A list of fits
+#' @param xseq The vector over which to run the profile
+#' @param par Which parameter, currently supports "M" and "q2".
+#' @param plot Whether to plot it
+#' @param maxNLL The maximum NLL below which to filter out individual components, for decluttering the plots.
+#' @param ylim Y limit for plots
+#' @param estSigR Whether to estimate sigmaR
+#' @param return.fits Whether to return the fits (not implemented yet)
+#' @return A ggplot object of the profiles
+#' @export
+fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
+                        ylim=c(0,10),
+                        estSigR=FALSE, return.fits=FALSE){
+  stopifnot(!return.fits)
+  if(is.pkfits(fits)){
+    nmods <- length(fits)
+  } else if(is.pkfit(fits)){
+    nmods <- 1
+  } else { stop("invalid fit object")}
+  par <- match.arg(par)
+  isM <- isq2 <- FALSE
+  if(par=='M'){
+    xlab <- 'M at age 4'
+    isM <- TRUE
+  } else if(par=='q2') {
+    xlab <- 'Catchability (q) for NMFS BT'
+    xseq <- log(xseq)
+    isq2 <- TRUE
+  }
+
+  tmp <- list()
+  for(jj in 1:nmods){
+    if(nmods==1) fit <- fits else fit <- fits[[jj]]
+    k <- 1
+    tmpfits <- list()
+    message("Starting fit ", fit$version)
+    for(ii in 1:length(xseq)){
+      inputtmp <- fit$input; inputtmp$pars <- fit$parList
+      inputtmp$version <- xseq[ii]
+      if(isM){
+        inputtmp$pars$natMscalar <- xseq[ii]
+        inputtmp$map$natMscalar <- factor(NA)
+      }
+      if(isq2){
+        inputtmp$pars$log_q2_mean <- xseq[ii]
+        inputtmp$map$log_q2_mean <- factor(NA)
+      }
+      if(estSigR) inputtmp$map$sigmaR <- factor(1)
+      if(estSigR) inputtmp$random <- 'dev_log_recruit'
+      tmpfits[[k]] <- fit_pk(inputtmp, newtonsteps=0, getsd=FALSE, control=list(trace=0), verbose = FALSE)
+      k <- k+1
+    }
+    tmp[[jj]] <-
+      get_rep(tmpfits, 'loglik')    %>% select(-name)  %>%
+      group_by(version) %>%
+      mutate(component=1:26, par=version, nll=-value) %>%
+      mutate(version=fit$version) %>% select(-value)
+  }
+  out <- bind_rows(tmp) %>% merge(components, by='component')
+  if(isM) out$par <- out$par*.3
+  if(isq2) out$par <- exp(out$par)
+  nlls <- group_by(out, version, component) %>%
+    mutate(deltaNLL=nll-min(nll)) %>%
+    filter(max(deltaNLL)>maxNLL) %>% ungroup
+  totals <- nlls %>% group_by(par,version) %>%
+    summarize(nll=sum(nll), .groups='drop') %>%
+    group_by(version) %>% mutate(name='total', deltaNLL=nll-min(nll))
+  mins <- group_by(nlls, name, version) %>% filter(deltaNLL==min(deltaNLL))
+  g <- ggplot(nlls, aes(par, deltaNLL, color=name)) +
+    geom_line()+facet_wrap('version') +
+    geom_line(data=totals, mapping=aes(color=NULL), lwd=1) +
+    geom_point(data=mins, size=2) +
+    geom_point(data=filter(totals, deltaNLL==min(deltaNLL)), pch=16, size=2, col=1)+
+    theme(legend.position='top') + labs(color=NULL, x=xlab, y='Change in NLL') +
+    coord_cartesian(ylim=ylim)
+  if(plot) print(g)
+  return(g)
+  if(return.fits) return(tmpfit)
+}
+
