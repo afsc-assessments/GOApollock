@@ -347,7 +347,7 @@ plot_cohort_biomass <- function(fit, type=c('ssb', 'total', 'summary'),
 #' Plot retrospective peels against the base model with CI
 #' @param retros A list of pkfits
 #' @param type The metric to use: 'ssb', 'F', 'recruit'
-#'
+#' @export
 plot_retros <- function(retros, type=c('ssb', 'F', 'recruit'), title=NULL){
   type <- match.arg(type)
   version <- retros[[1]]$version

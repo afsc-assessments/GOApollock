@@ -265,3 +265,26 @@ fit_peel <- function(fit, peel, getsd=TRUE, ...){
   return(fit)
 }
 
+
+#' Plot estimates of recruits from retro lists
+#' @param fits List of retro fits including peel=0
+#' @param thisyear The current year
+#' @param plot Whether to plot or return
+#' @export
+plot_retro_recruits <- function(fits, thisyear, plot=TRUE){
+  stopifnot(is.pkfits(fits))
+  stds <- get_std(fits)
+  g <- stds %>% filter(name=='log_recruit' & year <= thisyear) %>%
+    mutate(peel=as.numeric(gsub('peel','',version)),
+           ayear=thisyear-peel, cohort=year-1,
+           cohortf=paste(cohort,'cohort'),
+           years_data=ayear-cohort,
+           est=exp(est), lwr=exp(lwr), upr=exp(upr)) %>%
+    filter(cohort>=thisyear-11)
+  if(!plot) return(g)
+  g <- g %>% # only makes sense so far back
+    ggplot(aes(years_data, est, ymin=lwr, ymax=upr))+
+    geom_pointrange(fatten=2) + facet_wrap('cohortf', scales='free_y')+
+    scale_x_continuous(breaks=0:10)+
+    labs(x='Years of data', y='Recruits (billions)')
+}

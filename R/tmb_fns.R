@@ -336,6 +336,52 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
   return(invisible(fit))
 }
 
+#' Update a data list with a new maximum age, summing age compositions, but truncating WAA, ageing error, length transition matrices, and maturity.
+#'
+#' @param dat A data list as returned by \code{read_dat}
+#' @param maxage A new maximum age that is less than the one in the dat file.
+#' @return An updated data input list that is reformatted to the new maximum age.
+update_dat_maxage <- function(dat, maxage){
+  message("Reducing maxage age from ", dat$trmage, " to ", maxage)
+  i0 <- maxage:dat$trmage
+  i1 <- 1:maxage
+  d0 <- d <- dat
+  d$trmage <- maxage
+  ## sum across dropped columns
+  d$catp[,maxage] <-rowSums(d$catp[,i0])
+  d$catp <- d$catp[,i1]
+#  stopifnot(0==sum(rowSums(d0$catp) - rowSums(d$catp)))
+  d$wt_fsh <- d$wt_fsh[,i1]
+  d$ac_old_fsh <- d$ac_old_fsh*0 + maxage
+  d$srvp1[,maxage] <-rowSums(d$srvp1[,i0])
+  d$srvp1 <- d$srvp1[,i1]
+ # stopifnot(0==sum(rowSums(d0$srvp1) - rowSums(d$srvp1)))
+  d$wt_srv1 <- d$wt_srv1[,i1]
+  d$ac_old_srv1 <- d$ac_old_srv1*0 + maxage
+  d$srvp2[,maxage] <-rowSums(d$srvp2[,i0])
+  d$srvp2 <- d$srvp2[,i1]
+#  stopifnot(0==sum(rowSums(d0$srvp2) - rowSums(d$srvp2)))
+  d$wt_srv2 <- d$wt_srv2[,i1]
+  d$ac_old_srv2 <- d$ac_old_srv2*0 + maxage
+  d$srvp3[,maxage] <-rowSums(d$srvp3[,i0])
+  d$srvp3 <- d$srvp3[,i1]
+ # stopifnot(0==sum(rowSums(d0$srvp3) - rowSums(d$srvp3)))
+  d$wt_srv3 <- d$wt_srv3[,i1]
+  d$ac_old_srv3 <- d$ac_old_srv3*0 + maxage
+  d$srvp6[,maxage] <-rowSums(d$srvp6[,i0])
+  d$srvp6 <- d$srvp6[,i1]
+ # stopifnot(0==sum(rowSums(d0$srvp6) - rowSums(d$srvp6)))
+  d$wt_srv6 <- d$wt_srv6[,i1]
+  d$ac_old_srv6 <- d$ac_old_srv6*0 + maxage
+
+  d$age_trans <- d$age_trans[i1,i1]
+  d$len_trans1 <- d$len_trans1[i1,]
+  d$len_trans2 <- d$len_trans2[i1,]
+  d$len_trans3 <- d$len_trans3[i1,]
+  d$mat <- d$mat[i1]
+  return(d)
+}
+
 #' Prepare inputs for the TMB GOA pollock model.
 #' @param path Directory containing the model and dat
 #'   files. Passed to \code{fit_pk}.
@@ -347,13 +393,19 @@ fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
 #'   ML)
 #' @param modfile Model name assumed to be 'goa_pk' unless
 #'   specified
+#' @param maxage Specify a lower maximum age than in the input dat file if desired.
 #' @return A list with the version, dat, pars, map and random
 #'   which are used to build a TMB 'obj' in \code{\link{fit_pk}}.
 #' @export
 prepare_pk_input <- function(path, datfile, version='none',
-                             random=NULL, modfile='goa_pk'){
+                             random=NULL, modfile='goa_pk',
+                             maxage=NULL){
   if(!dir.exists(path)) stop("directory does not exist: ",path)
   dat <- read_dat(filename=datfile, path=path)
+  if(!is.null(maxage) && maxage<dat$trmage){
+    dat <- update_dat_maxage(dat,maxage)
+  }
+
   ## Prepare the parameter list based on the data
   pars <- prepare_par(dat)
   map <- prepare_map(pars)
@@ -530,8 +582,8 @@ run_jitter <- function(fit, njitter=20, scalar=.1, parallel=TRUE, type='par'){
   pars <- lapply(jitterfits, function(x)
     data.frame(jitter=x$jitter, nll=as.numeric(x$objective),
                log_maxgrad=log10(x$max_gradient), ssb=x$ssb,
-               init=x$init,
-               parnum=1:length(par0), parname=paste0(1:length(par0),"_",names(x$par)), value=x$par)) %>%
+               init=x$init, version=fit$version,
+               parnum=1:length(par0), parname=fit$parnames, value=x$par)) %>%
     bind_rows %>% as_tibble
   pars
   if(sum(pars$jitter==0 & pars$parnum==1)==1){
@@ -585,3 +637,4 @@ fit_self_test <- function(fit, reps, parallel=TRUE){
   out <- do.call(rbind, out)
   out <- with(out, cbind(out, relerror=(est-true)/true, abserror=est-true))
 }
+

@@ -22,7 +22,7 @@
 #' @return A ggplot object if plot is TRUE or the melted data if
 #'   FALSE
 #' @export
-plot_osa_comps <- function(res, years, Neff, ind=1, survey,
+plot_osa_comps <- function(res, years, Neff, ind=10, survey,
                            drop=NULL, plot=TRUE, minyear=NULL,
                            model=c('multinomial','Dirichlet-multinomial'),
                            theta){
@@ -31,7 +31,7 @@ plot_osa_comps <- function(res, years, Neff, ind=1, survey,
   exp <- res[,11:20]
   index <- 1:10
   if(!is.null(minyear)){
-    indminyear <- which(years==minyear-1)
+    indminyear <- which(years==minyear)-1
     obs <- obs[-(1:indminyear),]
     exp <- exp[-(1:indminyear),]
     years <- years[-(1:indminyear)]
