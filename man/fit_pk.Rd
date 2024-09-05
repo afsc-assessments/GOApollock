@@ -12,7 +12,7 @@ fit_pk(
   do.fit = TRUE,
   use_bounds = FALSE,
   save.sdrep = FALSE,
-  filename = "fit.RDS",
+  filename = NULL,
   verbose = TRUE
 )
 }
@@ -34,10 +34,9 @@ which is called internally.}
 fitted model. This is rarely used and large so turned off by
 default. When returned it is named \code{sdrep}.}
 
-\item{filename}{Character string giving a file name to save
-the fitted object as an RDS object. Defaults to 'fit.RDS',
-and a value of NULL indicates not to save it. If specified,
-it must end in .RDS. The file is written to folder given by
+\item{filename}{Character string giving a file name to save the fitted object
+as an RDS object. Defaults to NULL which indicates not to save it. If
+specified, it must end in .RDS. The file is written to folder given by
 \code{input$path}.}
 
 \item{verbose}{Whether to print output (default) or suppress

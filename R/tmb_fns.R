@@ -253,10 +253,9 @@ get_rep <- function(fits, slot=NULL) {
 #' @param save.sdrep Whether to return the sdreport object in the
 #'   fitted model. This is rarely used and large so turned off by
 #'   default. When returned it is named `sdrep`.
-#' @param filename Character string giving a file name to save
-#'   the fitted object as an RDS object. Defaults to 'fit.RDS',
-#'   and a value of NULL indicates not to save it. If specified,
-#'   it must end in .RDS. The file is written to folder given by
+#' @param filename Character string giving a file name to save the fitted object
+#'   as an RDS object. Defaults to NULL which indicates not to save it. If
+#'   specified, it must end in .RDS. The file is written to folder given by
 #'   \code{input$path}.
 #' @param verbose Whether to print output (default) or suppress
 #'   as much as possible.
@@ -271,7 +270,7 @@ get_rep <- function(fits, slot=NULL) {
 fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                    control=NULL, do.fit=TRUE,
                    use_bounds=FALSE, save.sdrep=FALSE,
-                   filename='fit.RDS', verbose=TRUE){
+                   filename=NULL, verbose=TRUE){
   cpp <- paste0(file.path(input$path, input$modfile),'.cpp')
   if(!file.exists(cpp)) stop("file does not exist: ", cpp)
   tryCatch(dyn.unload(dynlib(file.path(input$path, input$modfile))), error=function(e) 'error')
