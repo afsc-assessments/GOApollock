@@ -1053,7 +1053,10 @@ Type objective_function<Type>::operator() ()
     // determined using prior pushforward checks. Any log_slp >10
     // or < .01 is too flat to be differentiated with data so
     // used as thresholds here.
-
+    loglik(23) += dnorm(log_slp1_fsh_mean, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(log_slp2_fsh_mean, Type(-1.0),Type(1.5), true);
+    loglik(23) += dnorm(inf1_fsh_mean, Type(0.0),Type(3.0), true);
+    loglik(23) += dnorm(inf2_fsh_mean, Type(10.0),Type(3.0), true);
     // loglik(23) += dnorm(log_slp1_srv1, Type(-1.0),Type(1.5), true);
     loglik(23) += dnorm(log_slp2_srv1, Type(-1.0),Type(1.5), true);
     // loglik(23) += dnorm(inf1_srv1, Type(0.0),Type(3.0), true);
