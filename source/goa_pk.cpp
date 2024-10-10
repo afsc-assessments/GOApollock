@@ -401,7 +401,7 @@ Type objective_function<Type>::operator() ()
   vector<Type> Espawnbio_2plus(nyrs);
   vector<Type> Etotalbio(nyrs);
   // log likelihood containers
-  vector<Type> loglik(24);
+  vector<Type> loglik(23);
   vector<Type> llcatp(nyrs_fsh);
   vector<Type> lllenp(nyrslen_fsh);
   vector<Type> llsrvp1(nyrsac_srv1);
@@ -823,6 +823,7 @@ Type objective_function<Type>::operator() ()
     loglik(1) = llcatp.sum();
     // //Length compositions no longer implemented
     lllenp.setZero();
+    loglik(2) =0; // unused for now, placeholder for fishery length comps
 
     // Survey 1 likelihoods
     // Total biomass
@@ -860,11 +861,11 @@ Type objective_function<Type>::operator() ()
     REPORT(srvp1);
     REPORT(indxsurv1);
     loglik(4)=llsrvp1.sum();
+    loglik(5)=0; // unused for now, placeholder for survey 1 length comps
 
     // Survey 2 likelihoods
     // Total biomass
     RMSE_srv2=0;
-    loglik(6)=0;
     for(i=0; i<nyrs_srv2;i++){
       // Add bias correction on
       Type Eindxsurv2_tmp=log(Eindxsurv2(isrvyrs2(i)));
@@ -882,8 +883,7 @@ Type objective_function<Type>::operator() ()
         // Not sure why I have to do this in two steps.
         vector<Type> otmp=srvp2.row(i);
         vector<Type> etmp=Esrvp2.row(isrv_acyrs2(i));
-        otmp+=o; otmp*=multN_srv2(i);
-        etmp+=o;
+        otmp+=o; otmp*=multN_srv2(i); etmp+=o;
         llsrvp2(i) = dmultinom(otmp, etmp, true);
         SIMULATE {
           otmp=rmultinom(multN_srv2(i), etmp);
@@ -915,7 +915,6 @@ Type objective_function<Type>::operator() ()
     REPORT(srvlenp2);
     loglik(8)=llsrvlenp2.sum();
 
-
     // Survey 3 likelihoods
     // Total biomass
     RMSE_srv3=0;
@@ -924,7 +923,7 @@ Type objective_function<Type>::operator() ()
       Type Eindxsurv3_tmp=log(Eindxsurv3(isrvyrs3(i)));
       Eindxsurv3_tmp -= square(indxsurv_log_sd3(i))/2.;
       if(indxsurv_log_sd3(i)>0){
-        loglik(10)+= dnorm(log(indxsurv3(i)), Eindxsurv3_tmp, indxsurv_log_sd3(i), true);
+        loglik(9)+= dnorm(log(indxsurv3(i)), Eindxsurv3_tmp, indxsurv_log_sd3(i), true);
         SIMULATE indxsurv3(i)=exp(rnorm(Eindxsurv3_tmp, indxsurv_log_sd3(i)));
       }
     }
@@ -950,7 +949,8 @@ Type objective_function<Type>::operator() ()
       }
     }
     REPORT(srvp3);
-    loglik(11)=llsrvp3.sum();
+    loglik(10)=llsrvp3.sum();
+    loglik(11)=0; // unused for now, placeholder for survey 3 length comps
 
     // Survey 4 and 5 likelihoods
     RMSE_srv5=0;  RMSE_srv4=0;
@@ -961,11 +961,11 @@ Type objective_function<Type>::operator() ()
       Type Eindxsurv5_tmp=log(Eindxsurv5(isrvyrs5(i)));
       Eindxsurv5_tmp -= square(indxsurv_log_sd5(i))/2.;
       if(indxsurv_log_sd4(i)>0) {
-        loglik(13)+= dnorm(log(indxsurv4(i)), Eindxsurv4_tmp, indxsurv_log_sd4(i), true);
+        loglik(12)+= dnorm(log(indxsurv4(i)), Eindxsurv4_tmp, indxsurv_log_sd4(i), true);
         SIMULATE indxsurv4(i)=exp(rnorm(Eindxsurv4_tmp, indxsurv_log_sd4(i)));
       }
       if(indxsurv_log_sd5(i)>0){
-        loglik(14)+= dnorm(log(indxsurv5(i)), Eindxsurv5_tmp, indxsurv_log_sd5(i), true);
+        loglik(13)+= dnorm(log(indxsurv5(i)), Eindxsurv5_tmp, indxsurv_log_sd5(i), true);
         SIMULATE indxsurv4(i)=exp(rnorm(Eindxsurv4_tmp, indxsurv_log_sd4(i)));
       }
     }
@@ -979,7 +979,7 @@ Type objective_function<Type>::operator() ()
       Type Eindxsurv6_tmp=log(Eindxsurv6(isrvyrs6(i)));
       Eindxsurv6_tmp -= square(indxsurv_log_sd6(i))/2.;
       if(indxsurv_log_sd6(i)>0){
-        loglik(15)+= dnorm(log(indxsurv6(i)), Eindxsurv6_tmp, indxsurv_log_sd6(i), true);
+        loglik(14)+= dnorm(log(indxsurv6(i)), Eindxsurv6_tmp, indxsurv_log_sd6(i), true);
         SIMULATE indxsurv6(i)=exp(rnorm(Eindxsurv6_tmp, indxsurv_log_sd6(i)));
       }
     }
@@ -1005,7 +1005,7 @@ Type objective_function<Type>::operator() ()
       }
     }
     REPORT(srvp6);
-    loglik(16)=llsrvp6.sum();
+    loglik(15)=llsrvp6.sum();
     // length comps which are only used in the current year and otherwise have N=0
     llsrvlenp6.setZero();
     for (i=0;i<nyrslen_srv6;i++) {
@@ -1022,9 +1022,7 @@ Type objective_function<Type>::operator() ()
       }
     }
     REPORT(srvlenp6);
-    // need to move this to its own slot
     loglik(16)+=llsrvlenp6.sum();
-
     // End of data likelihoods
     // ------------------------------------------------------------
 
@@ -1034,45 +1032,44 @@ Type objective_function<Type>::operator() ()
 
     // Constraints on recruitment. Assumed sigmaR=1.3 for all devs
     loglik(17) += dnorm(dev_log_recruit, Type(0.0), sigmaR, true).sum();
-
-
+    // random walk penalties
     for(i=y0+1;i<=y1;i++){
       loglik(18) += dnorm(slp1_fsh_dev(i)-slp1_fsh_dev(i-1), Type(0.0), rwlk_sd(i-1), true);
       loglik(18) += dnorm(inf1_fsh_dev(i)-inf1_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true);
       loglik(18) += dnorm(slp2_fsh_dev(i)-slp2_fsh_dev(i-1), Type(0.0), rwlk_sd(i-1), true);
       loglik(18) += dnorm(inf2_fsh_dev(i)-inf2_fsh_dev(i-1), Type(0.0), 4*rwlk_sd(i-1), true);
-      loglik(20) += dnorm(log_q1_dev(i)-log_q1_dev(i-1), Type(0.0), q1_rwlk_sd(i-1), true);
-      loglik(20) += dnorm(log_q2_dev(i)-log_q2_dev(i-1), Type(0.0), q2_rwlk_sd(i-1), true);
-      loglik(20) += dnorm(log_q3_dev(i)-log_q3_dev(i-1), Type(0.0), q3_rwlk_sd(i-1), true);
+      loglik(19) += dnorm(log_q1_dev(i)-log_q1_dev(i-1), Type(0.0), q1_rwlk_sd(i-1), true);
+      loglik(19) += dnorm(log_q2_dev(i)-log_q2_dev(i-1), Type(0.0), q2_rwlk_sd(i-1), true);
+      loglik(19) += dnorm(log_q3_dev(i)-log_q3_dev(i-1), Type(0.0), q3_rwlk_sd(i-1), true);
     }
-
+    loglik(20)=0; // placeholder for projection recruitment
     // // Prior on trawl catchability
-    loglik(22) = dnorm(log_q2_mean, log(Type(0.85)), Type(0.1), true);
+    loglik(21) = dnorm(log_q2_mean, log(Type(0.85)), Type(0.1), true);
 
     // these broad priors on selex stabilize estimation and were
     // determined using prior pushforward checks. Any log_slp >10
     // or < .01 is too flat to be differentiated with data so
     // used as thresholds here.
-    loglik(23) += dnorm(log_slp1_fsh_mean, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(log_slp2_fsh_mean, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(inf1_fsh_mean, Type(0.0),Type(3.0), true);
-    loglik(23) += dnorm(inf2_fsh_mean, Type(10.0),Type(3.0), true);
-    // loglik(23) += dnorm(log_slp1_srv1, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(log_slp2_srv1, Type(-1.0),Type(1.5), true);
-    // loglik(23) += dnorm(inf1_srv1, Type(0.0),Type(3.0), true);
-    loglik(23) += dnorm(inf2_srv1, Type(10.0),Type(3.0), true);
-    loglik(23) += dnorm(log_slp1_srv2, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(log_slp2_srv2, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(inf1_srv2, Type(0.0),Type(3.0), true);
-    loglik(23) += dnorm(inf2_srv2, Type(10.0),Type(3.0), true);
-    loglik(23) += dnorm(log_slp1_srv3, Type(-1.0),Type(1.5), true);
-    // loglik(23) += dnorm(log_slp2_srv3, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(inf1_srv3, Type(0.0),Type(3.0), true);
-    // loglik(23) += dnorm(inf2_srv3, Type(10.0),Type(3.0), true);
-    loglik(23) += dnorm(log_slp1_srv6, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(log_slp2_srv6, Type(-1.0),Type(1.5), true);
-    loglik(23) += dnorm(inf1_srv6, Type(0.0),Type(3.0), true);
-    loglik(23) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
+    loglik(22) += dnorm(log_slp1_fsh_mean, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(log_slp2_fsh_mean, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(inf1_fsh_mean, Type(0.0),Type(3.0), true);
+    loglik(22) += dnorm(inf2_fsh_mean, Type(10.0),Type(3.0), true);
+    // loglik(22) += dnorm(log_slp1_srv1, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(log_slp2_srv1, Type(-1.0),Type(1.5), true);
+    // loglik(22) += dnorm(inf1_srv1, Type(0.0),Type(3.0), true);
+    loglik(22) += dnorm(inf2_srv1, Type(10.0),Type(3.0), true);
+    loglik(22) += dnorm(log_slp1_srv2, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(log_slp2_srv2, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(inf1_srv2, Type(0.0),Type(3.0), true);
+    loglik(22) += dnorm(inf2_srv2, Type(10.0),Type(3.0), true);
+    loglik(22) += dnorm(log_slp1_srv3, Type(-1.0),Type(1.5), true);
+    // loglik(22) += dnorm(log_slp2_srv3, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(inf1_srv3, Type(0.0),Type(3.0), true);
+    // loglik(22) += dnorm(inf2_srv3, Type(10.0),Type(3.0), true);
+    loglik(22) += dnorm(log_slp1_srv6, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(log_slp2_srv6, Type(-1.0),Type(1.5), true);
+    loglik(22) += dnorm(inf1_srv6, Type(0.0),Type(3.0), true);
+    loglik(22) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
   objfun = -sum(loglik);
 
   REPORT(objfun);

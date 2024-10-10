@@ -207,6 +207,27 @@ mymelt <- function(replist, slot){
   return(x)
 }
 
-
-
+#' Extract individual negative log likelihood components (NLL) in a convenient data.frame
+#'
+#' @param fits A single model or list of models as returned by
+#'   \code{\link{fit_pk}}.
+#' @return A data frame of fitted NLL components and their names
+#' @export
+#'
+get_nll_components <- function(fits){
+  component <- c('Total Catch', 'Fishery Ages', 'Fishery Lengths', 'Shelikof Index', 'Shelikof Ages', 'Shelikof Lengths',
+                 'NMFS BT Index', 'NMFS BT Ages', 'NMFS BT Lengths', 'ADF&G Index', 'ADF&G Ages', 'ADF&G Lengths',
+                 'Shelikof Age 1 Index', 'Shelikof Age 2 Index',
+                 'Summer AT Index', 'Summer AT Ages', 'Summer AT Lengths', 'Recruit Penalty', 'TV Selectivity Penalties',
+                 'TV Catchability Penalties', 'Projected Recruit Penalty', 'Catchability Prior', 'Selectivity Priors')
+    if(is.pkfit(fits)){
+      x <- get_rep(fits, 'loglik') %>% mutate(value=-value) # turn LL into NLL
+      if(length(component) != nrow(x)) stop("Mismatch in length of component names and output")
+      cbind(x, component)
+    } else if(is.pkfits(fits)) {
+      lapply(fits, get_nll_components)
+    } else {
+      stop("something is wrong with input fits")
+    }
+}
 
