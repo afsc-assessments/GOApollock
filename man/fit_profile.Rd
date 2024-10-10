@@ -7,7 +7,7 @@
 fit_profile(
   fits,
   xseq,
-  par = c("M", "q2"),
+  par = c("M", "q2", "q6"),
   plot = TRUE,
   maxNLL = 1,
   ylim = c(0, 10),
@@ -20,7 +20,7 @@ fit_profile(
 
 \item{xseq}{The vector over which to run the profile}
 
-\item{par}{Which parameter, currently supports "M" and "q2".}
+\item{par}{Which parameter, currently supports "M", "q2" and "q6".}
 
 \item{plot}{Whether to plot it}
 
