@@ -649,7 +649,7 @@ fit_self_test <- function(fit, reps, parallel=TRUE){
 #'
 #' @param fits A list of fits
 #' @param xseq The vector over which to run the profile
-#' @param par Which parameter, currently supports "M" and "q2".
+#' @param par Which parameter, currently supports "M", "q2" and "q6".
 #' @param plot Whether to plot it
 #' @param maxNLL The maximum NLL below which to filter out individual components, for decluttering the plots.
 #' @param ylim Y limit for plots
@@ -657,7 +657,7 @@ fit_self_test <- function(fit, reps, parallel=TRUE){
 #' @param return.fits Whether to return the fits (not implemented yet)
 #' @return A ggplot object of the profiles
 #' @export
-fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
+fit_profile <- function(fits, xseq, par=c('M','q2', 'q6'), plot=TRUE, maxNLL=1,
                         ylim=c(0,10),
                         estSigR=FALSE, return.fits=FALSE){
   stopifnot(!return.fits)
@@ -667,7 +667,7 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
     nmods <- 1
   } else { stop("invalid fit object")}
   par <- match.arg(par)
-  isM <- isq2 <- FALSE
+  isM <- isq2 <- isq6 <- FALSE
   if(par=='M'){
     xlab <- 'M at age 6'
     isM <- TRUE
@@ -675,7 +675,11 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
     xlab <- 'Catchability (q) for NMFS BT'
     xseq <- log(xseq)
     isq2 <- TRUE
-  }
+  } else if(par=='q6') {
+  xlab <- 'Catchability (q) for Summer AT'
+  xseq <- log(xseq)
+  isq6 <- TRUE
+}
   xx <- c("Total Catch", "Fishery Ages", "Fishery Lengths", "Shelikof 3+ Index",
           "Shelikof 3+ Ages", "Shelikof Lengths", "NMFS BT Index",
           "NMFS BT Ages", "NMFS BT Lengths", "Unused", "ADF&G Index",
@@ -703,6 +707,10 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
         inputtmp$pars$log_q2_mean <- xseq[ii]
         inputtmp$map$log_q2_mean <- factor(NA)
       }
+      if(isq6){
+        inputtmp$pars$log_q6 <- xseq[ii]
+        inputtmp$map$log_q6 <- factor(NA)
+      }
       if(estSigR) inputtmp$map$sigmaR <- factor(1)
       if(estSigR) inputtmp$random <- 'dev_log_recruit'
       tmpfits[[k]] <- fit_pk(inputtmp, newtonsteps=0, getsd=FALSE, control=list(trace=0), verbose = FALSE)
@@ -716,7 +724,7 @@ fit_profile <- function(fits, xseq, par=c('M','q2'), plot=TRUE, maxNLL=1,
   }
   out <- bind_rows(tmp) %>% merge(components, by='component')
   if(isM) out$par <- out$par*.3
-  if(isq2) out$par <- exp(out$par)
+  if(isq2 | isq6) out$par <- exp(out$par)
   nlls <- group_by(out, version, component) %>%
     mutate(deltaNLL=nll-min(nll)) %>%
     filter(max(deltaNLL)>maxNLL) %>% ungroup
