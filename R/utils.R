@@ -174,3 +174,19 @@ run_francis_weighting <- function(fit, iter=10, print.check=TRUE){
   if(print.check) print(check)
   return(fitnew)
 }
+
+#' Map off a parameter in a given input list
+#' @param x Input list
+#' @param slots A character vector to map off
+#' @return The modified input list
+#' @export
+mapoff <- function(x, slots) {
+  for(slot in slots){
+    if(length(x$pars[[slot]])==0){
+      warning("slot ", slot, " not found in pars")
+    } else {
+      x$map[[slot]] <- factor(x$pars[[slot]]*NA)
+    }
+  }
+  return(x)
+}
