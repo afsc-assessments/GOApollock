@@ -219,7 +219,8 @@ get_nll_components <- function(fits){
                  'NMFS BT Index', 'NMFS BT Ages', 'NMFS BT Lengths', 'ADF&G Index', 'ADF&G Ages', 'ADF&G Lengths',
                  'Shelikof Age 1 Index', 'Shelikof Age 2 Index',
                  'Summer AT Index', 'Summer AT Ages', 'Summer AT Lengths', 'Recruit Penalty', 'TV Selectivity Penalties',
-                 'TV Catchability Penalties', 'Projected Recruit Penalty', 'Catchability Prior', 'Selectivity Priors')
+                 'TV Catchability Penalties', 'Projected Recruit Penalty', 'Catchability Prior', 'Selectivity Priors',
+                 'Q-link Data', 'Q-link Penalty')
     if(is.pkfit(fits)){
       x <- get_rep(fits, 'loglik') %>% mutate(value=-value) # turn LL into NLL
       if(length(component) != nrow(x)) stop("Mismatch in length of component names and output")

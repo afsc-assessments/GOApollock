@@ -40,6 +40,9 @@ template <class Type>
 Type square(Type x){return x*x;};
 template <class Type>
 Type norm2(vector<Type> x){return (x*x).sum();};
+// from TMB examples, modified name, constrains between -1 and 1
+template <class Type>
+Type rho_trans(Type x){return Type(2)/(Type(1) + exp(-Type(2) * x)) - Type(1);}
 #define see(object) std::cout << #object ":\n" << object << "\n";
 // rmultinom taken from WHAM on 2024-03-22
 // https://github.com/timjmiller/wham/blob/master/src/age_comp_sim.hpp#L1C1-L19C2
@@ -207,6 +210,8 @@ Type objective_function<Type>::operator() ()
   DATA_SCALAR(B40); // mean log recruitment
   // DATA_SCALAR(log_mean_recr_proj);
   DATA_SCALAR(sigmasq_recr);                       // Variance for log recr, recruitment indices
+  DATA_IVECTOR(Ecov_obs_year);
+  DATA_VECTOR(Ecov_obs);
 
   // int styr_avg_slct;
   // int endyr_avg_slct;
@@ -342,6 +347,12 @@ Type objective_function<Type>::operator() ()
   PARAMETER(log_q6);
   // This scales M vector below so that M={M}*natMscalar. If 1 does nothing.
   PARAMETER(natMscalar);
+  // Ecov effects on q1
+  PARAMETER(transf_rho);
+  PARAMETER_VECTOR(Ecov_exp);
+  PARAMETER(log_Ecov_obs_sd);
+  PARAMETER(log_Ecov_sd);
+  PARAMETER(Ecov_beta);
 
   // Dependent parameters
   vector<Type> q1(nyrs);
@@ -401,7 +412,7 @@ Type objective_function<Type>::operator() ()
   vector<Type> Espawnbio_2plus(nyrs);
   vector<Type> Etotalbio(nyrs);
   // log likelihood containers
-  vector<Type> loglik(23);
+  vector<Type> loglik(25);
   vector<Type> llcatp(nyrs_fsh);
   vector<Type> lllenp(nyrslen_fsh);
   vector<Type> llsrvp1(nyrsac_srv1);
@@ -549,7 +560,7 @@ Type objective_function<Type>::operator() ()
 
   // Acoustic survey random walk setup
   for (i=y0;i<=y1;i++) {
-    log_q1(i)=log_q1_mean+log_q1_dev(i);
+    log_q1(i)=log_q1_mean+log_q1_dev(i)+Ecov_beta*Ecov_exp(i);
     log_q2(i)=log_q2_mean+log_q2_dev(i);
     log_q3(i)=log_q3_mean+log_q3_dev(i);
     q1(i)=exp(log_q1(i));
@@ -1070,6 +1081,19 @@ Type objective_function<Type>::operator() ()
     loglik(22) += dnorm(log_slp2_srv6, Type(-1.0),Type(1.5), true);
     loglik(22) += dnorm(inf1_srv6, Type(0.0),Type(3.0), true);
     loglik(22) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
+
+    Type rho=rho_trans(transf_rho);
+    Type Ecov_obs_sd=exp(log_Ecov_obs_sd);
+    Type Ecov_sd=exp(log_Ecov_sd);//pow(pow(exp(log_Ecov_sd),2)/(1-pow(rho,2)),0.5);
+    using namespace density;
+    // process error
+    loglik(23)= -SCALE(AR1(rho),Ecov_sd)(Ecov_exp);
+    // observation error
+    for(int i=0; i<Ecov_obs.size(); i++){
+      loglik(24)+=dnorm(Ecov_obs(i),Ecov_exp(Ecov_obs_year(i)-styr), Ecov_obs_sd,true);
+      SIMULATE Ecov_obs(i)=rnorm(Ecov_exp(i), Ecov_obs_sd);
+     }
+
   objfun = -sum(loglik);
 
   REPORT(objfun);
@@ -1233,7 +1257,12 @@ Type objective_function<Type>::operator() ()
   ADREPORT(Esumbio);
   ADREPORT(Espawnbio_log);
   ADREPORT(Esumbio_log);
-
+  REPORT(Ecov_obs_sd);
+  ADREPORT(rho);
+  REPORT(rho);
+  ADREPORT(Ecov_sd);
+  REPORT(Ecov_sd);
+  REPORT(Ecov_exp);
+  REPORT(Ecov_beta);
   return(objfun);
-
 }

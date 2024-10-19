@@ -175,8 +175,14 @@ read_dat <- function(filename, path=NULL, writedat=FALSE){
   d$B40 <- sn( ind=ind, n =1)
   d$log_mean_recr_proj <- sn( ind=ind, n =1)
   d$sigmasq_recr <- sn( ind=ind, n =1)
+  d$nyrs_ecov <- si(ind=ind,n=1)
+  d$Ecov_obs_year <- sn(ind=ind, n=d$nyrs_ecov)
+  d$Ecov_obs <- sn(ind=ind, n=d$nyrs_ecov)
   d$check <- sn(ind=ind, n=1)
-  if(d$check != -999) stop("Failed to read in dat file, final value=",d$check)
+  if(d$check != -999){
+    print(str(tail(d)))
+    warning("Failed to read in dat file, final value=",d$check)
+  }
   return(d)
 }
 
@@ -408,8 +414,18 @@ prepare_pk_input <- function(path, datfile, version='none',
   ## Prepare the parameter list based on the data
   pars <- prepare_par(dat)
   map <- prepare_map(pars)
+  if(dat$check == dat$styr){
+    message("Old dat file detected, turning off Ecov components")
+    pars$log_Ecov_obs_sd <- NULL
+    pars$Ecov_exp <- NULL
+    pars$Ecov_beta <- NULL
+    map$log_Ecov_obs_sd <- NULL
+  } else {
+    random <- c(random,'Ecov_exp')
+  }
   out <- list(version=version, path=path, modfile=modfile,
               dat=dat, pars=pars, map=map, random=random)
+
   return(out)
 }
 
@@ -453,7 +469,12 @@ prepare_par <- function(dat){
                log_q2_mean = -0.20, log_q2_dev = rep(0,nyrs), log_q3_mean = -1.54,
                log_q3_dev = rep(0,nyrs), log_q4 = -1.20,
                q4_pow = 0, log_q5 = -1.08, q5_pow = 0, log_q6 = -0.26,
-               natMscalar = 1)
+               natMscalar = 1,
+               transf_rho = .1,
+               Ecov_exp = rep(0,nyrs),
+               log_Ecov_obs_sd=log(.02),
+               log_Ecov_sd = 1,
+               Ecov_beta = 0)
   return(pars)
 }
 
@@ -461,9 +482,9 @@ prepare_par <- function(dat){
 prepare_map <- function(pars){
   parsoff <- c("dev_log_initN", "q4_pow", "q5_pow", "log_q2_dev", "slp2_fsh_dev",
                "inf2_fsh_dev", "log_slp2_srv2", "inf2_srv2", "log_slp1_srv6",
-               "inf1_srv6", "sigmaR", "natMscalar", "log_recr_proj", "log_q1_mean",
+               "inf1_srv6", "sigmaR", "natMscalar", "log_recr_proj", #"log_q1_mean",
                "log_q3_mean", "mean_log_F", "inf1_fsh_mean",
-               "log_slp1_fsh_mean")
+               "log_slp1_fsh_mean", 'log_q1_dev', 'log_Ecov_obs_sd')
   map <- list()
   for(x in parsoff) map[[x]] <- factor(pars[[x]]*NA)
   return(map)
