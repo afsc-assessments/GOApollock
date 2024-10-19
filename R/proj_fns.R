@@ -1,4 +1,61 @@
 
+#' Calculate Fabc for a fitted object.
+#'
+#' @param fit Fitted TMB model
+#' @param ratio The desired target biomass ratio
+#' @param F An option fishing mortality rate which can be
+#'   specified to get SPR(F), used for status figure
+#' @return A list containing SSB100, fabc, abc, btarget
+#'   (optimzed) and SPR at F=0, the optimized target, and what is specified by F.
+#' @export
+#'
+get_fabc <- function(fit, ratio=.4, F=NULL){
+  ## data inputs
+  if(is.null(fit$input))
+    stop("Function requires input slot -- add it manually or use updated package version")
+  M <- fit$rep$M
+  popwt <- fit$rep$wt_pop_proj # weights in kg
+  fshwt <- fit$rep$wt_fsh_proj
+  spawnwt <- fit$rep$wt_spawn_proj
+  mat <- fit$input$dat$mat
+  sel <- fit$rep$slctfsh_proj
+  maxage <- max(fit$rep$ages)
+  stopifnot(all.equal(length(popwt), length(fshwt), length(spawnwt), length(mat), length(sel), maxage))
+  if(maxage != 10) warning("SPR function not tested for maxage !=10")
+  R0 <- fit$rep$recruit_proj[1]# mean age-1 recruits (billion) used in proj
+  stopifnot(!is.null(R0))
+  spr <- function(F){
+    Z <- M+ F*sel
+    N <- rep(NA,maxage)
+    N[1] <- R0/2
+    for(i in 2:maxage) N[i] <- N[i-1]*exp(-Z[i-1])
+    N[maxage] <- N[maxage]/(1-exp(-Z[maxage]))
+    ssb <- sum(N*mat*spawnwt*exp(-.21*Z))
+    catch <- 2*sum(N*fshwt*(sel*F/Z)*(1-exp(-Z)))
+    return(list(ssb=ssb, catch=catch))
+  }
+  if(!is.null(F)){
+    sprF <- spr(F)
+  } else {
+    sprF <- NULL
+  }
+  ssb100 <- spr(0)$ssb
+  ssq <- function(ratio){
+    f <- function(F) 100*(spr(F)$ssb-ssb100*ratio)^2
+    opt <- optimize(f=f, interval=c(0,1))
+    opt$minimum
+  }
+  fabc <- ssq(ratio)
+  x <- spr(fabc)
+  return(list(ssb100=ssb100,
+              fabc=fabc,
+              abc=x$catch,
+              btarget=x$ssb/ssb100,
+              spr_at_F0=ssb100/R0,
+              spr_at_target=x$ssb/R0,
+              spr_at_F=sprF$ssb/R0))
+}
+
 #' Get table from projection output
 #' @param replist A list as read in by \link{read_rep}
 #' @param bigfile A data frame of full projection scenario
