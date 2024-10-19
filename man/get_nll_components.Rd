@@ -8,9 +8,10 @@ get_nll_components(fits)
 }
 \arguments{
 \item{fits}{A single model or list of models as returned by
-\code{\link{fit_pk}}.
-@return A data frame of fitted NLL components and their names
-@export}
+\code{\link{fit_pk}}.}
+}
+\value{
+A data frame of fitted NLL components and their names
 }
 \description{
 Extract individual negative log likelihood components (NLL) in a convenient data.frame

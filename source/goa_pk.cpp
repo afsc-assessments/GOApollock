@@ -30,6 +30,8 @@
 
 // Feb 2024 switched to dnorm and dmultinom and added SIMULATE
 
+// Oct 2024 add Ecov link to q1 (Rogers et al. 2024)
+
 
 
 #include <TMB.hpp>
