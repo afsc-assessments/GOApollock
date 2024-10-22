@@ -9,13 +9,14 @@ prepare_pk_input(
   datfile,
   version = "none",
   random = NULL,
+  complike = c("multinomial", "D-M"),
   modfile = "goa_pk",
   maxage = NULL
 )
 }
 \arguments{
-\item{path}{Directory containing the model and dat
-files. Passed to \code{fit_pk}.}
+\item{path}{Directory containing the model and dat files.
+Passed to \code{fit_pk}.}
 
 \item{datfile}{Name of dat file to be read in.}
 
@@ -26,10 +27,14 @@ plotting downstream}
 vectors to be integrated. Defaults to NULL (fully penalized
 ML)}
 
+\item{complike}{A flag to use either 'multinomial' or
+Dirichlet-multinomial 'D-M'.}
+
 \item{modfile}{Model name assumed to be 'goa_pk' unless
 specified}
 
-\item{maxage}{Specify a lower maximum age than in the input dat file if desired.}
+\item{maxage}{Specify a lower maximum age than in the input
+dat file if desired.}
 }
 \value{
 A list with the version, dat, pars, map and random

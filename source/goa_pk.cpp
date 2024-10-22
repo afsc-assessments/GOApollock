@@ -68,6 +68,32 @@ vector<Type> rmultinom(Type N, vector<Type> p)
   return x;
 }
 
+template <class Type>
+vector<Type> rdirichlet(vector<Type> alpha){
+  vector<Type> x=rgamma(alpha,Type(1));
+  return x/sum(x);
+}
+
+template<class Type>
+vector<Type> rdirmultinom(Type N, vector<Type> alpha, vector<int> ages) //dirichlet generated from iid gammas
+{
+  vector<Type> dp = rdirichlet(alpha);
+  vector<Type> obs = rmultinom(N,dp);
+  return(obs);
+}
+
+
+template<class Type>
+Type ddirmultinom(vector<Type> obs, vector<Type> alpha, int do_log)
+{
+  int dim = obs.size();
+  Type N = obs.sum();
+  Type phi=sum(alpha);
+  Type ll = lgamma(N + 1.0) + lgamma(phi) - lgamma(N + phi);
+  for(int a = 0; a < dim; a++) ll += -lgamma(obs(a) + 1.0) + lgamma(obs(a) + alpha(a)) - lgamma(alpha(a));
+  if(do_log == 1) return ll;
+  else return exp(ll);
+}
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
@@ -214,7 +240,8 @@ Type objective_function<Type>::operator() ()
   DATA_SCALAR(sigmasq_recr);                       // Variance for log recr, recruitment indices
   DATA_IVECTOR(Ecov_obs_year);
   DATA_VECTOR(Ecov_obs);
-
+  DATA_INTEGER(complike); // 1 is multinomial, 2 is D-M
+  bool isDM = complike==1;
   // int styr_avg_slct;
   // int endyr_avg_slct;
   int i;                                          // Index for year
@@ -355,6 +382,21 @@ Type objective_function<Type>::operator() ()
   PARAMETER(log_Ecov_obs_sd);
   PARAMETER(log_Ecov_sd);
   PARAMETER(Ecov_beta);
+  // linear Dirichlet-multinomial parameters for age comps (fsh,
+  // survs 1, 2, 3, 6), NOT length comps. Simulation built in but
+  // not yet tested thoroughly
+  PARAMETER_VECTOR(log_DM_pars);
+  vector<Type> DM_pars = exp(log_DM_pars);
+  vector<Type> ESS_fsh=multN_fsh*invlogit(log_DM_pars(0));
+  REPORT(ESS_fsh);
+  vector<Type> ESS_srv1=multN_srv1*invlogit(log_DM_pars(1));
+  REPORT(ESS_srv1);
+  vector<Type> ESS_srv2=multN_srv2*invlogit(log_DM_pars(2));
+  REPORT(ESS_srv2);
+  vector<Type> ESS_srv3=multN_srv3*invlogit(log_DM_pars(3));
+  REPORT(ESS_srv3);
+  vector<Type> ESS_srv6=multN_srv6*invlogit(log_DM_pars(4));
+  REPORT(ESS_srv6);
 
   // Dependent parameters
   vector<Type> q1(nyrs);
@@ -820,9 +862,18 @@ Type objective_function<Type>::operator() ()
         vector<Type> otmp= catp.row(i).segment(iac_yng_fsh(i), nagestmp);
         vector<Type> etmp=Ecatp.row(ifshyrs(i)).segment(iac_yng_fsh(i), nagestmp);
         otmp+=o; otmp*=multN_fsh(i); etmp+=o;
-        llcatp(i) = dmultinom(otmp, etmp, true);
+        vector<Type> alphas = sum(otmp) * etmp * DM_pars(0);
+        if(isDM){
+          llcatp(i) = ddirmultinom(otmp, alphas,  true);
+        } else {
+          llcatp(i) = dmultinom(otmp, etmp,  true);
+        }
         SIMULATE {
-          otmp=rmultinom(multN_fsh(i), etmp);
+          if(isDM){
+            otmp=rdirmultinom(multN_fsh(i), alphas, ages);
+          } else {
+            otmp=rmultinom(multN_fsh(i),etmp);
+          }
           catp.row(i).segment(iac_yng_fsh(i), nagestmp)=otmp/otmp.sum();
         }
         // Residuals and outputs which get used by R functions
@@ -859,9 +910,18 @@ Type objective_function<Type>::operator() ()
         vector<Type> otmp=srvp1.row(i).segment(iac_yng_srv1(i), nagestmp);
         vector<Type> etmp=Esrvp1.row(isrv_acyrs1(i)).segment(iac_yng_srv1(i), nagestmp);
         otmp+=o; otmp*=multN_srv1(i); etmp+=o;
-        llsrvp1(i) = dmultinom(otmp, etmp, true);
+        vector<Type> alphas = sum(otmp) * etmp * DM_pars(1);
+        if(isDM){
+          llsrvp1(i) = ddirmultinom(otmp, alphas,  true);
+        } else {
+          llsrvp1(i) = dmultinom(otmp,etmp,true);
+        }
         SIMULATE {
-          otmp=rmultinom(multN_srv1(i), etmp);
+          if(isDM){
+            otmp=rdirmultinom(multN_srv1(i), alphas, ages);
+          } else {
+            otmp=rmultinom(multN_srv1(i), alphas);
+          }
           srvp1.row(i).segment(iac_yng_srv1(i), nagestmp)=otmp/otmp.sum();
         }
         //Residuals and outputs which get used by R functions
@@ -897,9 +957,18 @@ Type objective_function<Type>::operator() ()
         vector<Type> otmp=srvp2.row(i);
         vector<Type> etmp=Esrvp2.row(isrv_acyrs2(i));
         otmp+=o; otmp*=multN_srv2(i); etmp+=o;
-        llsrvp2(i) = dmultinom(otmp, etmp, true);
+        vector<Type> alphas = sum(otmp) * etmp * DM_pars(2);
+        if(isDM){
+          llsrvp2(i) = ddirmultinom(otmp, alphas,  true);
+        } else {
+          llsrvp2(i) = dmultinom(otmp, etmp,  true);
+        }
         SIMULATE {
-          otmp=rmultinom(multN_srv2(i), etmp);
+          if(isDM){
+            otmp=rdirmultinom(multN_srv2(i), alphas, ages);
+          } else {
+            otmp=rmultinom(multN_srv2(9), etmp);
+          }
           srvp2.row(i)=otmp/otmp.sum();
         }
         //Residuals and outputs which get used by R functions
@@ -949,9 +1018,18 @@ Type objective_function<Type>::operator() ()
         vector<Type> otmp=srvp3.row(i);
         vector<Type> etmp=Esrvp3.row(isrv_acyrs3(i));
         otmp+=o; otmp*=multN_srv3(i); etmp+=o;
-        llsrvp3(i) = dmultinom(otmp, etmp, true);
+        vector<Type> alphas = sum(otmp) * etmp * DM_pars(3);
+        if(isDM){
+          llsrvp3(i) = ddirmultinom(otmp, alphas,  true);
+        } else {
+          llsrvp3(i) = dmultinom(otmp, etmp,  true);
+        }
         SIMULATE {
-          otmp=rmultinom(multN_srv3(i), etmp);
+          if(isDM){
+            otmp=rdirmultinom(multN_srv3(i), alphas, ages);
+          } else {
+            otmp=rmultinom(multN_srv3(i), etmp);
+          }
           srvp3.row(i)=otmp/otmp.sum();
         }
         //Residuals and outputs which get used by R functions
@@ -1005,9 +1083,18 @@ Type objective_function<Type>::operator() ()
         vector<Type> otmp=srvp6.row(i);
         vector<Type> etmp=Esrvp6.row(isrv_acyrs6(i));
         otmp+=o; otmp*=multN_srv6(i);	etmp+=o;
-        llsrvp6(i) = dmultinom(otmp, etmp, true);
+        vector<Type> alphas = sum(otmp) * etmp * DM_pars(4);
+        if(isDM){
+          llsrvp6(i) = ddirmultinom(otmp, alphas,  true);
+        } else {
+          llsrvp6(i) = dmultinom(otmp, etmp,  true);
+        }
         SIMULATE {
-          otmp=rmultinom(multN_srv6(i), etmp);
+          if(isDM){
+            otmp=rdirmultinom(multN_srv6(i), alphas, ages);
+          } else {
+            otmp=rmultinom(multN_srv6(i), etmp);
+          }
           srvp6.row(i)=otmp/otmp.sum();
         }
         //Residuals and outputs which get used by R functions

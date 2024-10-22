@@ -388,40 +388,51 @@ update_dat_maxage <- function(dat, maxage){
 }
 
 #' Prepare inputs for the TMB GOA pollock model.
-#' @param path Directory containing the model and dat
-#'   files. Passed to \code{fit_pk}.
+#' @param path Directory containing the model and dat files.
+#'   Passed to \code{fit_pk}.
 #' @param datfile Name of dat file to be read in.
 #' @param version A character string for the model name, used for
 #'   plotting downstream
 #' @param random A character vector declaring random effect
 #'   vectors to be integrated. Defaults to NULL (fully penalized
 #'   ML)
+#' @param complike A flag to use either 'multinomial' or
+#'   Dirichlet-multinomial 'D-M'.
 #' @param modfile Model name assumed to be 'goa_pk' unless
 #'   specified
-#' @param maxage Specify a lower maximum age than in the input dat file if desired.
+#' @param maxage Specify a lower maximum age than in the input
+#'   dat file if desired.
 #' @return A list with the version, dat, pars, map and random
 #'   which are used to build a TMB 'obj' in \code{\link{fit_pk}}.
 #' @export
 prepare_pk_input <- function(path, datfile, version='none',
-                             random=NULL, modfile='goa_pk',
+                             random=NULL, complike=c('multinomial','D-M'),
+                             modfile='goa_pk',
                              maxage=NULL){
   if(!dir.exists(path)) stop("directory does not exist: ",path)
   dat <- read_dat(filename=datfile, path=path)
   if(!is.null(maxage) && maxage<dat$trmage){
     dat <- update_dat_maxage(dat,maxage)
   }
-
+ complike <- match.arg(complike)
   ## Prepare the parameter list based on the data
   pars <- prepare_par(dat)
   map <- prepare_map(pars)
-  if(dat$check == dat$styr){
-    message("Old dat file detected, turning off Ecov components")
+  if(dat$nyrs_ecov == -999){
+    message("Old dat file detected, turning off Ecov components and turning RW q1 back on")
     pars$log_Ecov_obs_sd <- NULL
     pars$Ecov_exp <- NULL
     pars$Ecov_beta <- NULL
     map$log_Ecov_obs_sd <- NULL
+    ## turn back on since new package version has it off by default
+    map$log_q1_dev <- NULL
+    map$log_q1_mean <- factor(NA)
   } else {
     random <- c(random,'Ecov_exp')
+  }
+  dat$complike <- ifelse(complike=='multinomial', 1,2)
+  if(complike!='D-M'){
+     map$log_DM_pars <- factor(rep(NA, len=length(pars$log_DM_pars)))
   }
   out <- list(version=version, path=path, modfile=modfile,
               dat=dat, pars=pars, map=map, random=random)
@@ -474,7 +485,8 @@ prepare_par <- function(dat){
                Ecov_exp = rep(0,nyrs),
                log_Ecov_obs_sd=log(.02),
                log_Ecov_sd = 1,
-               Ecov_beta = 0)
+               Ecov_beta = 0,
+               log_DM_pars = rep(0,5))
   return(pars)
 }
 
