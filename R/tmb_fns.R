@@ -419,11 +419,14 @@ prepare_pk_input <- function(path, datfile, version='none',
   pars <- prepare_par(dat)
   map <- prepare_map(pars)
   if(dat$nyrs_ecov == -999){
+    years <- dat$styr:dat$endyr
     message("Old dat file detected, turning off Ecov components and turning RW q1 back on")
-    pars$log_Ecov_obs_sd <- NULL
-    pars$Ecov_exp <- NULL
-    pars$Ecov_beta <- NULL
-    map$log_Ecov_obs_sd <- NULL
+    map$log_Ecov_obs_sd <- map$log_Ecov_sd <- map$Ecov_beta <- map$transf_rho <- factor(NA)
+    map$Ecov_exp <- factor(rep(NA, len=length(pars$Ecov_exp)))
+    # have to put dummy values in with new model
+    dat$nyrs_ecov <- length(years)
+    dat$Ecov_obs_year <- years
+    dat$Ecov_obs <- rep(0, len=dat$nyrs_ecov)
     ## turn back on since new package version has it off by default
     map$log_q1_dev <- NULL
     map$log_q1_mean <- factor(NA)

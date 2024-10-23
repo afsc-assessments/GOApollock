@@ -241,7 +241,9 @@ Type objective_function<Type>::operator() ()
   DATA_IVECTOR(Ecov_obs_year);
   DATA_VECTOR(Ecov_obs);
   DATA_INTEGER(complike); // 1 is multinomial, 2 is D-M
-  bool isDM = complike==1;
+  bool isDM=false;
+  if(complike==2) isDM=true;
+  REPORT(isDM);
   // int styr_avg_slct;
   // int endyr_avg_slct;
   int i;                                          // Index for year
@@ -920,7 +922,7 @@ Type objective_function<Type>::operator() ()
           if(isDM){
             otmp=rdirmultinom(multN_srv1(i), alphas, ages);
           } else {
-            otmp=rmultinom(multN_srv1(i), alphas);
+            otmp=rmultinom(multN_srv1(i), etmp);
           }
           srvp1.row(i).segment(iac_yng_srv1(i), nagestmp)=otmp/otmp.sum();
         }
@@ -967,7 +969,7 @@ Type objective_function<Type>::operator() ()
           if(isDM){
             otmp=rdirmultinom(multN_srv2(i), alphas, ages);
           } else {
-            otmp=rmultinom(multN_srv2(9), etmp);
+            otmp=rmultinom(multN_srv2(i), etmp);
           }
           srvp2.row(i)=otmp/otmp.sum();
         }
@@ -1197,6 +1199,7 @@ Type objective_function<Type>::operator() ()
   REPORT(Esumbio);
   REPORT(Espawnbio_2plus);
   REPORT(F);
+  ADREPORT(F);
   REPORT(Eecocon);
   REPORT(initN);
   REPORT(cattot);

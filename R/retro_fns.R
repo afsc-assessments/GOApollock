@@ -225,21 +225,10 @@ peel_data <- function(dat, peel){
   d$nyrs_srv5 <- length(d$srvyrs5)
   d$indxsurv5 <- d$indxsurv5[i3]
   d$indxsurv_log_sd5 <- d$indxsurv_log_sd5[i3]
+  i4 <- which(d$Ecov_obs_year <= endyr)
+  d$Ecov_obs_year <- d$Ecov_obs_year[i4]
+  d$Ecov_obs <- d$Ecov_obs[i4]
   if(peel==0) stopifnot(all.equal(d,dat))
-  ## this breaks makeadfun for some reason if not done??
-  ##   for(i in 1:length(dat)){
-  ## ##     browser()
-  ##     print(cbind(i=i, names(dat)[i], class(dat[[i]])[1], class(d[[i]])[1]))
-  ##     ## if(class(dat[[i]])[1]=='integer'){
-  ##     ##   message("converting ", names(dat)[i])
-  ##     ##   class(d[[i]]) <- 'integer'
-  ##     ## }
-  ##     class(d[[i]])[1] <- class(dat[[i]])[1]
-  ##     print(cbind(i=i, names(dat)[i], class(dat[[i]])[1], class(d[[i]])[1]))
-  ##   }
-  ## attributes(d) <- attributes(dat)
-  ## attributes(d) <- attributes(dat)
-  ## attributes(d)$checks.passed <- NULL
   return(d)
 }
 
