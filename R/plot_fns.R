@@ -390,3 +390,37 @@ plot_retros <- function(retros, type=c('ssb', 'F', 'recruit'), title=NULL){
   if(type=='recruit') g1 <- g1+scale_y_log10()
   g1
 }
+
+#' Plot effective sample sizes to compare Francis tuning to Dirichlet-multinomial (DM)
+#' @param fitDM A model fit with the DM turned on
+#' @param fitfrancis A model fit with Francis tuning
+#' @param addISS Whether to add the input sample size (ISS) taken from the fitDM model.
+#' @param plot Whether to print.
+#' @return A ggplot object if plot is TRUE, otherwise the data
+#' @export
+plot_ess <- function(fitDM, fitfrancis=NULL, addISS=FALSE, plot=TRUE){
+  d <- fitDM$input$dat
+  r <- fitDM$rep
+  f <- fitfrancis$input$dat
+  x0 <- data.frame(survey=0, year=d$fshyrs, ISS=d$multN_fsh, DM=r$ESS_fsh)
+  x1 <- data.frame(survey=1, year=d$srv_acyrs1, ISS=d$multN_srv1, DM=r$ESS_srv1)
+  x2 <- data.frame(survey=2, year=d$srv_acyrs2, ISS=d$multN_srv2, DM=r$ESS_srv2)
+  x3 <- data.frame(survey=3, year=d$srv_acyrs3, ISS=d$multN_srv3, DM=r$ESS_srv3)
+  x6 <- data.frame(survey=6, year=d$srv_acyrs6, ISS=d$multN_srv6, DM=r$ESS_srv6)
+  if(!is.null(fitfrancis)){
+    x0 <- cbind(x0, Francis=f$multN_fsh)
+    x1 <- cbind(x1, Francis=f$multN_srv1)
+    x2 <- cbind(x2, Francis=f$multN_srv2)
+    x3 <- cbind(x3, Francis=f$multN_srv3)
+    x6 <- cbind(x6, Francis=f$multN_srv6)
+  }
+  x <-bind_rows(x0,x1,x2,x3,x6)
+  if(!addISS) x <- select(x, -ISS)
+  g <- x %>% pivot_longer(-c(survey,year)) %>%
+    filter(value>0) %>% mutate(survey=surveyf(survey)) %>%
+    ggplot(aes(year,value, color=name)) + geom_line() +
+    facet_wrap('survey') + ylim(0,NA) +
+    labs(x=NULL, y='Effecive sample size (ESS)')
+  if(plot) return(g)
+  return(x)
+}
