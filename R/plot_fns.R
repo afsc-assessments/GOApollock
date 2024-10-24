@@ -256,7 +256,7 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL,
       mutate(age=as.numeric(stringr::str_sub(type,4,5)),
              type=stringr::str_sub(type, 1,3))
     ## fake data point ot control ylimit height
-    x0 <- group_by(x, year) %>% summarize(age=NA, proportion=max(proportion)*1.1) %>% ungroup
+    x0 <- group_by(x, year) %>% summarize(age=NA, type='obs', proportion=max(proportion)*1.1) %>% ungroup
     bind_rows(x,x0)
   }
   x <- melt_obs_exp(mat, years)
@@ -268,7 +268,7 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL,
     geom_point(cex=1) +
     facet_wrap("year", dir='v',ncol=ncol, scales='free_y') +
     scale_x_continuous(breaks=1:maxage) +
-    geom_text(data=pos, size=2.5, aes(x=x, lty=NULL,y=maxp), vjust = 1, color='black') +
+    geom_text(data=pos, size=2.5, aes(x=x, lty=NULL,y=maxp, type=NULL), vjust = 1, color='black') +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           strip.background = element_blank(),
@@ -278,7 +278,7 @@ plot_obs_exp <- function(mat, years, ncol=5, title, minyr=NULL,
           axis.text.y=element_blank(),
           axis.title.y=element_blank(),
           axis.ticks.y=element_blank(),
-          legend.position='none')+
+          legend.position='right')+
     labs(x="Age") + ggtitle(title)
   g
 }
@@ -365,7 +365,7 @@ plot_retros <- function(retros, type=c('ssb', 'F', 'recruit'), title=NULL){
     y <- get_std(retros, 'recruit')
     lab <- 'Recruitment (billions)'
   } else { stop('something wrong with type=',type)}
-  y <- mutate(y, lwr=pmax(lwr,0)) %>% filter(version=='peel0')
+  y <- mutate(y, lwr=pmax(lwr,0.001)) %>% filter(version=='peel0')
   stopifnot(nrow(x)>0)
   stopifnot(nrow(y)>0)
   rho <- calculate_rho(retros,type=type)
