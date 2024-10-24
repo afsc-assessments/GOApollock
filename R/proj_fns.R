@@ -101,25 +101,29 @@ format_exec_table <- function(tab){
   tab
 }
 
-#' Write input files for the 'spm' projection module. Differs
-#' slightly from the old projection module.
+#' Write input files for the 'spm' projection module. Uses subsequent year's NAA
+#' (endN) to better match the assessment model dynamics of the terminal year.
 #'
-#' @param replist A list as read in by \link{read_rep}
-#' @param datlist A list as read in by \link{read_dat}
-#' @param path Directory to write in
+#' @param fit A fitted object from \code{fit_pk}.
+#' @param path Directory to write output files to
 #'
-#' @return Nothing but writes files spm.dat, goa_wp.txt, and
-#'   tacpar.dat (dummy file) to 'path' based on values in the
-#'   replist and datlist objections
+#' @return Nothing but writes files spm.dat, goa_wp.txt, and tacpar.dat (dummy file)
+#'   to 'path' based on values in the replist and datlist objections
 #' @export
 #'
-write_spm_inputs <- function(replist, datlist, path=getwd()){
+write_spm_inputs <- function(fit, path=NULL){
+  stopifnot(is.pkfit(fit))
+  if(is.null(path)) {
+    path <- getwd()
+    message("No path provided so writing to working directory ", path)
+  }
+  replist <- fit$rep
+  datlist <- fit$input$dat
   ## delete old files in case it fails it'll stop there
   ff <- file.path(path, c("goa_wp.txt", "spm.dat", "spp_catch.dat"))
   trash <- lapply(ff, function(x) if(file.exists(x)) file.remove(x))
-  ayr <- tail(replist$years,1)
-  write_spm_setup(ayr, path=path, catch=tail(datlist$cattot,1))
-  write_spm_dynamics(replist, datlist, ayr, path)
+  write_spm_setup(fit=fit, path=path)
+  write_spm_dynamics(fit=fit, path=path)
   ## old unused file, just need dummy values so it runs
   ## tacpar <- readLines(tacpar.dat'); dput(tacpar)
   write.table(file=file.path(path,'tacpar.dat'),
@@ -134,18 +138,10 @@ write_spm_inputs <- function(replist, datlist, path=getwd()){
 }
 
 
-write_spm_dynamics <- function(replist, datlist, ayr, path){
-  if(is.null(replist$Fishing_mortalities)){
-    ## new TMB names don't match so fix here
-    replist$Fishing_mortalities <- replist$F
-    replist$Natural_mortality <- replist$M
-    replist$Projection_spawning_weight_at_age <- replist$wt_spawn_proj
-    replist$Projection_fishery_weight_at_age <- replist$wt_fsh_proj
-    replist$Projection_fishery_selectivity <- colMeans(tail(replist$slctfsh,5)[-5,]) #replist$slctfsh_proj
-    replist$Expected_spawning_biomass <- replist$Espawnbio
-    replist$Recruits <- replist$recruit
-    replist$Numbers_at_age <- replist$N
-  }
+write_spm_dynamics <- function(fit, path){
+  replist <- fit$rep; datlist <- fit$input$dat
+  ayr <- tail(replist$years,1)
+  naa <- tail(replist$N,1)
   x <- c()
   x <-
   c(x,paste("# proj input file written by write_spm_inputs on", Sys.time()))
@@ -154,33 +150,33 @@ write_spm_dynamics <- function(replist, datlist, ayr, path){
   x <- c(x, "0 # Flag to Dorn's version of a constant buffer")
   x <- c(x, "1 # number of fisheries")
   x <- c(x, "1 # number of sexes")
-  x <- c(x, paste(mean(tail(replist$Fishing_mortalities,5)), " # average F over last 5 years"))
+  x <- c(x, paste(mean(tail(replist$F,5)), " # average F over last 5 years"))
   x <- c(x, "1 # Author's F multiplier (to MaxPermissible)")
   x <- c(x, "0.4 # ABC SPR")
   x <- c(x, "0.35 # OFL SPR")
   x <- c(x, "3.52 # Month of spawning")
-  x <- c(x, "10 # Number of ages")
+  x <- c(x, paste(max(replist$ages), " # Number of ages"))
   x <- c(x, "1 # Fratio")
   x <- c(x, "# Natural mortality")
-  x <- c(x, paste(replist$Natural_mortality, collapse=' '))
+  x <- c(x, paste(replist$M, collapse=' '))
   x <- c(x, "# Maturity")
   x <- c(x, paste(datlist$mat, collapse=' '))
   x <- c(x, "# Spawning WAA")
-  x <- c(x, paste(replist$Projection_spawning_weight_at_age*1000, collapse=' '))
+  x <- c(x, paste(replist$wt_spawn_proj*1000, collapse=' '))
   x <- c(x, "# Fishery WAA")
-  x <- c(x, paste(replist$Projection_fishery_weight_at_age*1000, collapse=' '))
+  x <- c(x, paste(replist$wt_fsh_proj*1000, collapse=' '))
   x <- c(x, "# Fishery selex, averaged over last 5 years")
   ## This is wrong b/c ignores most recent year
   ## x <- c(x, paste(colMeans(tail(replist$Fishery_selectivity,
   ## 5)), collapse= ' '))
  ##  x <- c(x, paste(replist$Mean_fishery_selectivity, collapse='
   ##  '))
-  x <- c(x, paste(replist$Projection_fishery_selectivity, collapse=' '))
-  x <- c(x, "# current year starting NAA")
-  x <- c(x, paste(tail(replist$Numbers_at_age,1)*1000, collapse=' '))
+  x <- c(x, paste(replist$slctfsh_proj, collapse=' '))
+  x <- c(x, "# starting NAA")
+  x <- c(x, paste(naa*1000, collapse=' '))
   ind <- which(replist$years %in% 1978:(ayr-1))
-  recs <- replist$Recruits[ind]*1000
-  ssb <- replist$Expected_spawning_biomass[ind-1]*1000
+  recs <- replist$recruit[ind]*1000
+  ssb <- replist$Espawnbio[ind-1]*1000
   x <- c(x, paste(length(recs), " # num of recruits"))
   x <- c(x, "# Recruits from 1978 to this year -1 due to uncertain last year")
   x <- c(x, paste(recs, collapse=' '))
@@ -189,7 +185,8 @@ write_spm_dynamics <- function(replist, datlist, ayr, path){
   writeLines(x, con=file.path(path, 'goa_wp.txt'))
 }
 
-write_spm_setup <- function(ayr, path, catch){
+write_spm_setup <- function(fit, path){
+  ayr <- tail(fit$rep$years,1)
   x <- c()
   x <- c(x,paste("# proj input file written by write_proj_inputs on",
                  Sys.time()))
@@ -205,7 +202,7 @@ write_spm_setup <- function(ayr, path, catch){
   x <- c(x, "1 # flag to write bigfile")
   x <- c(x, "14 # number of proj years")
   x <- c(x, "1000 # number of simulations")
-  x <- c(x, paste(ayr, " # begin year"))
+  x <- c(x, paste(ayr, " # begin year is last assessment year"))
   x <- c(x, "1 # number of years with specified catch")
   x <- c(x, "1 # numberof species")
   x <- c(x, "0 # OY min")
@@ -216,113 +213,8 @@ write_spm_setup <- function(ayr, path, catch){
   x <- c(x, "0.75 # new alt 4 Fabc SPRs (unused?)")
   x <- c(x, "1 # num of TAC model categories")
   x <- c(x, "1 # TAC model indices")
-  x <- c(x, paste(ayr,catch,"# Catch in each year starting w/ begining NAA"))
+  #x <- c(x, '# no catch read in b/c starting in subsequent year ')
+  x <- c(x, paste(ayr, tail(fit$input$dat$cattot,1),"# Catch in each year starting w/ begining NAA"))
   writeLines(x, con=file.path(path, 'spm.dat'))
 }
 
-
-#' Write input files for the Projection module
-#'
-#' @param replist A list as read in by \link{read_rep}
-#' @param datlist A list as read in by \link{read_dat}
-#' @param path Directory to write in
-#'
-#' @return Nothing but writes three files
-#' @export
-write_proj_inputs <- function(replist, datlist, path=getwd()){
-  ## delete old files in case it fails it'll stop there
-  ff <- file.path(path, c("goa_wp.txt", "setup.dat",
-                          "spp_catch.dat"))
-  lapply(ff, function(x) if(file.exists(x)) file.remove(x))
-  ayr <- tail(replist$years,1)
-  write_proj_setup(ayr, path=path)
-  write_proj_catch(replist, ayr, path=path)
-  write_proj_dynamics(replist, datlist, ayr, path)
-}
-write_proj_setup <- function(ayr, path){
-  x <- c()
-  x <- c(x,paste("# proj input file written by write_proj_inputs on",
-                 Sys.time()))
-  x <- c(x, " std # run name")
-  x <- c(x, "7 # number of alt scenarios")
-  x <- c(x, paste(1:7, collapse=' '))
-  x <- c(x, "1 # flag to set TAC=ABC (1 is true)")
-  x <- c(x, "2 # SR type (1 ricker, 2 bholt")
-  x <- c(x, "1 # proj rec form (default: 1= use obs mean/SD")
-  x <- c(x, "0 # SR conditioning (0 means no)")
-  x <- c(x, "0.0 # turn off prior thing")
-  x <- c(x, "1 # flag to write bigfile")
-  x <- c(x, "14 # number of proj years")
-  x <- c(x, "1000 # number of simulations")
-  x <- c(x, paste(ayr, " # begin year"))
-  writeLines(x, con=file.path(path, 'setup.dat'))
-}
-
-write_proj_catch <- function(replist, ayr, path){
-  x <- c()
-  x <- c(x,paste("# proj input file written by write_proj_inputs on",
-                 Sys.time()))
-  x <- c(x, "1 # num years of catch")
-  x <- c(x, "1 # num species")
-  x <- c(x, "1343.248 # unused")
-  x <- c(x, "1943.248 # unused")
-  x <- c(x, "goa_wp.txt # input file name")
-  x <- c(x, "1 # ABC multipliers")
-  x <- c(x, "1 # pop scalars")
-  x <- c(x, "0.75 # new alt 4 Fabc SPRs (unused?)")
-  x <- c(x, "1 # num of TAC model categories")
-  x <- c(x, "1 # TAC model indices")
-  x <- c(x, "# Catch in each year starting w/ begining NAA")
-  ## Not the last year b/c this is data and if using retro option
-  ## it's full length
-  ind <- which(replist$years == ayr)
-  x <- c(x, paste(ayr, replist$Total_catch[ind]))
-  writeLines(x, con=file.path(path, 'spp_catch.dat'))
-}
-
-
-write_proj_dynamics <- function(replist, datlist, ayr, path){
-  x <- c()
-  x <-
-  c(x,paste("# proj input file written by write_proj_inputs on", Sys.time()))
-  x <- c(x, "goa_wp")
-  x <- c(x, "1 # Flag to tell if this is a SSL forage species")
-  x <- c(x, "0 # Flag to Dorn's version of a constant buffer")
-  x <- c(x, "1 # number of fisheries")
-  x <- c(x, "1 # number of sexes")
-  x <- c(x, paste(mean(tail(replist$Fishing_mortalities,5)), " # average F over last 5 years"))
-  x <- c(x, "1 # Author's F multiplier (to MaxPermissible)")
-  x <- c(x, "0.4 # ABC SPR")
-  x <- c(x, "0.35 # OFL SPR")
-  x <- c(x, "3.52 # Month of spawning")
-  x <- c(x, "10 # Number of ages")
-  x <- c(x, "1 # Fratio")
-  x <- c(x, "# Natural mortality")
-  x <- c(x, paste(replist$Natural_mortality, collapse=' '))
-  x <- c(x, "# Maturity")
-  x <- c(x, paste(datlist$mat, collapse=' '))
-  x <- c(x, "# Spawning WAA")
-  ## x <- c(x, paste(datlist$wt_spawn_proj*1000, collapse=' '))
-  x <- c(x, paste(replist$Projection_spawning_weight_at_age*1000, collapse=' '))
-  x <- c(x, "# Fishery WAA")
-  ##  x <- c(x, paste(datlist$wt_fsh_proj*1000, collapse=' '))
-  x <- c(x, paste(replist$Projection_fishery_weight_at_age*1000, collapse=' '))
-  x <- c(x, "# Fishery selex, averaged over last 5 years")
-  ## This is wrong b/c ignores most recent year
-  ## x <- c(x, paste(colMeans(tail(replist$Fishery_selectivity,
-  ## 5)), collapse= ' '))
- ##  x <- c(x, paste(replist$Mean_fishery_selectivity, collapse='
-  ##  '))
-  x <- c(x, paste(replist[[111]], collapse=' '))
-  x <- c(x, "# current year starting NAA")
-  x <- c(x, paste(tail(replist$Numbers_at_age,1)*1000, collapse=' '))
-  ind <- which(replist$years %in% 1978:(ayr-1))
-  recs <- replist$Recruits[ind]*1000
-  ssb <- replist$Expected_spawning_biomass[ind-1]*1000
-  x <- c(x, paste(length(recs), " # num of recruits"))
-  x <- c(x, "# Recruits from 1978 to this year -1 due to uncertain last year")
-  x <- c(x, paste(recs, collapse=' '))
-  x <- c(x, '# SSB from 1977 to this year-2 to match recruits')
-  x <- c(x, paste(ssb, collapse=' '))
-  writeLines(x, con=file.path(path, 'goa_wp.txt'))
-}

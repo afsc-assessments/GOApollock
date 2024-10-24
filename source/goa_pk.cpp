@@ -1337,6 +1337,7 @@ Type objective_function<Type>::operator() ()
   ADREPORT(log_q5);
   ADREPORT(log_q6);
   ADREPORT(endN);
+  REPORT(endN);
   ADREPORT(slctsrv1);
   ADREPORT(slctsrv2);
   ADREPORT(slctsrv3);

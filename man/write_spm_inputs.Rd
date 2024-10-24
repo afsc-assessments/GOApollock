@@ -2,24 +2,21 @@
 % Please edit documentation in R/proj_fns.R
 \name{write_spm_inputs}
 \alias{write_spm_inputs}
-\title{Write input files for the 'spm' projection module. Differs
-slightly from the old projection module.}
+\title{Write input files for the 'spm' projection module. Uses subsequent year's NAA
+(endN) to better match the assessment model dynamics of the terminal year.}
 \usage{
-write_spm_inputs(replist, datlist, path = getwd())
+write_spm_inputs(fit, path = NULL)
 }
 \arguments{
-\item{replist}{A list as read in by \link{read_rep}}
+\item{fit}{A fitted object from \code{fit_pk}.}
 
-\item{datlist}{A list as read in by \link{read_dat}}
-
-\item{path}{Directory to write in}
+\item{path}{Directory to write output files to}
 }
 \value{
-Nothing but writes files spm.dat, goa_wp.txt, and
-tacpar.dat (dummy file) to 'path' based on values in the
-replist and datlist objections
+Nothing but writes files spm.dat, goa_wp.txt, and tacpar.dat (dummy file)
+to 'path' based on values in the replist and datlist objections
 }
 \description{
-Write input files for the 'spm' projection module. Differs
-slightly from the old projection module.
+Write input files for the 'spm' projection module. Uses subsequent year's NAA
+(endN) to better match the assessment model dynamics of the terminal year.
 }
