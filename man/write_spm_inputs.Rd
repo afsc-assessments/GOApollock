@@ -10,13 +10,21 @@ write_spm_inputs(fit, path = NULL)
 \arguments{
 \item{fit}{A fitted object from \code{fit_pk}.}
 
-\item{path}{Directory to write output files to}
+\item{path}{Directory to write output files to, defaults to working directory.}
 }
 \value{
 Nothing but writes files spm.dat, goa_wp.txt, and tacpar.dat (dummy file)
-to 'path' based on values in the replist and datlist objections
+to 'path' based on values in \code{fit}
 }
 \description{
 Write input files for the 'spm' projection module. Uses subsequent year's NAA
 (endN) to better match the assessment model dynamics of the terminal year.
+}
+\details{
+Previous to 2024, approaches to using 'proj' and 'spm' took terminal NAA
+from the current year and the current year's catch as inputs in order to
+recreate the dynamics of the current year. However, with time-varying quantities
+and especially time-varying WAA there were often large mismatches of what the
+assessment and spm would produces for the terminal year. Starting in 2024, spm initiates
+at the beginning of the subsequent years so there can be no mismatch.
 }

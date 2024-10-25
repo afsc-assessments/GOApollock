@@ -56,29 +56,63 @@ get_fabc <- function(fit, ratio=.4, F=NULL){
               spr_at_F=sprF$ssb/R0))
 }
 
+
+#' Get table from projection output
+#' @param fit A model fit with \code{fit_pk}
+#' @param summary The spm_summary.csv object
+#' @param detail The spm_detail.csv object
+#' @export
+get_exec_table <- function(fit, summary, detail, maxABCratio=1){
+  if(maxABCratio!=1) stop("Function does not yet support an abc reduction")
+  replist <- fit$rep
+  ayr <- tail(replist$years,1)
+  M <- c(.3,.3)
+  means <- detail %>% filter(Year > ayr & Year <= ayr+2) %>%
+    group_by(Alt, Year, Stock) %>%
+    summarize_all(mean) %>% ungroup
+  sumbio <- tail(replist$Esumbio,2)*1e6
+  ref <- filter(summary, is.na(Alt))
+  B100 <- filter(ref, variable=='SSB_100')$value %>% round(-3)
+  B40 <- filter(ref, variable=='SSB_40')$value %>% round(-3)
+  B35 <- filter(ref, variable=='SSB_ofl')$value %>% round(-3)
+  fofl <- filter(ref, variable=='F_ofl')$value %>% round(3)
+  fabc <- filter(ref, variable=='F_abc')$value %>% round(3)
+  ssb <- filter(summary, Alt==1 & Year %in% c(ayr+1, ayr+2) & variable == 'SSB_mean')$value
+  ofl <- filter(means,  Alt==1 & Year %in% c(ayr+1, ayr+2)) %>% pull(OFL) %>% round(0)
+  abc <- maxabc <- filter(means,  Alt==1 & Year %in% c(ayr+1, ayr+2)) %>% pull(ABC) %>% round(0)
+  maxfabc <- fabc * maxABCratio
+  tab <- rbind(M, sumbio, ssb, B100, B40, B35, fofl, maxfabc, fabc,ofl,maxabc,abc)
+  tab <- as.data.frame(tab) %>% setNames(c(ayr+1,ayr+2)) %>%
+    cbind(name=row.names(tab),.)
+  row.names(tab) <- NULL
+  tab
+  return(tab)
+}
+
+
 #' Get table from projection output
 #' @param replist A list as read in by \link{read_rep}
 #' @param bigfile A data frame of full projection scenario
 #'   outputs
 #' @export
-get_exec_table <- function(replist, bigfile, maxABCratio=1){
+get_exec_table_old <- function(replist, bigfile, maxABCratio=1){
   ayr <- tail(replist$years,1)
   M <- c(.3,.3)
-  means <- bigfile %>% filter(Yr > ayr & Yr <= ayr+2) %>%
-    group_by(Alternative, Yr, Spp, SpNo) %>%
+  means <- bigfile %>% filter(Year > ayr & Year <= ayr+2) %>%
+    group_by(Alt, Year, Stock) %>%
     summarize_all(mean) %>% ungroup
   sumbio <- tail(replist$Esumbio,2)*1e6
-  ssb <- filter(means,  Alternative==1) %>% pull(SSB) %>%
+  ssb <- filter(means,  Alt==1) %>% pull(SSB) %>%
     round(0)
-  if('B0' %in% names(means))
-    bfrac <- filter(means, Alternative==1) %>% select(B0,B40,B35) %>%
-      round(-3) %>% t
-  else {warning("no B0 col"); bfrac=matrix(NA,3,2)}
-  fofl <- filter(means,  Alternative==2) %>% pull(FOFL) %>% round(3)
-  fabc <-filter(means, Alternative==1) %>% pull(F) %>% round(3)
+  if('B100' %in% names(means))
+    bfrac <- filter(means, Alt==1) %>% select(B100,B40,B35) %>%
+    round(-3) %>% t
+  else {warning("no B100 col"); bfrac=matrix(NA,3,2)}
+  fofl <- filter(means,  Alt==2) %>% pull(F) %>% round(3)
+  fabc <-filter(means, Alt==1) %>% pull(F) %>% round(3)
   maxfabc <- fabc
-  ofl <- filter(means,  Alternative==2) %>% pull(OFL) %>% round(0)
-  maxabc <- filter(means,  Alternative==1) %>% pull(Catch) %>% round(0)
+  ofl <- filter(means,  Alt==2) %>% pull(OFL) %>% round(0)
+  maxabc <- filter(means,  Alt==1) %>% pull(Catch) %>% round(0)
   abc <- maxabc*maxABCratio
   tab <- rbind(M, sumbio, ssb, bfrac, fofl, maxfabc, fabc,ofl,maxabc,abc)
   tab <- as.data.frame(tab) %>% setNames(c(ayr+1,ayr+2)) %>%
@@ -93,7 +127,7 @@ get_exec_table <- function(replist, bigfile, maxABCratio=1){
 format_exec_table <- function(tab){
   ## kludgy way but its finicky
   tab0 <- tab
-  for(i in c(1:5,9:11)){
+  for(i in c(2:6,10:12)){
     for(j in 2:3){
       tab[i,j] <- formatC(tab0[i,j], format='d', big.mark=',')
     }
@@ -101,21 +135,30 @@ format_exec_table <- function(tab){
   tab
 }
 
+
+
 #' Write input files for the 'spm' projection module. Uses subsequent year's NAA
 #' (endN) to better match the assessment model dynamics of the terminal year.
 #'
 #' @param fit A fitted object from \code{fit_pk}.
-#' @param path Directory to write output files to
+#' @param path Directory to write output files to, defaults to working directory.
 #'
 #' @return Nothing but writes files spm.dat, goa_wp.txt, and tacpar.dat (dummy file)
-#'   to 'path' based on values in the replist and datlist objections
+#'   to 'path' based on values in \code{fit}
+#'
+#' @details Previous to 2024, approaches to using 'proj' and 'spm' took terminal NAA
+#'   from the current year and the current year's catch as inputs in order to
+#'   recreate the dynamics of the current year. However, with time-varying quantities
+#'   and especially time-varying WAA there were often large mismatches of what the
+#'   assessment and spm would produces for the terminal year. Starting in 2024, spm initiates
+#'   at the beginning of the subsequent years so there can be no mismatch.
 #' @export
 #'
 write_spm_inputs <- function(fit, path=NULL){
   stopifnot(is.pkfit(fit))
   if(is.null(path)) {
     path <- getwd()
-    message("No path provided so writing to working directory ", path)
+    #message("No path provided so writing to working directory ", path)
   }
   replist <- fit$rep
   datlist <- fit$input$dat
@@ -141,7 +184,8 @@ write_spm_inputs <- function(fit, path=NULL){
 write_spm_dynamics <- function(fit, path){
   replist <- fit$rep; datlist <- fit$input$dat
   ayr <- tail(replist$years,1)
-  naa <- tail(replist$N,1)
+  # naa <- tail(replist$N,1)
+  naa <- head(replist$N_proj,1)
   x <- c()
   x <-
   c(x,paste("# proj input file written by write_spm_inputs on", Sys.time()))
@@ -154,7 +198,7 @@ write_spm_dynamics <- function(fit, path){
   x <- c(x, "1 # Author's F multiplier (to MaxPermissible)")
   x <- c(x, "0.4 # ABC SPR")
   x <- c(x, "0.35 # OFL SPR")
-  x <- c(x, "3.52 # Month of spawning")
+  x <- c(x, "3.52 # Month of spawning (mid Feb, yrfrac=.21)")
   x <- c(x, paste(max(replist$ages), " # Number of ages"))
   x <- c(x, "1 # Fratio")
   x <- c(x, "# Natural mortality")
@@ -166,11 +210,6 @@ write_spm_dynamics <- function(fit, path){
   x <- c(x, "# Fishery WAA")
   x <- c(x, paste(replist$wt_fsh_proj*1000, collapse=' '))
   x <- c(x, "# Fishery selex, averaged over last 5 years")
-  ## This is wrong b/c ignores most recent year
-  ## x <- c(x, paste(colMeans(tail(replist$Fishery_selectivity,
-  ## 5)), collapse= ' '))
- ##  x <- c(x, paste(replist$Mean_fishery_selectivity, collapse='
-  ##  '))
   x <- c(x, paste(replist$slctfsh_proj, collapse=' '))
   x <- c(x, "# starting NAA")
   x <- c(x, paste(naa*1000, collapse=' '))
@@ -202,8 +241,8 @@ write_spm_setup <- function(fit, path){
   x <- c(x, "1 # flag to write bigfile")
   x <- c(x, "14 # number of proj years")
   x <- c(x, "1000 # number of simulations")
-  x <- c(x, paste(ayr, " # begin year is last assessment year"))
-  x <- c(x, "1 # number of years with specified catch")
+  x <- c(x, paste(ayr+1, " # begin year is assessment year + 1"))
+  x <- c(x, "0 # number of years with specified catch")
   x <- c(x, "1 # numberof species")
   x <- c(x, "0 # OY min")
   x <- c(x, "2e6 # OY max")
@@ -214,7 +253,7 @@ write_spm_setup <- function(fit, path){
   x <- c(x, "1 # num of TAC model categories")
   x <- c(x, "1 # TAC model indices")
   #x <- c(x, '# no catch read in b/c starting in subsequent year ')
-  x <- c(x, paste(ayr, tail(fit$input$dat$cattot,1),"# Catch in each year starting w/ begining NAA"))
+  x <- c(x, paste(ayr, 0,"# dummy catch"))
   writeLines(x, con=file.path(path, 'spm.dat'))
 }
 

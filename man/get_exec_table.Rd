@@ -4,13 +4,14 @@
 \alias{get_exec_table}
 \title{Get table from projection output}
 \usage{
-get_exec_table(replist, bigfile, maxABCratio = 1)
+get_exec_table(fit, summary, detail, maxABCratio = 1)
 }
 \arguments{
-\item{replist}{A list as read in by \link{read_rep}}
+\item{fit}{A model fit with \code{fit_pk}}
 
-\item{bigfile}{A data frame of full projection scenario
-outputs}
+\item{summary}{The spm_summary.csv object}
+
+\item{detail}{The spm_detail.csv object}
 }
 \description{
 Get table from projection output
