@@ -222,13 +222,12 @@ get_std <- function(fits, slot=NULL, year.scale=1) {
 }
 
 #' Extract report list from fitted models
-#' @param fits A single model or list of models as returned by
-#'   \code{\link{fit_pk}}
-#' @param slot Which slot to extract and format into data.frame
-#'   for easy plotting. If NULL (default) the whole report file
-#'   is returned.
-#' @return Either a list of reports or a formatted data.frame
-#'   containing the specified slot variable.
+#' @param fits A single model or list of models as returned by \code{\link{fit_pk}}
+#' @param slot Which slot to extract and format into data.frame for easy plotting. If
+#'   NULL (default) the whole report file is returned. If a vector of character
+#'   strings then separate calls are done and rbinded together.
+#' @return Either a list of reports or a formatted data.frame containing the
+#'   specified slot variable.
 #' @export
 get_rep <- function(fits, slot=NULL) {
   ## single fit
@@ -239,7 +238,12 @@ get_rep <- function(fits, slot=NULL) {
     out <- lapply(fits, function(x) x$rep)
   }
   if(!is.null(slot)){
-    out <- mymelt(out, slot=slot)
+    if(length(slot)>1){
+      # use recursion to get multiple slots
+      out <- lapply(slot, function(x) get_rep(fits,x))
+    } else {
+      out <- mymelt(out, slot=slot)
+    }
     if(nrow(out)==0)
       warning("Slot", slot, "was not found in report file")
   }
@@ -716,16 +720,6 @@ fit_profile <- function(fits, xseq, par=c('M','q2', 'q6'), plot=TRUE, maxNLL=1,
   xseq <- log(xseq)
   isq6 <- TRUE
 }
-  xx <- c("Total Catch", "Fishery Ages", "Fishery Lengths", "Shelikof 3+ Index",
-          "Shelikof 3+ Ages", "Shelikof Lengths", "NMFS BT Index",
-          "NMFS BT Ages", "NMFS BT Lengths", "Unused", "ADF&G Index",
-          "ADF&G Ages", "ADF&G Lengths", "Shelikof Age 1",
-          "Shelikof Age 2", "Summer AT Index", "Summer AT Ages",
-          "Recruit Penalties", "TV Selex Penalties", "Proj Recruits",
-          "TV Q penalties", "Unused", "Priors",
-          "Unused", 'Ecov_exp', 'Ecov_obs')
-  components <- data.frame(component=1:26, name=xx)#, ctype=ctype, csurv=csurv, name2=paste(csurv, ctype))
-
   tmp <- list()
   for(jj in 1:nmods){
     if(nmods==1) fit <- fits else fit <- fits[[jj]]
@@ -753,12 +747,11 @@ fit_profile <- function(fits, xseq, par=c('M','q2', 'q6'), plot=TRUE, maxNLL=1,
       k <- k+1
     }
     tmp[[jj]] <-
-      get_rep(tmpfits, 'loglik')    %>% select(-name)  %>%
-      group_by(version) %>%
-      mutate(component=1:26, par=version, nll=-value) %>%
-      mutate(version=fit$version) %>% select(-value)
+      get_nll_components(tmpfits) %>% bind_rows %>%
+      mutate(par=version, version=fit$version, nll=value) %>%
+        select(-name)
   }
-  out <- bind_rows(tmp) %>% merge(components, by='component')
+  out <- bind_rows(tmp)
   if(isM) out$par <- out$par*.3
   if(isq2 | isq6) out$par <- exp(out$par)
   nlls <- group_by(out, version, component) %>%
@@ -767,8 +760,8 @@ fit_profile <- function(fits, xseq, par=c('M','q2', 'q6'), plot=TRUE, maxNLL=1,
   totals <- nlls %>% group_by(par,version) %>%
     summarize(nll=sum(nll), .groups='drop') %>%
     group_by(version) %>% mutate(name='total', deltaNLL=nll-min(nll))
-  mins <- group_by(nlls, name, version) %>% filter(deltaNLL==min(deltaNLL))
-  g <- ggplot(nlls, aes(par, deltaNLL, color=name)) +
+  mins <- group_by(nlls, component, version) %>% filter(deltaNLL==min(deltaNLL))
+  g <- ggplot(nlls, aes(par, deltaNLL, color=component)) +
     geom_line()+facet_wrap('version') +
     geom_line(data=totals, mapping=aes(color=NULL), lwd=1) +
     geom_point(data=mins, size=2) +
