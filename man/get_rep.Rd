@@ -7,16 +7,15 @@
 get_rep(fits, slot = NULL)
 }
 \arguments{
-\item{fits}{A single model or list of models as returned by
-\code{\link{fit_pk}}}
+\item{fits}{A single model or list of models as returned by \code{\link{fit_pk}}}
 
-\item{slot}{Which slot to extract and format into data.frame
-for easy plotting. If NULL (default) the whole report file
-is returned.}
+\item{slot}{Which slot to extract and format into data.frame for easy plotting. If
+NULL (default) the whole report file is returned. If a vector of character
+strings then separate calls are done and rbinded together.}
 }
 \value{
-Either a list of reports or a formatted data.frame
-containing the specified slot variable.
+Either a list of reports or a formatted data.frame containing the
+specified slot variable.
 }
 \description{
 Extract report list from fitted models
