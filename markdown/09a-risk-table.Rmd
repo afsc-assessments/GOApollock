@@ -1,133 +1,57 @@
-### Should the ABC be reduced below the maximum permissible ABC?
+
+### Risk Table and ABC Recommendation
 The SSC in its December 2018 minutes recommended that all
 assessment authors use the risk table when determining whether to
 recommend an ABC lower than the maximum permissible.  The
-following template is used to complete the risk table, which was
-updated in 2023 to reflect only three levels of concern:
-
-```{r}
- data.frame(level = c("Level 1: No Concern",
-                      "Level 2: Major Concern",
-                      "Level 3: Extreme concern"),
-            assess = c("Typical to moderately increased uncertainty/minor unresolved issues in assessment.", 
-                       "Major problems with the stock assessment; very poor fits to data; high level of uncertainty; strong retrospective bias.",
-                       "Severe problems with the stock assessment; severe retrospective bias. Assessment considered unreliable."),
-            pop = c("Stock trends are typical for the stock; recent recruitment is within normal range.",
-                    "Stock trends are highly unusual; very rapid changes in stock abundance, or highly atypical recruitment patterns.",
-                    "Stock trends are unprecedented; More rapid changes in stock abundance than have ever been seen previously, or a very long stretch of poor recruitment compared to previous patterns."),
-            enviro = c("No apparent environmental/ecosystem concerns",
-                       "Multiple indicators showing consistent adverse signals a) across the same trophic level as the stock, and/or b) up or down trophic levels (i.e., predators and prey of the stock)",
-                       "Extreme anomalies in multiple ecosystem indicators that are highly likely to impact the stock; Potential for cascading effects on other ecosystem components"),
-            fish = c("No apparent fishery/resource-use performance and/or behavior concerns",
-                     "Multiple indicators showing consistent adverse signals a) across different sectors, and/or b) different gear types",
-                     "Extreme anomalies in multiple performance  indicators that are highly likely to impact the stock")) %>% 
-   flextable() %>% 
-     font(fontname = "Times", part = "all") %>% 
-     width(j = ~ assess, width = 1.5) %>% 
-     width(j = ~ pop, width = 2) %>% 
-     width(j = ~ enviro, width = 1.5) %>% 
-     width(j = ~ fish, width = 1.5) %>% 
-     set_header_labels(level = "",
-                     assess = "Assessment-related considerations",
-                     pop = "Population dynamics considerations",
-                     enviro = "Environmental/ecosystem considerations",
-                     fish = "Fishery Performance") %>% 
-   font(fontname = "Times", part = "all") %>% 
-   fontsize(size = 10) %>% 
-   theme_vanilla() %>% 
-   italic(part = "header") 
-```
-
-The table is applied by evaluating the severity of four types of
-considerations that could be used to support a scientific
-recommendation to reduce the ABC from the maximum permissible.
-These considerations are stock assessment considerations,
-population dynamics considerations, environmental/ecosystem
-considerations, and fishery performance.  Examples of the types
-of concerns that might be relevant include the following:
-
-1.  Assessment considerations---data-inputs: biased ages,
-    skipped surveys, lack of fishery-independent trend data;
-    model fits: poor fits to fits to fishery or survey data,
-    inability to simultaneously fit multiple data inputs; model
-    performance: poor model convergence, multiple minima in the
-    likelihood surface, parameters hitting bounds; estimation
-    uncertainty: poorly-estimated but influential year classes;
-    retrospective bias in biomass estimates.
-2.  Population dynamics considerations---decreasing biomass
-    trend, poor recent recruitment, inability of the stock to
-    rebuild, abrupt increase or decrease in stock abundance.
-3.  Environmental/ecosystem considerations---adverse trends in
-    environmental/ecosystem indicators, ecosystem model results,
-    decreases in ecosystem productivity, decreases in prey
-    abundance or availability, increases or increases in predator
-    abundance or productivity.
-4.  Fishery performance---fishery CPUE is showing a contrasting
-    pattern from the stock biomass trend, unusual spatial pattern
-    of fishing, changes in the percent of TAC taken, changes in
-    the duration of fishery openings.
+Introduction to the Gulf of Alaska SAFE contains details on how
+the risk table is implemented.
 
 #### Assessment considerations
 
-Several important assessment considerations arose in 2023. The
-new abundance indices had conflict, with two going up and two
-going down. The two surveys which cover the whole extent of the
-Gulf were both up more than 70% from two years ago, while the two
+Several important assessment considerations arose in 2023 which
+are revisited here in light of new data and models. In 2023 the new
+abundance indices had conflict, with two going up and two going
+down. The two surveys which cover the whole extent of the Gulf
+were both up more than 70% from three years ago, while the two
 with more limited spatial coverage were down from 2022. Not
 surprisingly the model was not able to fit these data points, and
 in particular the NMFS bottom trawl index has not fit well since
-2015 (Fig. 1.\@ref(fig:index-fits)). 
-
+2015 (Fig. 1.\@ref(fig:index-fits)). Two surveys were completed
+in 2024. The Shelikof index was higher, but lower than predicted,
+similar to 2023. The ADF&G index was comparable to 2023. No new
+models were able to resolve this conflict, and it remains a
+concern.
 
 The Shelikof abundance estimate is unexpectedly low and comprised
 predominantly of pollock greater than 40 cm, but also coincides
 with increased estimates of biomass in outlying areas, like the
-Chirikof shelf break and Shumagin islands, relative to recent
+Chirikof shelf break, relative to recent
 years (Fig. 1.\@ref(fig:biomass-area-srv1)). However, biomass
 estimates in the outlying areas are not abnormally high compared
 to historical surveys and the Shelikof estimate still constitutes
 the largest winter spawning area by far. This low Shelikof
 estimate is thus not well explained by spatial shifts. A mismatch
 between spawn timing and survey timing is another reasonable
-hypothesis, as the two were linked statistically via a
-relationship with catchability as was presented to the Groundfish
-Plan Team in September 2022. However, the covariate values in
-2023 would suggest only moderately lower catchability and likely
-also not explain the poor fit to the new data point. In the end,
-the fit is poor but not unprecedented with this stock, and the
-previous few years have fit very well. We therefore believe there
-is no reason for a substantial concern.
+hypothesis, but inclusion of this covariate into model 23b did
+not resolve it. In the end, the fit is poor but not unprecedented
+with this stock, and the previous few years have fit very well.
+We therefore believe there is no reason for a substantial
+concern.
 
 In contrast, the NMFS bottom trawl survey has fit poorly for the
-last 5 biennial surveys (since 2015). The expected trend is the
-opposite of the observed trend. The consistency of this misfit is
-a larger concern, particularly because the prior on catchability
-for this index is an important contributor to estimating the
-scale of the stock. We therefore consider this an elevated stock
-assessment concern.
+last 4 out of 5 biennial surveys. The expected trend is the
+opposite of the observed trend in some years. The consistency of
+this misfit is a larger concern, particularly because the prior
+on catchability for this index is an important contributor to
+estimating the scale of the stock. We therefore consider this an
+elevated stock assessment concern.
 
-Finally, we highlight the poor retrospective pattern estimated
-this year. The estimated $\rho=-0.308$ is considered significant,
-with substantial and consistent increases of estimated SSB as
-data are added to the model. We hypothesized that the inflexible
-time-varying catchability for the winter Shelikof survey, coupled
-with the notably low estimate in 2023, could exaggerate this
-retrospective pattern. To test this hypothesis we estimated the
-process error for the random walk (assumed to be 0.05 in the base
-model) to allow it increased flexibility. This type of estimation
-is possible because model 23.0 is in TMB. The estimated value of
-the process error was 0.36, a substantial increase as expected,
-but the retrospective pattern was actually worse and decreased to
--0.40 (results not shown). It thus appears that this
-retrospective pattern is not driven by an inadequately flexible
-catchability for the Shelikof survey. Further explorations of
-causes and reasonable solutions to minimize this significant
-retrospective pattern will be done, but for now we highlight it
-as a stock assessment concern.
+Previous assessments had significant retrospective patterns, but
+they were improved this year and not a concern.
 
-Between the poor model fits and significant retrospective pattern
-we assign level 2: major concerns with assessment
-considerations. 
+Although there are poor model fits to some biomass indices, they
+do not equate to a major concern. We therefore assign level 1:
+normal for assessment considerations.
 
 #### Population dynamics considerations
 
@@ -140,150 +64,132 @@ increased substantially over the last few years, including a 9.2%
 and 9.9% increase in 2022 and 2023 with additional data, an
 increase of almost 10 billion fish from 2020 to 2023. For
 context, this increase alone would be considered a large cohort,
-and only magnifies the large impact it has on the population
-dynamics over the last 10 years. However, the 2012 year class,
+and only magnifies the already large impact it has on the population
+dynamics over the last 10 years. However, the 2012 cohort,
 now in the 10+ age class, is no longer the predominant one in the
-fishery and two large ones (2017 and 2018) have already entered
-the fishery, with another large one in 2020 to enter in the
-coming years (Figs. 1.\@ref(fig:ages-fsh) and
+fishery and three large ones (2017, 2018, and 2020) have already
+entered the fishery (Figs. 1.\@ref(fig:ages-fsh) and
 1.\@ref(fig:ssb-status-rec)), resulting in a return to normal age
-diversity and population dynamics.
+diversity and population dynamics (Fig. 1.\@ref(fig:fsh-chars)).
 
-A new phenomenon emerged in the last handful of years that is
-worth highlighting. Many of the estimates of recent cohort sizes
-are abnormally small compared to previous estimates as seen in
-the following figure.
-
-```{r} 
- addfig("log_recruits.png")
-```
-
-These recruits have implications for $\sigma_R$. We used TMB's
-ability to estimate process errors during a retrospective peel to
-test how sensitive the quantity is to these cohorts (below). We
-found a big increase from 2015 to 2016, and again from 2022
-to 2023. This demonstrates that these small cohorts have a strong
-influence on the perception of the variation in recruitment. A
-value of $\sigma_R$ closer to 1.8 is estimated by the model using
-data through 2023, but $\sigma_R=1.3$ is assumed in the model
-this year. Future work will be done to further corroborate the
-small cohorts and explore whether recruitment variation should be
-updated. For now we consider 1.3 a more reasonable value.
-
-```{r}
- addfig("sigmaR_ests.png")
-```
-
-These vanishingly small cohorts are clear aberrations and violate
-the statistical assumption of the assessment, namely that
-log-recruitment is normally distributed. They also are
-consistently estimated (Fig. 1\@ref(fig:retro-recruits)) and
-corroborated by larval surveys. In other words, the estimates
-appear justified by the data. Whether this shift is caused by
-environmental forcing or other factors is unclear. However, from
-a population dynamics perspective, which considers recruitment in
-natural space, the effects are expected to be minimal. This is
-because the cohorts are not expected to contribute to the
-spawning stock whether they are very small or exceptionally
-small. It is the large cohorts that drive the population dynamics
-in the end. So while we highlight these abnormal recruitment
-failures, we do not believe it rises to the level of a major
-concern. We therefore give a level 1: no concern to population
-dynamics considerations.
+The 2023 assessment highlighted a new phenomenon of concern,
+specifically vanishingly small recent cohort estimates. This
+issue was identified and resolved in model 23c and thus is no
+longer a concern here.
 
 #### Environmental/Ecosystem considerations
-Appendix 1A provides a detailed look at environmental/ecosystem
-considerations specific to this stock within the ecosystem and
-socioeconomic profile (ESP). Broad-scale information on
-environmental and ecosystem considerations are provided by the
-Gulf of Alaska Ecosystem Status Report (GOA ESR;
-@ferriss2022a). The text below summarizes ecosystem information
+The most recent data available suggest an ecosystem risk Level 1
+– Normal: “No apparent environmental/ecosystem concerns.” This
+score is informed by ocean temperatures within optimal ranges for
+pollock life stages, average to above average prey abundance,
+reduced levels of competition, and moderate levels of predation.
+Appendix 1A [@Shotwell2024] provides a detailed look at
+environmental/ecosystem considerations specific to this stock
+within the ecosystem and socioeconomic profile (ESP). Broad-scale
+information on environmental and ecosystem considerations are
+provided by the Gulf of Alaska Ecosystem Status Report
+[@Ferriss2024]. The text below summarizes ecosystem information
 related to GOA pollock provided from both the ESP and GOA ESR.
 
-**Environmental Processes:** The 2023 ocean temperatures are all
-within known optimal ranges for pollock life history stages
-(Feb-May 150-300m: spawning 1-7°C, Mar-Apr 0-200m: egg 5-6°C,
-Apr-Jul surface: larva 3-7°C, as referenced in the ESP, Appendix
-1A). Western GOA temperatures at depth on the shelf were
-approximately average. Surface waters were approximately average/
-cooler than average in the winter, spring, and fall with warmer
-waters in the summer (Satellite: @lemagie2023a; Appendix 1A:
-Callahan, Seward Line: @danielson2023a, NOAA bottom trawl:
-@o2023a, Shelikof: @axler2023a). The central GOA experienced
-below average marine heatwave events this year, a decrease from
-last year (Appendix 1A: Barbeaux). The mean direction of the
-spring wind was southwest down Shelikof Strait suggesting
-retention in suitable larval habitat but sustained April offshore
-gap winds near Kodiak may have altered advective patterns
-(Appendix 1A: Rogers). Over the western and central GOA, spring
-chlorophyll-a concentrations were below average and the peak
-spring bloom was considerably late (Satellite, Appendix 1A:
-Callahan). Upcoming 2024 winter and spring surface temperatures
-are predicted to be warmer than average, in alignment with El
-Niño conditions, potentially impacting larval pollock survival
-(depending on intensity and duration of the warming event).
+**Environmental Processes**: 
+The 2023 ocean temperatures are all within known
+optimal ranges for pollock life history stages (Feb-May 150-300m:
+spawning 1-7°C, Mar-Apr 0-200m: egg 5-6°C, Apr-Jul surface: larva
+3-7°C, as referenced in the ESP, Appendix 1A). The 2023/2024 El
+Niño event brought warmer surface temperatures to the GOA in the
+winter, but it was moderate and short-lived, resulting in
+approximately average surface temperatures by spring in the
+western GOA and continued warm surface waters through the spring
+in the eastern GOA. Despite warmer than average surface
+temperatures averaged across the western GOA shelf in January
+(5.1°C, satellite-derived; @Lemagie2024a), NOAA’s January acoustic
+survey in Shelikof Str. (key spawning habitat and time) observed
+cooler temperatures in the top 10m (3.2°C) and showed no evidence
+of warmth at depth (4°C at 100m; @Jones2024). Surface waters in
+the western GOA cooled to approximately average temperatures in
+March, and remained average through early spring and fall with
+warmer waters in the summer (Satellite: @Lemagie2024a; Appendix
+1A: Callahan, Seward Line: @Danielson2024). The central GOA
+experienced no marine heatwave events this year, a decrease from
+last year (Appendix 1A: Barbeaux). The north/south component of
+the spring wind direction was toward the west during spring 2024
+suggesting neutral retention in suitable larval habitat (Appendix
+1A: Rogers). Upcoming 2025 winter and spring surface temperatures
+are predicted to be cooler than average, din alignment with weak
+La Nina condition [@Lemagie2024b].
 
-**Prey**: Zooplankton biomass were below average to average on
-the GOA shelf in the spring and summer. Zooplankton biomass in
-the WGOA progressed from below average in the spring (lower small
-and calanoid copepod biomass and higher euphausiid biomass) to
-improved conditions in the summer (above average biomass of large
-calanoid copepods and euphausiids, but continued lower small
-copepod biomass; Appendix 1A: Rogers, Shelikof St., and Seward
-Line, @hopcroft2023a). Summer planktivorous foraging conditions
-were somewhat improved with above average large calanoid copepod
-and euphausiid biomass, but continued lower small copepod biomass
-(Shelikof, @kimmel2023a). Planktivorous seabird reproductive
-success, an indicator of zooplankton availability and nutritional
-quality, was approximately average just south of Kodiak (Chowiet
-Island), and in the central GOA (Middleton Island)
-(@drummond2023a, @whelan2023a, Appendix 1A). Adult and juvenile
-fish conditions were below average (Bottom trawl survey,
-@o2023a; winter acoustic survey, Appendix 1A:
-Monnahan). Percent euphausiids in the diet of juveniles was
-slightly above average (Appendix 1A: Aydin). Catches of larval
-and YOY pollock in spring and summer surveys were low (Shelikof
-St, @rogers2023a, Appendix 1A: Rogers, Kodiak beach seine survey,
-Appendix 1A: Laurel), suggesting less productive feeding
-conditions in the nearshore for larval pollock.
+**Prey**: 
+Zooplankton biomass, primary prey for adult and juvenile pollock,
+was average to above average on the GOA shelf in the spring and
+summer. Spring zooplankton biomass along the central GOA Seward
+Line included above average euphausiids, below average large
+copepods, and average small copepods [@Hopcroft2024].
+Planktivorous seabird reproductive success, an indicator of
+zooplankton availability and nutritional quality, was generally
+above average and increased from 2023 [@Drummond2024;@Whelan2024,
+Appendix 1A: Zador]. Catches of YOY pollock in the summer beach
+seine survey was the highest on record (Kodiak beach seine
+survey, Appendix 1A: Laurel), suggesting productive feeding
+conditions in the nearshore for larval pollock. Adult and
+juvenile fish conditions were below average but slightly improved
+from 2023 (winter acoustic survey, Appendix 1A: Monnahan). GOA
+forage fish prey base was average to above average in 2024
+(similar to 2023). Capelin continues to rebound in the GOA
+[@McGowan2024;@Arimitsu2024], and herring continue to have
+relatively elevated populations supported by the strong 2016 and
+2020 year classes [@Hebert2024]. Forage species that are
+relatively lower in abundance include eulachon, sandlance, and
+juvenile salmon. The reproductive success of piscivorous, diving
+seabirds (with an overlapping prey base with juvenile sablefish),
+was generally above average across the GOA [@Drummond2024;@Whelan2024].
 
-**Predators and Competitors**: Predation pressure from key
-groundfish species (arrowtooth flounder, Pacific cod, Pacific
-halibut, and potentially sablefish) is expected to be
-moderate. Pacific cod, P. halibut, and arrowtooth flounder
-biomass have remained relatively low (@hulson2023a,
-@whorton2023a, Appendix 1A: Shotwell). The sablefish population
-has had multiple large age classes since 2016, potentially adding
-predation pressure to pollock prior to moving to adult slope
-habitat (sablefish assessment, @goethel2023a, Appendix
-1A). Western GOA Steller sea lions were not reassessed in 2023
-but remain lower than previous biomass peaks
-(@sweeney2022a). Potential competitors include large returns of
-pink salmon (@whitehouse2023a, @vulstek2023a), a relatively large
-population of Pacific ocean perch (Assessment @hulson2022a,
-Appendix 1A), large year classes of juvenile sablefish
-(Assessment, @goethel2023a, Appendix 1A).
-
+**Predators and Competitors**: 
+Predation pressure from key groundfish species (arrowtooth
+flounder, Pacific cod, Pacific halibut, and potentially
+sablefish) is expected to be moderate. Pollock biomass consumed
+by predators in the multispecies model (Pacific cod, Pacific
+halibut, pollock, and arrowtooth flounder) remains low similar to
+2023 (Appendix 1A: Adams). The sablefish population has had
+multiple large age classes, 2022 potentially being the most
+recent, potentially adding predation pressure to pollock prior to
+moving to adult slope habitat (@Goethel2024; Appendix
+1A). Western GOA Steller sea lions were not reassessed in
+2023/2024 but remain lower than previous biomass peaks (K.
+Sweeney, 2022). Potential competitors include relatively low
+returns of pink salmon [@Whitehouse2024;@Vulstek2024], a
+relatively large population of Pacific ocean perch (assessment,
+@hulson2023a, Appendix 1A), and large year classes of juvenile
+sablefish (assessment, @Goethel2024, Appendix 1A).
 
 #### Fishery performance
 Trends in effort-weighted fishery CPUE were examined in the ESP
-(Appendix 1A) for two seasons, the pre-spawning fishery (A and B
-seasons) and the summer/fall fishery (C and D seasons). Fishery
-CPUE is either above (A and B seasons) or close to (C and D
-seasons) the long-term average, and is very consistent with the
-abundance trend of exploitable biomass from the assessment. No
-concerns regarding fishery performance were identified and this
-element was given a score of 1.
+(Appendix 1A) for two seasons, the `r year` pre-spawning fishery
+(first trimester; A season) and the `r year-1` summer/fall
+fishery (third trimeseter; B season). Fishery CPUE is above (A)
+or close to (B) the long-term average, and is very consistent
+with the abundance trend of exploitable biomass from the
+assessment.
 
+The fishery in the central Gulf (620 and 630) was closed on
+September 25, 2024 due to exceedence of king salmon bycatch. This
+is the first closure since it was put in place in 2010, and
+consequently about 50 kt of pollock TAC were left, reducing the
+expected catch in 2024. The estimated 2024 catch includes this
+closure, and thus is in the model. So while abnormal and
+noteworthy, the closure does not affect the risk of overfishing
+and thus is not considered in the risk table.
+
+No concerns regarding fishery performance were
+identified and this element was given a score of 1.
 
 #### Summary and ABC recommendation
 
 ```{r}
-l1 = "Level 1: No concern"
-l2 = "Level 2: Major concern"
+l1 = "Level 1: Normal"
+l2 = "Level 2: Increased concern"
 l3 = "Level 3: Extreme concern"
 
-data.frame(assess = l2,
+data.frame(assess = l1,
            pop = l1,
            enviro = l1,
            fish = l1) %>%
@@ -295,8 +201,8 @@ data.frame(assess = l2,
     set_header_labels(level = "",
                     assess = "Assessment-related considerations",
                     pop = "Population dynamics considerations",
-                    enviro = "Environmental/ecosystem considerations",
-                    fish = "Fishery Performance") %>%
+                    enviro = "Ecosystem considerations",
+                    fish = "Fishery Performance considerations related to the health of the stock") %>%
   fontsize(size = 10) %>%
   font(fontname = "Times", part = "all") %>%
   italic(part = "header")
@@ -318,7 +224,7 @@ in the estimate of B20%, and variability in future
 recruitment. We then sampled from the probability of future
 spawning biomass using Markov chain Monte Carlo (MCMC) using the
 no-U-turn sampler available in TMB [@monnahan2018a]. Analysis of
-the posterior samples indicates that probability of the stock
-dropping below B20% will be negligible through `r year+5`,
-conditional upon the model specified here
-(Fig. 1.\@ref(fig:depletion)).
+the posterior samples indicated convergence (ESS>400 and Rhat
+<1.01) and indicates that probability of the stock dropping
+below B20% will be negligible through `r year+5`, conditional
+upon the model specified here.

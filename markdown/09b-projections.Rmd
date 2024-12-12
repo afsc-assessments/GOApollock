@@ -141,11 +141,10 @@ level is defined as $B_{35\%}$):
 
 Results from scenarios 1-7 are presented in Table
 1.\@ref(tab:proj-scens). Mean spawning biomass is projected to
-decline to 2027 under full exploitation scenarios, but will
+decline to 2028 under full exploitation scenarios, but will
 stay stable under the F=0 and other low exploitation scenarios
 (Fig. 1.\@ref(fig:fig-proj-scens)). We project catches to
-increase through 2025, and then drop slightly in subsequent
-years.
+decrease through 2027, and then increase slightly in 2028.
 
 Under the MSFCMA, the Secretary of Commerce is required to report
 on the status of each U.S. fishery with respect to
@@ -159,13 +158,14 @@ is `r F(tail(datfile$cattot,2)[1])` t, which is less than the
 `r year-1` OFL of `r ofl.last` t. Therefore, the stock is not
 subject to overfishing. The fishing mortality that would have
 produced a catch in `r year-1` equal to the `r year-1` OFL is
-0.239.
+0.205.
 
 Scenarios 6 and 7 are used to make the MSFCMA’s other required
 status determination as follows:
 
-Under scenario 6, spawning biomass is estimated to be `r ssb` t
-in `r year` (see Table 1.\@ref(tab:proj-scens)), which is above
+Under scenario 6, spawning biomass is estimated to be 
+`r F(1e6*tail(finalfit$rep$Espawnbio,1))` t
+in `r year`, which is above
 B35% (`r b35` t). Therefore, GOA pollock is not currently
 overfished.
 
@@ -173,7 +173,6 @@ Under scenario 7, projected mean spawning biomass in `r year +2`
 is `r F(exec_table[3,4])` t, which is above B35% (`r b35`
 t). Therefore, GOA pollock is not approaching an overfished
 condition.
-
 
 The recommended area apportionment to management areas in the
 central and western portions of the Gulf of Alaska

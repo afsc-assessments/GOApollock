@@ -19,18 +19,19 @@ function with time-varying parameters [@dorn1990a;
 biomass, survey indices of abundance, and estimates of age and
 length composition from the fishery and surveys. Details of the
 population dynamics and estimation equations are presented in
-Appendix 1C.
+Appendix 1C and model code can be found online at https://github.com/afsc-assessments/GOApollock.
 
 Model parameters were estimated by maximizing the joint log
-likelihood of the data and penalties, viewed as a function of
-the parameters. Mean-unbiased log-normal likelihoods were used
-for survey biomass and total catch estimates, and multinomial
+likelihood of the data and penalties, viewed as a function of the
+parameters. Mean-unbiased log-normal likelihoods were used for
+survey biomass and total catch estimates, and multinomial
 likelihoods were used for age and length composition data. Model
 tuning for composition data was done by iterative re-weighting of
 input sample sizes using the @francis2011a method. Variance
 estimates/assumptions for survey indices were not reweighted. The
 following table lists the likelihood components used in fitting
-the model.
+the model. The linear form of the Dirichlet-multinomial was
+introduced in model 23d in 2024 [@thorson2017].
 
 ```{r}
 x <- read_xlsx(table.path, sheet='likelihoods')
@@ -95,10 +96,11 @@ relative to the R/V Miller Freeman was significantly greater than
 one (1.13), as would be expected if the quieter OD reduced the
 avoidance response of the fish. Previously we included a
 likelihood component to incorporate this information in the
-assessment model, but dropped it because this survey is now
-modeled with a random walk in catchability, and a relatively
-small systematic change in catchability is inconsequential
-compared to other factors affecting catchability.
+assessment model, but dropped it because this survey was
+previously modeled with a random walk in catchability and now
+with a covariate, and a relatively small systematic change in
+catchability is inconsequential compared to other factors
+affecting catchability.
 
 ### Ageing error
 An ageing error conversion matrix is used in the assessment model
@@ -151,16 +153,54 @@ respectively. Bin definitions were different for the summer and
 the winter conversion matrices to account for the seasonal growth
 of the younger fish (ages 1-4).
 
-### Initial data weighting
-The input sample sizes were initially standardized by data set
-before model tuning. Fishery age composition was given an initial
-sample size of 200 except when the age sample in a given year
-came from fewer than 200 hauls/deliveries, in which case the
-number of hauls/deliveries was used. Both the Shelikof acoustic
-survey and the bottom trawl age compositions were given an
-initial sample size of 60, and the ADF&G crab/groundfish survey
-was given a weight of 30.
+### Initial data weighting 
+Input sample sizes (ISS) for age compositions are the initial
+weights (number of fish) for a data set in a year. The ISS is
+then either tuned via the Francis approach to get effective
+sample size (ESS), or if using the Dirichlet-multinomial
+calculated by multiplying the ISS by the inverse logit of the log
+overdispersion parameter (often called $\theta$).  Because ISS
+serves as an upper limit for ESS with a Dirichlet-multinomial, it
+is important to get both the relative weights among years but
+also a reasonable estimate of absolute ESS. As $\theta$ goes to
+infinity the ESS converges to the ISS and can be reverted back to
+a multinomial.
 
+Previous to 2024 ISS were generally considered
+constant among years, despite known variance in the quantity
+of information in the age data. So in 2024 a new approach was taken. For the
+fishery, previous assessments assumed an ISS of of 200 except
+when the age sample in a given year came from fewer than 200
+hauls/deliveries, in which case the number of hauls/deliveries
+was used. This year, a bootstrap procedure was used in an
+external ALK sampler program developed at the AFSC
+(https://github.com/afsc-assessments/sampler). Each bootstrap
+replicate produces a "realized" sample size (RSS) for each year.
+1000 replicates were done and the harmonic mean of the RSS was
+taken to get ISS. This procedure only works after 2000 due to database
+limitations. As such, the post-2000 ISS series was scaled to average
+200 and the historical ISS values (before 2000) were unchanged.
+This procedure maintains the relative weight of fishery age
+compositions in these periods, but allows for interannual
+variability. 
+
+ISS for the Shelikof and summer acoustic age data was assumed to
+be twice to the number of hauls taken in that year (midwater +
+bottom). ISS for the NMFS BT survey come from a bootstrap
+procedure detailed in @hulson2024. No change was made for the
+ADF&G survey, where ISS was assumed 45 in all years. ISS and ESS
+estimates are presented in the results section.
+
+The CVs of the acoustic biomass indices were also updated in
+model 23a. For the two acoustic surveys, a 1-D geostastical
+estimate [@walline2007] has been available (see e.g. Table
+1.\@ref(tab:aged-srv1) but had been deemed unrealistically small
+and values of 0.2 (Shelikof) and 0.25 (summer AT) were used for
+all years. Instead we assume the relative inter-annual CVs are
+correct and scaled the annual time series of CVs to average the
+historical values (0.2 and 0.25). This provides information on
+the relative difference in weights among years based on the
+survey data and published methods.
 
 ## Parameters Estimated Outside the Assessment Model
 Pollock life history characteristics, including natural
@@ -253,7 +293,8 @@ bottom trawl survey for 1984-2013.
 
 *@gislason2010a*: Age-specific $M$ is given by
 
-$$\ln(M)=0.55-1.61\ln(L)+1.44\ln(L_{\infty})+\ln{K}$$ where
+$$\ln(M)=0.55-1.61\ln(L)+1.44\ln(L_{\infty})+\ln{K}$$ 
+where
 $L_\infty = 65.2$ cm and $K = 0.30$ were estimated by fitting von
 Bertalanffy growth curves using the NLS routine in R using summer
 bottom trawl age data for 2005-2009 for sexes combined in the
@@ -286,7 +327,7 @@ assumed to be mature (i.e., stage 3 in the 5-stage pollock
 maturity scale). Maturity stages are qualitative rather than
 quantitative, so there is subjectivity in assigning stages, and a
 potential for different technicians to apply criteria differently
-(Neidetcher et al. 2014). Because the link between pre-spawning
+[@neidetcher2014a]. Because the link between pre-spawning
 maturity stages and eventual reproductive activity later in the
 season is not well established, the division between mature and
 immature stages is problematic. Changes in the timing of spawning
@@ -337,7 +378,8 @@ older fish, compared to 2021 and the long-term mean for all ages
 may reflect environmental conditions, pollock population biology,
 effect of strong year classes moving through the population, or
 simply ageing error. Because there did not appear to be an
-objective basis for excluding data, the 1983-2021 average
+objective basis for excluding data, the 1983-
+`r year` average
 maturity at age was used in the assessment.
 
 Logistic regression [@mccullagh1983a] was also used to
@@ -348,7 +390,7 @@ in 2017 to 6.1 years in 1991, with an average of 4.8 years
 (Fig. 1.\@ref(fig:a50)). The last few years has shown a decrease in the age
 at 50% mature, which is largely being driven by the maturation of
 the 2012 year class at younger ages than is typical, however the
-2019 to 2022 estimates of age at 50% mature are near the
+2019 to 2024 estimates of age at 50% mature are near the
 long-term average. Length at 50% mature is less variable than the
 age at 50% mature, suggesting that at least some of the
 variability in the age at maturity can be attributed to changes
@@ -376,7 +418,7 @@ weight at age for older pollock
 (Fig. 1.\@ref(fig:fig-waa-srv1)). For pollock greater than age 6,
 weight-at-age nearly doubled by 2012 compared to
 1983-1990. However, weight at age trended strongly downward from
-2012 to 2020, with some rebound in the last couple of
+2012 to 2020, with a strong rebound in the last couple of
 years. Further analyses are needed to evaluate whether these
 changes are a density-dependent response to declining pollock
 abundance, or whether they are environmentally forced. Changes in
@@ -405,7 +447,7 @@ assumed to have standard deviations that were 1.5 times the
 fishery weights at age. A comparison of RE model estimates from
 last year of the `r year-1` fishery weight at age with the data
 now available indicate that the model overestimated weights
-slightly (Fig. 1.\@ref(fig:fig-waa-fsh)). In this assessment, RE
+slightly (Fig. 1.\@ref(fig:fig-waa-re)). In this assessment, RE
 model estimates of weight at age are used for the fishery in
 `r year` and for yield projections and harvest recommendations.
 
@@ -427,7 +469,28 @@ Builder, TMB includes post-convergence routines to calculate standard
 errors (or likelihood profiles) for any quantity of interest, and
 has state of the art Bayesian integration capabilities [@monnahan2018a].
 
+Priors are used for select parameters to stabilize optimization
+and integration, a practice recommended specifically for stock
+assessments [@monnahan2024] and known as regularizing priors. This
+is needed because there are certain values of selectivity
+parameters that cannot be distinguished by data, such as when the
+slope at the inflection point goes to infinity (knife-edge) and
+there is thus a zero gradient of that parameter with respect to
+the log-likelihood surface. As such the following priors were
+used starting in 2024.
+
+- The log of logistic and double-logistic slope parameters have a $N(-1,1.5)$ prior.
+- The ascending logistic inflection age have a $N(0,3)$ prior.
+- The descending logistic inflection age have a $N(10,3)$ prior.
+- The log of the Dirichlet-multinomial $\theta$ parameters have a $N(0,2)$ prior.
+
+These priors had a negligible impact on maximum likelihood
+estimates and uncertainty, but improve estimation substantially,
+particularly for MCMC. In the future regularizing priors will be
+developed for other fixed effect parameters.
+
 A list of model parameters for the base model is shown below:
+
 
 ```{r}
 read_xlsx(table.path, sheet='pars') %>%

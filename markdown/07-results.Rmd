@@ -6,81 +6,79 @@ conducted of the impact of each new data element on model
 results. Figure 1.\@ref(fig:add-data) shows the changes in
 estimated spawning biomass as the updated catch projections,
 catch at age, and surveys were added sequentially. This year,
-additions changed both the trend and scale of the stock. In
-particular adding the NMFS BT index and lengths, the Shelikof
-index and ages, and summer acoustic index all substantially
-increased the estimate of stock size. Such changes are not
-typical, but given the large increases in survey indices it is
-not entirely surprising that recent trends shifted upward.
-Likewise, a change in scale is expected given the known
-sensitivity for this model to changes in data and model
-assumptions (as explored more thoroughly in e.g., @monnahan2021a)
-and the Plan Team presentations in 2022 ([link to
-pdf](https://meetings.npfmc.org/CommentReview/DownloadFile?p=7df129bb-16cb-4dba-a4d5-a160c31d087e.pdf&fileName=GOA%20pollock%20model%20updates.pdf)).
+additions did not change the trend and scale of the stock as in
+the last few years.
 
+Four new models were proposed this year, 23a, 23b, 23c, and 23d.
+Basic results are presented for the first three, and more
+detailed results for 23d which is the authors' recommended model.
+Model 23a which updates input sample sizes and biomass CVs had a
+minor impact on SSB and uncertainty relative to last year's model
+(23) with the 2024 data in it (Fig. 1.\@ref(fig:ssb-cv-re)).
+Model 23b estimated about 15% lower recent SSB, and about 15%
+higher SSB from 2000 to 2010, and overall decreased uncertainty.
+Dropping the age 1 and 2 indices (23c) had a minor impact and was
+very similar to 23b. Model 23d had the largest impact on
+estimates, with about a 20% reduction in the CV of SSB, due to
+the higher weight given to age composition data when using the
+Dirichlet-multinomial likelihood (Fig. 1.\@ref(fig:ess)).
 
-The intent of this year's assessment was to migrate to the new
-TMB modeling framework without considering any changes to the
-model structure. Conversion requires a substantial effort not
-only in rewriting the C++ model, but also the workflow for
-processing model inputs and results. After adding new data to
-model 23.0, a final turning step was done using the @francis2011a
-approach which reweighted all composition components, including
-the summer acoustic age composition for the second time,
-resulting in the only downward estimate of SSB in the model
-results (Fig. 1.\@ref(fig:add-data)).
+Unreasonably low estimates of recruitment in recent years went
+away starting with model 23c and were similar for model 23d (Fig.
+1.\@ref(fig:recruit-compare)).
 
 ### Model evaluation
-The fit of model 23.0 to age composition data was evaluated using
-plots of observed and predicted age composition and residual
-plots. Figure 1.\@ref(fig:tv-q) shows the estimates of
-time-varying catchability for the Shelikof Strait acoustic survey
-and the ADF&G crab/groundfish survey, as well as the constant
-catchabilities for the other surveys. The catchability for the
-Shelikof Strait acoustic survey continued to decrease away from
-1, and is close to 0.5 in 2023. Catchability for the NMFS bottom
-trawl and summer acoustic surveys were similar (0.80 and 0.70
-respectively), while the age-1 and age-2 Shelikof survey
-catchabilities were 0.22 and 0.26, respectively, reflecting the
-fact that the survey does not target these immature ages. 
 
-One-step-ahead (OSA) residuals are used this year to assess fits
-to composition data [@trijoulet2023a]. Plots show the fit to
-fishery age composition (Figs. 1.\@ref(fig:obs-exp-fsh),
-1.\@ref(fig:osa-fsh)), Shelikof Strait acoustic survey age
-composition
-(Figs. 1.\@ref(fig:obs-exp-srv1),1.\@ref(fig:osa-srv1)), NMFS
-trawl survey age composition
-(Fig. 1.\@ref(fig:obs-exp-osa-srv2)), ADF&G trawl survey age
-composition (Fig. 1.\@ref(fig:obs-exp-osa-srv3)) and the
-summer acoustic survey
-(Fig. 1.\@ref(fig:obs-exp-osa-srv6)). Model fits to fishery age
-composition data are adequate in most years, though the very
-strong 2012 year class shows up as a positive residual in
-2016-2023 due to stronger than expected abundance in the age
-composition. Previous assessments had strong patterns of negative
-residuals for older ages, but it is clear now using OSA residuals
-that these were not real and instead an artifact of Pearson
-residuals being wrong. In contrast, the pattern of negative
-residuals for age 4 and positive for age 3 persists with OSA
-residuals, suggesting these are real. More complicated
-selectivity forms were able to eliminate this pattern (Appendix
-1F). The NMFS bottom trawl survey has relatively good residuals,
-even for the most recent years where there is a misfit in the
-index. The ADF&G compositions overall do not fit well, exhibiting
-strong patterns of positive residuals after 2000.  The two
-acoustic surveys had no apparent issues fitting to the
-data. Overall there were no major issues in fitting the age
-composition data and the issues highlighted here are considered
-minor.
+Model 23d had good statistical performance. Convergence was
+determined by successful inversion of the Hessian matrix and a
+maximum gradient component of less than 1e-4 (this value was
+5.88e-8 for Model 23d). A jitter analysis revealed that the
+base model and all alternative models are insensitive
+to perturbations of parameter start values on the order of 10%
+(Fig. 1.\@ref(fig:jitter)). All parameters were estimated within
+their pre-specified bounds. A self-test simulation, where 100
+data sets were simulated from the the estimated model and refit
+also showed no concerns (Fig. 1.\@ref(fig:selftest)). A
+likelihood profile over the catchability for the NMFS BT index
+serves as a proxy for scale, and shows limited information in the
+data sets to set this scale, a known issue with this stock (Fig.
+1.\@ref(fig:profile-q2)).
 
-In recent assessments there was apparent conflict and uncertainty
-in the data about the size of the 2018 cohort. The new estimate
-of the initial cohort size is about 8 billion fish, larger than
-average (Table 1.\@ref(tab:timeseries)), an increase from 5.4
-billion in the previous assessment. This appears to confirm that
-this cohort was relatively large and for unknown reasons was not
-apparent in previous years of data.
+Parameter estimates and uncertainty are given in Table
+1.\@ref(tab:parests)). Figure 1.\@ref(fig:tv-q) shows the
+estimates of survey catchability, including for the Shelikof Strait acoustic survey which is driven by
+an environmental covariate.  Catchability for the NMFS bottom
+trawl and summer acoustic surveys were similar
+(`r round(finalfit$rep$q2[1],2)` and 
+`r round(finalfit$rep$q6,2)`
+respectively).
+
+The fit of model 23d to age composition data was evaluated using
+plots of observed and predicted age composition (Figs.
+1.\@ref(fig:obs-exp-fsh), 1.\@ref(fig:obs-exp-srv1), 1.\@ref(fig:obs-exp-srv2),
+1.\@ref(fig:obs-exp-srv3), and 1.\@ref(fig:obs-exp-srv6)).
+One-step-ahead (OSA) residuals [@trijoulet2023a] and aggregate
+fits are used to assess fits to composition data (Fig.
+1.\@ref(fig:osa-all)). Model fits to fishery age composition data
+are adequate in most years, though the very strong 2012 year
+class shows up as a positive residual in 2016-2023 due to
+stronger than expected abundance in the age composition. Previous
+assessments had strong patterns of negative residuals for older
+ages, but it is clear now using OSA residuals that these were not
+real and instead an artifact of Pearson residuals being wrong. In
+contrast, the pattern of negative residuals for age 4 and
+positive for age 3 persists with OSA residuals, suggesting these
+are real. More complicated selectivity forms were able to
+eliminate this pattern [Appendix 1F of @monnahan2023a], but these
+were not recommended due to their added complexity and minimal
+impact on management advice. The NMFS bottom trawl survey has
+relatively good residuals, even for the most recent years where
+there is a misfit in the index. The ADF&G compositions overall do
+not fit well, especially to the age 10 plus group.  The two
+acoustic surveys had no apparent issues fitting to the data,
+although there are some large values. Overall there were no major
+issues in fitting the age composition data and the issues
+highlighted here are considered minor.
 
 Model fits to survey biomass estimates are reasonably good for
 all surveys except the period 2015-2019 and now in 2023 with poor
@@ -94,9 +92,7 @@ survey is reasonable even during the most recent period. The
 model shows good fits to both the 2021 Shelikof Strait acoustic
 survey and the 2021 NMFS bottom trawl, while the 2021 ADF&G
 bottom trawl and 2021 summer acoustic survey fits were
-reasonable. The fit to the age-1 and age-2 Shelikof acoustic
-indices was considered acceptable with a few exceptions
-(Fig. 1.\@ref(fig:index-fits2)).
+reasonable. 
 
 ## Time series results
 Parameter estimates and model output are presented in a series of
@@ -121,17 +117,41 @@ absence of fishing (SPR at F=0), see below for how this is
 calculated). In 2002, the stock dropped below B40% for the first
 time since the early 1980s, and reached a minimum in 2003 of 35%
 of unfished stock size. Over the years 2009-2013 stock size
-showed a strong upward trend, increasing from 45% to 88% of
-unfished stock size, but declined to 65% of unfished stock size
-in 2015. The spawning stock peaked in 2017 at 90% as the strong
-2012 year class matured, and has declined subsequently to 68%
-in 2023. Figure 1.\@ref(fig:status) shows the historical pattern
+showed a strong upward trend, increasing from 49% to 83% of
+unfished stock size, but declined to 60% of unfished stock size
+in 2015. The spawning stock peaked in 2017 at 86% as the strong
+2012 year class matured, and has declined subsequently to 56%
+in 2024. Figure 1.\@ref(fig:status) shows the historical pattern
 of exploitation of the stock both as a time series of SPR and
 fishing mortality compared to the current estimates of biomass
 and fishing mortality reference points. Except from the mid-1970s
 to mid-1980s fishing mortalities have generally been lower than
 the current OFL definition, and in nearly all years were lower
 than the FMSY proxy of F35%.
+
+## Retrospective analysis of base model
+A retrospective analysis consists of dropping the data
+year-by-year from the current model, and provides an evaluation
+of the stability of the current model as new data are added.
+Figure 1.\@ref(fig:retros) shows a retrospective plot with data
+sequentially removed back to `r year-7`. The range of errors in
+the estimates of spawning biomass (if the current assessment is
+accepted as truth) is -32.1% to 2.3%, but usually the errors are
+much smaller (median absolute error is 16%). There was a
+relatively large negative retrospective pattern in the assessment
+in recent years (i.e., the model consistently underestimates
+SSB). The revised Mohn’s $\rho$ [@mohn1999a] across all ten peels
+for terminal spawning biomass is -0.159. This is not considered a
+significant $\rho$ based on a bootstrapping analysis done in the
+2022 assessment which found that by chance $\rho$ would be
+between -0.21 and 0.29 (Bryan and Monnahan in prep), and is smaller
+than in recent years. Retrospective behavior of fishing mortality
+(F) and recruitment are also shown in Fig. 1.\@ref(fig:retros)
+but not discussed here. Trends in estimates of cohort sizes is
+also given in Fig. 1.\@ref(fig:retro-recruits), which are more
+stable compared to previous years due to the age 1 and 2 Shelikof
+indices being removed. The 2020 and 2021 cohorts are both
+estimated as smaller than originally thought.
 
 ## Comparison of historical assessment results
 
@@ -150,26 +170,6 @@ average recruitment, but the `r year` model has data from the
 Shelikof survey which showed a weak 2022 year class. This difference
 does not strongly affect the OFL and ABC for next year because
 these fish are not in the exploitable population.
-
-## Retrospective analysis of base model
-A retrospective analysis consists of dropping the data
-year-by-year from the current model, and provides an evaluation
-of the stability of the current model as new data are
-added. Figure 1.\@ref(fig:retros) shows a retrospective plot with
-data sequentially removed back to `r year-7`. The range of errors
-in the estimates of spawning biomass (if the current assessment
-is accepted as truth) is -37.7% to -24.8%, but usually the errors
-are much smaller (median absolute error is -33%). There is a
-relatively large negative retrospective pattern in the assessment
-(i.e., the model consistently underestimates SSB), and the
-revised Mohn’s $\rho$ [@mohn1999a] across all seven peels for
-terminal spawning biomass is -0.308. This is considered a
-significant $\rho$ based on a bootstrapping analysis done on the
-2022 assessment which found that by chance $\rho$ would be
-between -0.21 and 0.29 (Bryan and Monnahan in prep), and is worse
-than in recent years. Trends in estimates of cohort sizes is also
-given in Fig. 1.\@ref(fig:retro-recruits).
-
 
 ## Stock productivity
 
@@ -205,8 +205,4 @@ temporal scale. The decadal trends in spawner productivity have
 produced the pattern of increase and decline in the GOA pollock
 population. The last two decades have been a period of relatively
 low spawner productivity, though there appears to be a recent
-increase. Age-1 recruitment in 2022 and 2023 is estimated to be
-to be very weak, but the 2021 recruitment is above average,
-although these estimates will remain very uncertain until
-additional data become available (Figure
-1.\@ref(fig:ssb-status-rec)).
+increase. 

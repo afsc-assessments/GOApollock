@@ -6,13 +6,13 @@
  x <- gettab(sheet = 'catch') 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>%
- colformat_double(digits=0) %>% fontsize(size=8) 
+ colformat_double(digits=0) %>% fontsize(size=7)
 ``` 
  
 \pagebreak
 
 ```{r incidental, eval=TRUE} 
- x <- gettab(sheet = 'incidental') 
+ x <- gettab(sheet = 'incidental', maxcols = 6) 
  flextable(x$tab) %>%   
        set_caption(x$cap) %>% colformat_double(digits=1) 
 ``` 
@@ -27,6 +27,15 @@
 
 \pagebreak 
 
+```{r non-commercial} 
+ x <- gettab(sheet = 'non_commercial', maxcols=4) 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>%
+   colformat_double(digits=2) %>% 
+ 	  colformat_double(digits=0, big.mark='', j=1)
+``` 
+
+\pagebreak 
 
 ```{r retained} 
  x <- gettab(sheet = 'retained') 
@@ -54,18 +63,8 @@
        set_caption(x$cap) %>% 
  	  colformat_double(digits=0, big.mark='', j=1) 
 ``` 
+
 \pagebreak 
-
-```{r indices} 
- x <- gettab(sheet = 'indices', maxcols=6) 
- flextable(x$tab) %>%   
-       set_caption(x$cap) %>% 
- 	  colformat_double(digits=0) %>%  
- 	  colformat_double(digits=0, big.mark='',j=1) %>% 
- 	  autofit() 
-``` 
- \pagebreak 
-
 
 ```{r aged-srv2} 
  x <- gettab(sheet = 'aged_srv2', maxcols=10) 
@@ -75,7 +74,8 @@
  	  colformat_num(big.mark='',j=1) %>% 
  	  colformat_double(digits=2, j=4) 
 ``` 
- \pagebreak 
+
+\pagebreak 
 
 ```{r naa-srv2} 
  x <- gettab(sheet = 'naa_srv2') 
@@ -86,8 +86,18 @@
  	  hline(i=18:19) %>% autofit()  %>% fontsize(size=7)
 ``` 
 
+\pagebreak
 
- \pagebreak 
+```{r indices} 
+ x <- gettab(sheet = 'indices', maxcols=6) 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+ 	  colformat_double(digits=0) %>%  
+ 	  colformat_double(digits=0, big.mark='',j=1) %>% 
+ 	  autofit() 
+``` 
+
+\pagebreak 
 
 ```{r naa-srv1} 
  x <- gettab(sheet = 'naa_srv1') 
@@ -96,7 +106,8 @@
    colformat_double(digits=1) %>%  
    colformat_num(digits=0, big.mark='',j=1) %>% autofit  %>% fontsize(size=7)
 ``` 
- \pagebreak 
+
+\pagebreak 
 
 ```{r aged-srv1} 
  x <- gettab(sheet = 'aged_srv1') 
@@ -104,10 +115,11 @@
        set_caption(x$cap) %>% 
  	  colformat_double(digits=0, big.mark=',') %>% 
  	  colformat_double(digits=0, big.mark='',j=1) %>% 
- 	  colformat_double(digits=2, j=4)  %>% fontsize(size=6)
+ 	  colformat_double(digits=2, j=4)  %>% fontsize(size=7)  %>%
+   fontsize(size=9, part='header')
 ``` 
-\pagebreak 
 
+\pagebreak 
 
 ```{r paa-srv3} 
  x <- gettab(sheet = 'paa_srv3', maxcols=17) 
@@ -117,9 +129,9 @@
  colformat_num(digits=0, big.mark='',j=1) %>%  
   colformat_num(digits=0, big.mark=',',j=17) %>%  
  		autofit  %>% fontsize(size=7)
-
 ``` 
 
+<br>
 
 ```{r age-error} 
  x <- gettab(sheet = 'age_error') 
@@ -129,6 +141,7 @@
  	  colformat_num(digits=0,j=1) 
 ``` 
 
+<br>
 
 ```{r natM} 
  x <- gettab(sheet = 'natM') 
@@ -166,7 +179,6 @@
 
 \pagebreak 
 
-
 ```{r waa-srv1} 
  waa_srv1 <- datfile$wt_srv1 %>% data.frame(ayears,.) %>% 
  	setNames(c('Year',1:10)) %>% 
@@ -178,7 +190,8 @@
  	   colformat_num(digits=0, big.mark='', j=1) %>% 
   	fontsize(size=9) 
 ``` 
- \pagebreak 
+ 
+\pagebreak 
 
 ```{r waa-srv26} 
  waa_srv2 <- datfile$wt_srv2 %>% data.frame(ayears,.) %>% 
@@ -201,47 +214,15 @@
 
 \pagebreak
 
-```{r timeseries}
-sumbio <- repfile$Esumbio*1e3
-ssb <- repfile$Espawnbio*1e3
-pct.ssb <- paste0(round(100*ssb/(Finv(b100)/1000),0),"%")
-rec <- repfile$recruit*1e3
-catch <- repfile$cattot
-hr <- paste0(round(100*catch/(1000*sumbio),0), '%')
-sumbio2 <-
- c( repfile.last[['Expected_summary_(age_3+)_biomass']]*1e3, NA)
-ssb2 <- c(repfile.last[['Expected_spawning_biomass']]*1e3, NA)
-rec2 <- c(repfile.last$Recruits*1e3,NA)
-hr2 <- paste0(round(100*catch/(1000*sumbio2),0), '%') 
-hr2[length(hr2)] <- NA
-tab <- data.frame(Year=repfile$years, sumbio=sumbio, ssb=ssb,pct.ssb=pct.ssb,
-           rec=rec,catch=catch,hr, sumbio2, ssb2,rec2,hr2) %>% 
-  subset(Year>=1977) 
-cap <- "Estimates of population biomass, recruitment, and harvest of GOA pollock from the age-structured assessment model.  The harvest rate is the catch in biomass divided by the total biomass of age 3+ fish at the start of the year."
-tmpyrs <- c("",paste0(year," assessment"), paste0(year-1," assessment"))
-cols <- list(sumbio="3+ total\nbiomass (kt)", 
-             ssb="SSB (kt)", 
-			 pct.ssb="% of SB100",
-             rec="Age 1 recruits\n(millions)",
-             catch="Catch (t)",
-			 hr="Harvest\nrate", 
-			 sumbio2="3+ total\nbiomass (kt)", 
-             ssb2="SSB (kt)", 
-             rec2="Age 1 recruits\n(millions)",
-			 hr2="Harvest\n rate")
-flextable(tab) %>% set_caption(cap) %>% 
- set_header_labels(values=cols) %>%
- add_header_row(values=tmpyrs,
- colwidths=c(1,6,4)) %>%
- colformat_double(digits=0, big.mark=',') %>%
- colformat_num(digits=0, big.mark='', j=1) %>%
- vline(j=7) %>%
- align(part='header', align='center') %>% fontsize(size=9)
-
+```{r parests}
+ x <- gettab(sheet = 'parests') 
+ flextable(x$tab) %>%   
+       set_caption(x$cap) %>% 
+   set_table_properties(layout = "autofit") %>%
+  colformat_double(digits=3) 
 ```
 
-
-\pagebreak 
+\pagebreak
 
 ```{r selex} 
   selex <- repfile$slctfsh 
@@ -269,7 +250,8 @@ flextable(tab) %>% set_caption(cap) %>%
  colformat_double(digits=3) %>%
  colformat_double(digits=3) 
 ``` 
- \pagebreak 
+
+<br>
 
 ```{r naa-est}
  naa <- 1e3*repfile$N %>% as.data.frame() %>% 
@@ -284,7 +266,45 @@ flextable(tab) %>% set_caption(cap) %>%
  cap <- "Total estimated abundance at age (millions) of GOA pollock from the age-structured assessment model" 
  flextable(naa2) %>% set_caption(cap) %>% 
    colformat_double(digits=0, big.mark=',') %>% fontsize(size=9)
-   
+```
+
+\pagebreak 
+
+```{r timeseries}
+sumbio <- repfile$Esumbio*1e3
+ssb <- repfile$Espawnbio*1e3
+pct.ssb <- paste0(round(100*ssb/(Finv(b100)/1000),0),"%")
+rec <- repfile$recruit*1e3
+catch <- repfile$cattot
+hr <- paste0(round(100*catch/(1000*sumbio),0), '%')
+sumbio2 <- c( repfile.last$Esumbio*1e3, NA)
+ssb2 <- c(repfile.last$Espawnbio*1e3, NA)
+rec2 <- c(repfile.last$recruit*1e3,NA)
+hr2 <- paste0(round(100*catch/(1000*sumbio2),0), '%') 
+hr2[length(hr2)] <- NA
+tab <- data.frame(Year=repfile$years, sumbio=sumbio, ssb=ssb,pct.ssb=pct.ssb,
+           rec=rec,catch=catch,hr, sumbio2, ssb2,rec2,hr2) %>% 
+  subset(Year>=1977) 
+cap <- "Estimates of population biomass, recruitment, and harvest of GOA pollock from the age-structured assessment model.  The harvest rate is the catch in biomass divided by the total biomass of age 3+ fish at the start of the year."
+tmpyrs <- c("",paste0(year," assessment"), paste0(year-1," assessment"))
+cols <- list(sumbio="3+ total\nbiomass (kt)", 
+             ssb="SSB (kt)", 
+			 pct.ssb="% of SB100",
+             rec="Age 1 recruits\n(millions)",
+             catch="Catch (t)",
+			 hr="Harvest\nrate", 
+			 sumbio2="3+ total\nbiomass (kt)", 
+             ssb2="SSB (kt)", 
+             rec2="Age 1 recruits\n(millions)",
+			 hr2="Harvest\n rate")
+flextable(tab) %>% set_caption(cap) %>% 
+ set_header_labels(values=cols) %>%
+ add_header_row(values=tmpyrs,
+                colwidths=c(1,6,4)) %>%
+  colformat_double(digits=0, big.mark=',') %>%
+  colformat_num(digits=0, big.mark='', j=1) %>%
+ vline(j=7) %>%
+ align(part='header', align='center') %>% fontsize(size=9)
 ```
 
 \pagebreak
@@ -312,29 +332,7 @@ cap <- "Uncertainty of estimates of recruitment and spawning biomass of GOA poll
  vline(j=5) %>%
  align(part='header', align='center') %>% fontsize(size=9)
 ```
-\pagebreak
 
-```{r spr-inputs}
-
-cols <- c("Age", "Natural\nmortality",
-  paste0("Fishery selectivity\n(Avg. ",year-4, "-",year,")"),
-  paste0("Spawning WAA\n(Avg. ",year-4, "-",year,")"),
-  paste0("Population WAA\n(Avg. ", paste(tail(datfile$srv_acyrs2,3), collapse=', '),")"),
-  paste0("Fishery WAA\n(Est. ",year, " from RE model)"),
-  paste0("Proportion mature females\n(Avg. 1983-",year,")"))
-
-cap <- "GOA pollock life history and fishery characteristics used to estimate spawning biomass per recruit (FSPR) harvest rates. Spawning weight at age (WAA, kg) is based on an average from the Shelikof Strait acoustic survey conducted in March.  Population weight at age is based on a average for the last three bottom trawl survey conducted in June to August.  Proportion mature females is the average from winter acoustic survey specimen data."
-tab <- data.frame(age=c(1:9, "10+"), a=repfile_admb$Natural_mortality, 
-      b=repfile_admb$Projection_fishery_selectivity,
-      c=repfile_admb$Projection_spawning_weight_at_age,
-      d=repfile_admb$Projection_population_weight_at_age,
-      e=t(tail(datfile$wt_fsh,1)),
-      f=datfile$mat) %>% setNames(cols)
-flextable(tab) %>% set_caption(cap) %>% 
- colformat_double(digits=3) %>%
- colformat_double(digits=0, j=1) %>%
- colformat_double(digits=2, j=2)
-```
 \pagebreak
 
 ```{r model-history}
@@ -343,8 +341,34 @@ names(x$tab) <- c("Year", "Assessment Method", "Catch recommendation basis", "B4
 flextable(x$tab) %>%   
       set_caption(x$cap) %>% 
 	  colformat_double(digits=0, big.mark='',j=1) %>%
-	  colformat_double(digits=0, big.mark=',',j=4) %>% fontsize(size=8)
+	  colformat_double(digits=0, big.mark=',',j=4) %>% 
+  fontsize(size=8) %>%
+  width( j=2, width=2.5)
 ``` 
+
+\pagebreak
+
+```{r spr-inputs}
+cols <- c("Age", "Natural\nmortality",
+  paste0("Fishery selectivity\n(Avg. ",year-4, "-",year-1,")"),
+  paste0("Spawning WAA\n(Avg. ",year-4, "-",year,")"),
+  paste0("Population WAA\n(Avg. ", paste(tail(datfile$srv_acyrs2,3), collapse=', '),")"),
+  paste0("Fishery WAA\n(Est. ",year, " from RE model)"),
+  paste0("Proportion mature females\n(Avg. 1983-",year,")"))
+
+cap <- "GOA pollock life history and fishery characteristics used to estimate spawning biomass per recruit (FSPR) harvest rates. Spawning weight at age (WAA, kg) is based on an average from the Shelikof Strait acoustic survey conducted in March.  Population weight at age is based on an average for the last three bottom trawl survey conducted in June to August.  Proportion mature females is the average from winter acoustic survey specimen data."
+tab <- data.frame(age=c(1:9, "10+"), a=repfile$M, 
+      b=repfile$slctfsh_proj,
+      c=repfile$wt_spawn_proj,
+      d=repfile$wt_pop_proj,
+      e=t(tail(datfile$wt_fsh,1)),
+      f=datfile$mat) %>% setNames(cols)
+flextable(tab) %>% set_caption(cap) %>% 
+ colformat_double(digits=3) %>%
+ colformat_double(digits=0, j=1) %>%
+ colformat_double(digits=2, j=2)
+```
+
 \pagebreak
 
 ```{r proj-scens}
@@ -352,8 +376,8 @@ cap <- paste("Projections of GOA pollock spawning biomass, full recruitment fish
 cols <- c("Year", "Max FABC","Author's\nrecommended F", "Average F",	"F75%",
           "F=0", "FOFL", "Max FABC for two\nyears, then FOFL")
 tmp <- proj_scens
-tmp <- dplyr::select(proj_scens, Yr, Alternative, SSB, F, Catch) %>%
-  dplyr::rename(Year=Yr, alt=Alternative)
+tmp <- dplyr::select(proj_scens, Year, Alt, SSB, F, Catch) %>%
+  dplyr::rename(Year=Year, alt=Alt)
 ssb <- dplyr::select(tmp, Year, alt, SSB) %>%
   tidyr::pivot_wider(names_from=alt, values_from=SSB) %>%
   setNames(cols)

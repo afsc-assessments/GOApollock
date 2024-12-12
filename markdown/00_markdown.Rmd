@@ -1,0 +1,152 @@
+---
+params: 
+  chapter: 1
+  species: "walleye pollock"
+  species_complex: "no"
+  area: "Gulf of Alaska"
+  tier: 3 
+author: "Cole C. Monnahan, Bridget E. Ferriss, S. Kalei Shotwell, Zack Oyafuso, Mike Levine, James T. Thorson, Lauren Rogers, Jane Sullivan, Juliette Champagnat"
+date: "November 2024"
+
+# don't do anything below this line unless you are cool with the consequences
+# use html_document2 for kniting to html which is better during development
+# use word_document2 for final knitting
+output: 
+  bookdown::word_document2:
+     reference_docx: "template.docx"
+     toc: false
+     number_sections: false
+     css: "styles.css"
+     pandoc_args:  
+       - '--lua-filter=scholarly-metadata.lua'
+       - '--lua-filter=author-info-blocks.lua'
+
+always_allow_html: true        
+fontsize: 11pt
+geometry:
+  - top=1in
+  - bottom=1in
+  - left=1in
+  - right=1in     
+fig_caption: true
+bibliography: "safe_bibby.bib"
+csl: "fishfish.csl"
+---
+
+```{r setup, include=FALSE, echo = FALSE}
+# remotes::install_github("crsh/rmdfiltr")
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.pos = "!h", out.extra = "")
+knitr::opts_knit$set(eval.after = "fig.cap")
+x = 1
+sprintf("Figure %s. " , paste0(params$chapter, '.',x))
+```
+
+```{r}
+if(params$species_complex=="no"){
+   title = paste0(params$chapter, ". Assessment of the ", tools::toTitleCase(params$species), " Stock in the ", params$area)
+  } else {
+    title = paste0(params$chapter, ". Assessment of the ", tools::toTitleCase(params$species), " Stock Complex in the ", params$area)  
+  }
+
+
+```
+
+---
+title: `r title`
+---
+
+```{r load, warning=F, message=F}
+# load
+library(safe)
+suppressWarnings(library(flextable))
+set_flextable_defaults(font.size = 10, padding.top = 0, padding.bottom=0, table.layout='autofit', font.family='Times New Roman')
+suppressWarnings(library(readxl))
+## library(dplyr)
+## library(tidyr)
+source("C:/Users/cole.monnahan/Work/assessments/GOA_pollock/2024/writeup/markdown/prepare_global_workspace.R")
+
+```
+<p style="text-align:center;">This report may be cited as:</p>
+
+Monnahan, C.C., B. Ferriss, S.K. Shotwell, Z. Oyafuso, M. Levine,
+J.T. Thorson, L. Rogers, J. Sullivan and J. Champagnat. 2024.
+Assessment of the Walleye Pollock Stock in the Gulf of Alaska.
+North Pacific Fishery Management Council, Anchorage, AK.
+Available from https://www.npfmc.org/library/safe-reports/
+
+The following documents are associated with this report and can
+be found at the associated links:
+
+
+
+
+**Appendix 1.A** is available online [here](https://apps-afsc.fisheries.noaa.gov/Plan_Team/2024/goapollock_appA.pdf).
+
+\pagebreak
+
+```{r, child="01-summary.Rmd", eval = T}
+```
+
+```{r, child="02-responses.Rmd", eval = T}
+```
+
+```{r, child="03-intro.Rmd", eval = T}
+```
+
+```{r, child="04-fishery.Rmd", eval = T}
+```
+
+```{r, child="05-data.Rmd", eval = T}
+```
+
+```{r, child="06-model.Rmd", eval = T}
+```
+
+```{r, child="07-results.Rmd", eval = T}
+```
+
+```{r, child="08-abc.Rmd", eval = T}
+```
+
+```{r, child="09a-risk-table.Rmd", eval = T}
+```
+
+```{r, child="09b-projections.Rmd", eval = T}
+```
+
+```{r, child="10-gaps.Rmd", eval = T}
+```
+
+
+```{r, child="11-tables.Rmd", eval = T}
+```
+ 
+```{r, child="12-figures.Rmd", eval = T}
+```
+
+\pagebreak
+
+<!-- \allsectionsfont{\centering} -->
+
+# References
+
+::: {#refs}
+:::
+
+<!-- \pagebreak -->
+
+<!-- ```{r, child="11-tables.Rmd", eval = T} -->
+
+<!-- ```  -->
+
+<!-- \pagebreak -->
+
+<!-- ```{r, child="12-figures.Rmd", eval = T} -->
+
+<!-- ``` -->
+
+\pagebreak
+
+# Appendix 1A. Ecosystem and Socioeconomic Profile of the Walleye Pollock stock in the Gulf of Alaska - Report Card
+
+Appendix 1.A is available at [this external link](https://apps-afsc.fisheries.noaa.gov/Plan_Team/2024/goapollock_appA.pdf).

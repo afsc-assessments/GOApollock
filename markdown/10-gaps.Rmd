@@ -3,17 +3,9 @@
 The following research priorities were identified based on
 previous CIE reviews and recent Plan Team and SSC discussions:
 
-- Explore alternative functional forms for fishery selectivity.
-- Jointly estimate process errors for time-varying components
-  like selectivity, catchability and recruitment, using
-  integration via the Laplace approximation or MCMC.
-- Consider alternative modeling platforms in parallel to the
-  current ADMB assessment.
 - Explore priors on catchability and the effect on the population
   scale and potentially how it relates to results from the
   predation mortality model.
-- Revisit initial data weights for compositional data, and
-  assumed CVs for indices.
 - Estimate input variances for weight at age components in the
   WAA RE model.
 - Continue to develop spatial GLMM models for survey indices and
@@ -22,27 +14,29 @@ previous CIE reviews and recent Plan Team and SSC discussions:
   using the CEATTLE model.
 - Explore implications of non-constant natural mortality on
   pollock assessment and management.
+- Extend the maximum age to better account for dynamics for older fish, particularly in light of the large 2012 cohort.
 
 Additional recommendations that could be done by other teams at
 the AFSC, but are unlikely to be specifically prioritized by the
 primary assessment author, include:
 
 - Efforts to combine acoustic and bottom trawl information in a
-  vertically integrated index
+  vertically integrated index, or similar approaches to better understand
+  how gear availability varies over time and space [@monnahan2021b].
 - Efforts to improve understanding of changes of weight at age or
   and maturity at age, either via linkage to copepods/euphausiids
   or directly to the physical environment
+- Efforts to better understand drivers of recruitment variability
 
 # Acknowledgements
 We thank the AFSC survey personnel for the collection of data,
-providing the biomass estimates, and discussing results,
-particularly Ned Laman for providing summarized data and
-important historical context this year. We are grateful to all
-the fishery observers working with the Fishery Monitoring and
-Analysis (FMA) Division who collect vital data for the stock
-assessments, and the staff of the AFSC Age and Growth Unit for
-the ageing of otoliths used to determine the age compositions in
-the assessment. We also thank Kally Spalinger for providing ADF&G
-survey data.
+providing the biomass estimates, and discussing results. We are
+grateful to all the fishery observers working with the Fishery
+Monitoring and Analysis (FMA) Division who collect vital data for
+the stock assessments, and the staff of the AFSC Age and Growth
+Program for the ageing of otoliths used to determine the age
+compositions in the assessment. We also thank Kally Spalinger for
+providing ADF&G survey data and Dave McGowan for providing summer
+acoustic data this year.
 
 \pagebreak

@@ -1,70 +1,53 @@
+# Responses to SSC and Plan Team Comments
 ## Responses to SSC and Plan Team Comments on Assessments in General
 
-None this year.
+Responses to general issues are also found in the SAFE Introduction.
+
+*When there are time-varying biological and fishery parameters in the model, the SSC requests that a table be included in the SAFE that documents how reference points are calculated.*
+
+This is included in Table 1.\@ref(tab:spr-inputs)
+
+
 
 ## Responses to SSC and Plan Team Comments Specific to this Assessment
 
+*Since fishery weight-at-age is so variable, the SSC is interested in seeing if TMB can help use these data directly in the model.*
 
-*The GOA Plan Team in its November 2019 minutes recommended the
-author examine fishery selectivity, as persistent patterns in the
-catch-at-age residuals may represent artifacts of the selectivity
-functional form used.*
+A WHAM version of the model presented in @correa2023a smooths
+weight at age (WAA) internally, but did not find a big impact so this was
+not prioritized. However, it is feasible in TMB, and likely
+advisable, to model WAA for the fishery and all surveys
+simultaneously, with annual, cohort, and age effects. This will
+be a priority research topic for 2025.
 
-An extensive analysis of non-parametric and parametric fisheries
-selectivities was undertaken in 2023 (Appendix 1F). These models showed
-promise for improving residual patterns, but had some lingering
-estimation and stability issues that need to be more thoroughly
-addressed. This will be done next year.
+*Check the recruitment that is set or estimated to be “1” in 2023. If there is no information due to lack of data for young pollock, perhaps recruitment in 2023 should be closer to mean recruitment.*
 
+Previously age 1 recruitments were informed by data from the
+Shelikof survey, which has age-1 and 2 indices in the assessment
+year. Those data were proposed to be removed from the model in
+2024 (model 23c) and so the estimates will be mean recruitment.
 
-In December 2021 the SSC highlighted the need to examine 
-catchability for the winter Shelikof acoustic survey.
+*Continue to investigate the estimates of recruitment variability and the extremely low recruitment estimates in recent years.*
 
-*The SSC supports future research to identify the optimal level
-of constraint on among-year variation in Shelikof Survey
-catchability (q), including the potential to estimate the
-process error variance internally within the assessment model.*
+The extremely low recruitments were found to be driven entirely
+by the age-1 and 2 Shelikof indices which had unreasonably low
+estimates. Subsequent data were not able to counteract this
+signal and so excessively small cohort estimates persisted. As
+such, these data were removed from the model this year until a
+more appropriate way to include them can be found.
 
-*The SSC reiterates its recommendation from December 2020 to
-explore the use of covariates related to the timing of the survey
-to inform survey catchability in the Shelikof Strait survey. For
-example, the difference in timing between peak spawning and mean
-survey date or, alternatively, the proportion of mature fish in
-the survey, are likely to inform time-varying catchability in the
-survey.*
+*The SSC agrees with the GOA GPT to continue to present the 10-year standard used in AFSC assessments for retrospectives as it helps review bodies compare across assessments more readily.*
 
-Currently the winter Shelikof acoustic survey catchability is
-modeled as a random walk with assumed process error. The original
-logic was that some of the stock spawned outside of Shelikof
-Strait and thus were unavailable to the survey. Fish tended to
-spawn in other areas with some consistency, so a random walk on
-catchability was implemented to account for variation in spatial
-availability. Several overlapping efforts were done to explore
-alternative catchability structures. None of these are proposed
-for 2023, but were presented for Plan Team feedback in September
-2022 and remains ongoing collaborative research for this
-stock. In particular a WHAM version of the GOA pollock assessment
-was used to explore estimating the constraint (process error), and
-to quantify the amount by which timing covariates can reduce
-that, in effect parsing spatial and temporal
-availability. Preliminary results are very promising but still
-under scientific review and thus not adopted this year. We
-anticipate having something formal to present in 2024.
+Corrected in 2024.
 
-In October 2023 the SSC supported *the GOA GPT recommendation
-that additional examinations are necessary to determine best
-method(s) for projecting near term trends when time-varying and
-auto-correlated selectivities are used in assessments.*
+*The SSC notes that the ESR process has matured over several decades to effectively use ecosystem trends to inform annual specifications and encourages the use of trans-disciplinary approaches for linking ESR and ESPs to stock assessments in the future. The GOA pollock assessment was suggested as a potential case study, particularly in contrasting differences in the strength of 2018 vs. 2019 year classes.*
 
-We examined this in Appendix 1F and found that using model
-predictions from non-parametric selectivity modules (2D and 3D
-AR(1)) generally outperformed the status quo of using an average
-of the most recent 4 years with data. The non-parametric
-functions led to improved retrospective patterns, but also lower
-predictive error (RMSE) in a retrospective analysis when
-predicting a single year out and comparing it to estimates with
-the data in the subsequent year. Non-parametric modules are not
-feasible to fit in a robust way in ADMB models, and so the new
-23.0 TMB pollock model provides an important research tool to
-explore issues with time-variation and projections. We anticipate
-further research along these lines in 2024.
+A research model is presented in Appendix 1E that explores
+incorporating ESP data into the pollock stock assessment. This
+model embeds a dynamic structural equation model (DSEM) into the
+assessment, and uses complex causal relationships among eight ESP
+indicators to explain recruitment variation. Preliminary results
+are encouraging, with strong statistical evidence that this
+approach can substantially reduce unexplained recruitment
+variation and improve short-term projections like those used for
+management.
