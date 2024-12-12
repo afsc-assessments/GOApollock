@@ -1172,6 +1172,7 @@ Type objective_function<Type>::operator() ()
     loglik(22) += dnorm(log_slp2_srv6, Type(-1.0),Type(1.5), true);
     loglik(22) += dnorm(inf1_srv6, Type(0.0),Type(3.0), true);
     loglik(22) += dnorm(inf2_srv6, Type(10.0),Type(3.0), true);
+    loglik(22) += dnorm(log_DM_pars, Type(0.0), Type(2.0),true).sum();
 
     Type rho=rho_trans(transf_rho);
     Type Ecov_obs_sd=exp(log_Ecov_obs_sd);
