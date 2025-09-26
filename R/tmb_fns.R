@@ -280,7 +280,7 @@ get_rep <- function(fits, slot=NULL) {
 fit_pk <- function(input, getsd=TRUE, newtonsteps=1,
                    control=NULL, do.fit=TRUE,
                    use_bounds=FALSE, save.sdrep=FALSE,
-                   filename=NULL, verbose=TRUE){
+                   filename='fit.RDS', verbose=TRUE){
   cpp <- paste0(file.path(input$path, input$modfile),'.cpp')
   if(!file.exists(cpp)) stop("file does not exist: ", cpp)
   tryCatch(dyn.unload(dynlib(file.path(input$path, input$modfile))), error=function(e) 'error')
@@ -410,7 +410,7 @@ update_dat_maxage <- function(dat, maxage){
 #'   which are used to build a TMB 'obj' in \code{\link{fit_pk}}.
 #' @export
 prepare_pk_input <- function(path, datfile, version='none',
-                             random=NULL, complike=c('multinomial','D-M'),
+                             random=NULL, complike=c('D-M', 'multinomial'),
                              modfile='goa_pk',
                              maxage=NULL){
   if(!dir.exists(path)) stop("directory does not exist: ",path)
@@ -493,7 +493,8 @@ prepare_par <- function(dat){
                log_Ecov_obs_sd=log(.02),
                log_Ecov_sd = 1,
                Ecov_beta = 0,
-               log_DM_pars = rep(0,5))
+               log_DM_pars = rep(0,5),
+               log_initN0=0)
   return(pars)
 }
 
@@ -502,7 +503,7 @@ prepare_map <- function(pars){
   parsoff <- c("dev_log_initN", "q4_pow", "q5_pow", "log_q2_dev", "slp2_fsh_dev",
                "inf2_fsh_dev", "log_slp2_srv2", "inf2_srv2", "log_slp1_srv6",
                "inf1_srv6", "sigmaR", "natMscalar", "log_recr_proj", #"log_q1_mean",
-               "log_q3_mean", "mean_log_F", "inf1_fsh_mean",
+               "log_q3_mean", "mean_log_F", "inf1_fsh_mean", 'log_q4', 'log_q5',
                "log_slp1_fsh_mean", 'log_q1_dev', 'log_Ecov_obs_sd')
   map <- list()
   for(x in parsoff) map[[x]] <- factor(pars[[x]]*NA)
