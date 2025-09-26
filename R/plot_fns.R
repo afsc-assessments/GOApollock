@@ -424,3 +424,92 @@ plot_ess <- function(fitDM, fitfrancis=NULL, addISS=FALSE, plot=TRUE){
   if(plot) return(g)
   return(x)
 }
+
+#' Plot fits to biomass indices for a single fit
+#' @param fit A fitted model object
+#' @export
+plot_index_fits <- function(fit){
+  survey.cex <- .9
+  dd <- fit$input$dat
+  rr <- fit$rep
+  years <- rr$years
+  thisyear <- max(years)
+  ## index fits
+  addsegs <- function(yrs, obs, CV){
+    getlwr <- function(obs, CV) qlnorm(p=.025, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
+    getupr <- function(obs, CV) qlnorm(p=.975, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
+    segments(yrs, y0=getlwr(obs,CV), y1=getupr(obs,CV))
+    points(yrs, obs, pch=22, bg='white')
+  }
+  par(mfrow=c(4,1), mar=c(.2,3,.2,.2), oma=c(2,0,0,0),
+      mgp=c(1.5,.25,0), tck=-.01)
+  plot(years, rr$Eindxsurv1, type='l', xlim=c(1987, thisyear),
+       ylim=c(0,2.1),  xlab=NA, xaxt='n',
+       ylab='')
+  addsegs(yrs=dd$srvyrs1, obs=dd$indxsurv1, CV=dd$indxsurv_log_sd1)
+  mtext('Shelikof acoustic survey',  line=-1.5, cex=survey.cex)
+  plot(years, rr$Eindxsurv6, type='l',xaxt='n',
+       xlim=c(1987, thisyear),
+       ylim=c(0,2.7),  xlab=NA, ylab='')
+  addsegs(yrs=dd$srvyrs6, obs=dd$indxsurv6, CV=dd$indxsurv_log_sd6)
+  mtext('Summer acoustic survey',  line=-1.5, cex=survey.cex)
+  plot(years, rr$Eindxsurv2, type='l', xlim=c(1987, thisyear),
+       ylim=c(0,1.5),  xlab=NA, xaxt='n',
+       ylab='')
+  addsegs(yrs=dd$srvyrs2, obs=dd$indxsurv2, CV=dd$indxsurv_log_sd2)
+  mtext('NMFS bottom trawl survey',  line=-1.5, cex=survey.cex)
+  plot(years, rr$Eindxsurv3, type='l', xlim=c(1987, thisyear),
+       ylim=c(0,.5), xlab=NA, ylab='')
+  addsegs(yrs=dd$srvyrs3, obs=dd$indxsurv3, CV=dd$indxsurv_log_sd3)
+  mtext('ADF&G bottom trawl survey',  line=-1.5, cex=survey.cex)
+  legend('topright', legend=c('Expected', 'Observed'), lty=c(1,NA),
+         pch=c(NA,0), bty='n')
+  mtext('Biomass (Mt)', outer=TRUE, side=2, line=-1.5, cex=.8)
+}
+
+#' Plot OSA fits via afscOSA for fishery and all surveys
+#' @param fit Fitted object
+#' @export
+#' @details This is just a wrapper around run_osa
+plot_osa_fits <- function(fit){
+  library(afscOSA)
+  theta <- exp(fit$parList$log_DM_pars)
+  fs <- run_osa(obs = fit$rep$res_fish[,2:10],
+                exp = fit$rep$res_fish[,12:20],
+                N=fit$input$dat$multN_fsh,
+                index=2:10, index_label = 'Age',
+                fleet='Fishery',
+                theta = theta[1],
+                year=fit$input$dat$fshyrs)
+
+  s1 <- run_osa(obs = fit$rep$res_srv1[,3:10],
+                exp = fit$rep$res_srv1[,13:20],
+                N=fit$input$dat$multN_srv1,
+                index=3:10, index_label = 'Age',
+                fleet='Shelikof',
+                theta = theta[2],
+                year=fit$input$dat$srv_acyrs1)
+  s2 <- run_osa(obs = fit$rep$res_srv2[,1:10],
+                exp = fit$rep$res_srv2[,11:20],
+                N=fit$input$dat$multN_srv2,
+                index=1:10, index_label = 'Age',
+                fleet='NMFS BT',
+                theta = theta[3],
+                year=fit$input$dat$srv_acyrs2)
+  ind <- which(rowSums(fit$rep$res_srv3[,1:10])>0)
+  s3 <- run_osa(obs = fit$rep$res_srv3[ind,1:10],
+                exp = fit$rep$res_srv3[ind,11:20],
+                N=fit$input$dat$multN_srv3[ind],
+                index=1:10, index_label = 'Age',
+                fleet='ADF&G BT',
+                theta = theta[4],
+                year=fit$input$dat$srv_acyrs3[ind])
+  s6 <- run_osa(obs = fit$rep$res_srv6[,1:10],
+                exp = fit$rep$res_srv6[,11:20],
+                N=fit$input$dat$multN_srv6,
+                index=1:10, index_label = 'Age',
+                fleet='Summer AT',
+                theta = theta[5],
+                year=fit$input$dat$srv_acyrs6)
+  afscOSA::plot_osa(list(fs, s1,s2,s3,s6))
+}
